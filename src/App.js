@@ -4,6 +4,7 @@ import { createGlobalStyle } from 'styled-components';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import CreateStudyGroup from './pages/CreateStudyGroup/CreateStudyGroup';
 import MemberStudyGroup from './pages/Member/MemberStudyGroup';
+import Process from './pages/Member/Process';
 import Home from './pages/Home/Home';
 
 const GlobalStyle = createGlobalStyle`
@@ -47,6 +48,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/create" element={<CreateStudyGroup />} />
         <Route path="/member" element={<MemberStudyGroup />} />
+        <Route path="/study-group/:id/process" element={<Process />} />
       </Routes>
     </BrowserRouter>
   );

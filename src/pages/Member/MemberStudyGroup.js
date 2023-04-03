@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
+
 const Container = styled.div`
   display: flex;
   height: 100vh;
@@ -28,15 +30,18 @@ const BookImg = styled.div`
   height: 300px;
   margin-right: 30px;
 `;
-
+const CardContent = styled.div`
+  width:800px
+`
 const MemberStudyGroup = () => {
   const [groupData, setGroupData] = useState([]);
-
   useEffect(() => {
-    const articlesRef = collection(db, 'studyGroups');
-    const unsubscribe = onSnapshot(articlesRef, (querySnapshot) => {
-      let groupData = querySnapshot.docs.map((doc) => doc.data());
-      //   console.log('所有groupData', groupData);
+    const groupsRef = collection(db, 'studyGroups');
+    const unsubscribe = onSnapshot(groupsRef, (querySnapshot) => {
+      let groupData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setGroupData(groupData);
     });
 
@@ -50,7 +55,7 @@ const MemberStudyGroup = () => {
         {groupData.map((item, i) => (
           <StudyGroupCard key={i}>
             <BookImg imageUrl={item.image} />
-            <div>
+            <CardContent>
               <p>
                 書名:<span>{item.name}</span>
               </p>
@@ -71,9 +76,11 @@ const MemberStudyGroup = () => {
               </p>
               <p>公告：{item.post}</p>
               <input type="button" value="退出讀書會" />
-              <input type="button" value="編輯流程" />
+              <Link to={`/study-group/${item.id}/process`}>
+                <input type="button" value="編輯流程"/>
+              </Link>
               <input type="button" value="開始讀書會" />
-            </div>
+            </CardContent>
           </StudyGroupCard>
         ))}
       </Content>
