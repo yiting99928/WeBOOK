@@ -1,22 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/macro';
-import { initializeApp } from 'firebase/app';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
-
-const firebaseConfig = {
-  apiKey: 'AIzaSyD3XyLnJTIrQyiK4_5Na-ReoyewPxTbUv4',
-  authDomain: 'webook-online-study-group.firebaseapp.com',
-  projectId: 'webook-online-study-group',
-  storageBucket: 'webook-online-study-group.appspot.com',
-  messagingSenderId: '671095613820',
-  appId: '1:671095613820:web:3f792fdcc8fe26c43c5cf9',
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const storage = getStorage(app);
-const db = getFirestore(app);
+import { storage, db } from '../../utils/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc } from 'firebase/firestore';
 
 const CreateFrom = styled.form`
   display: flex;
@@ -48,7 +34,10 @@ function CreateStudyGroup() {
     } else {
       setCreateForm((prevContact) => ({
         ...prevContact,
-        [e.target.name]: e.target.value,
+        [e.target.name]:
+          e.target.name === 'totalNum'
+            ? parseInt(e.target.value)
+            : e.target.value,
       }));
     }
   };
@@ -60,17 +49,14 @@ function CreateStudyGroup() {
         return;
       }
     }
-    console.log('handleSubmit');
     formPost();
+    resetForm();
   };
-  
   const formPost = async () => {
     try {
-      console.log('formPost');
       const storageRef = ref(storage, `image/${createForm.image.name}`);
       await uploadBytes(storageRef, createForm.image);
       const imageURL = await getDownloadURL(storageRef);
-      //   const studyGroupCollection = collection(db, 'studyGroups');
       const docRef = await addDoc(collection(db, 'studyGroups'), {
         createBy: 'Yumy',
         name: createForm.name,
@@ -89,8 +75,20 @@ function CreateStudyGroup() {
       console.error('Error: ', error);
     }
   };
-  console.log(createForm);
-
+  const resetForm = () => {
+    setCreateForm({
+      createBy: 'Yumy',
+      name: '',
+      image: '',
+      author: '',
+      chapter: '',
+      totalNum: 2,
+      hold: '',
+      category: '',
+      post: '',
+      status: 'preparing',
+    });
+  };
   return (
     <>
       <CreateFrom>
@@ -131,7 +129,7 @@ function CreateStudyGroup() {
           <label>人數上限</label>
           <span>-</span>
           <input
-            type="text"
+            type="number"
             name="totalNum"
             value={createForm.totalNum}
             onChange={handleInputChange}
