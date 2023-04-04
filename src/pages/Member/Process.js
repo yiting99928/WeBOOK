@@ -19,76 +19,67 @@ const Content = styled.div`
 const ProcessCard = styled.div`
   border: 1px solid black;
   padding: 10px;
+  cursor: pointer;
 `;
 
-const initialState = {
-  studyGroup: {},
-  templates: [],
-};
-
-function reducer(state, action) {
-  switch (action.type) {
-    case 'SET_STUDY_GROUP':
-      return { ...state, studyGroup: action.payload };
-    case 'SET_TEMPLATES':
-      return { ...state, templates: action.payload };
-    case 'UPDATE_STUDY_GROUP_PROCESS':
-      return {
-        ...state,
-        studyGroup: { ...state.studyGroup, process: action.payload },
-      };
+function reducer(processData, { type, payload }) {
+  const { lecture, processIndex, templates, e } = payload;
+  switch (type) {
+    case 'SET_CARD':
+      return [{ ...lecture }];
+    case 'ADD_CARD':
+      return [...processData, { ...lecture }];
+    case 'CHANGE_CARD':
+      return processData.map((card, cardIndex) => {
+        if (cardIndex === processIndex) {
+          const newTemplate = templates.find(
+            (template) => template.type === e.target.value
+          );
+          return { ...newTemplate };
+        }
+        return card;
+      });
+    case 'COPY_CARD':
+      const cardToCopy = processData[processIndex];
+      return [
+        ...processData.slice(0, processIndex + 1),
+        { ...cardToCopy },
+        ...processData.slice(processIndex + 1),
+      ];
+    case 'DEL_CARD':
+      const newData = [...processData];
+      newData.splice(processIndex, 1);
+      return newData;
+    case 'MOVE_CARD':
+      const { fromIndex, toIndex } = payload;
+      const itemToMove = processData[fromIndex];
+      const updatedData = [...processData];
+      updatedData.splice(fromIndex, 1);
+      updatedData.splice(toIndex, 0, itemToMove);
+      return updatedData;
     default:
-      throw new Error(`Unknown action: ${action.type}`);
+      throw new Error(`Unknown action: ${type}`);
   }
 }
 function Process() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [processData, dispatch] = useReducer(reducer, []);
+  const [templates, setTemplates] = useState([]);
+  const [studyGroup, setStudyGroup] = useState({});
 
   const { id } = useParams();
   useEffect(() => {
     getDoc(doc(db, 'studyGroups', id)).then((doc) => {
-      if (doc.exists()) {
-        dispatch({ type: 'SET_STUDY_GROUP', payload: doc.data() });
-      } else {
-        console.log('No such document!');
-      }
+      setStudyGroup(doc.data());
     });
 
     getDocs(collection(db, 'template')).then((snapshot) => {
       const templatesData = snapshot.docs.map((doc) => doc.data());
-      dispatch({ type: 'SET_TEMPLATES', payload: templatesData });
-
+      setTemplates(templatesData);
       const lecture = templatesData.find((item) => item.type === 'lecture');
-      dispatch({
-        type: 'UPDATE_STUDY_GROUP_PROCESS',
-        payload: [lecture],
-      });
+      dispatch({ type: 'SET_CARD', payload: { lecture } });
     });
   }, []);
 
-  const handleAddProcess = () => {
-    console.log('add');
-    const lecture = state.templates.find((item) => item.type === 'lecture');
-    const newProcess = [...state.studyGroup.process, lecture];
-    dispatch({
-      type: 'UPDATE_STUDY_GROUP_PROCESS',
-      payload: newProcess,
-    });
-  };
-
-  const handleProcessTypeChange = (e, index) => {
-    const { value } = e.target;
-    const updatedProcess = [...state.studyGroup.process];
-    updatedProcess.splice(index, 1);
-    const newTemplate = state.templates.find(
-      (template) => template.type === value
-    );
-    updatedProcess.splice(index, 0, { ...newTemplate });
-    dispatch({
-      type: 'UPDATE_STUDY_GROUP_PROCESS',
-      payload: updatedProcess,
-    });
-  };
   const renderCardContent = (item) => {
     switch (item.type) {
       case 'lecture':
@@ -141,30 +132,68 @@ function Process() {
         return null;
     }
   };
-  console.log(state.templates);
-  console.log(state.studyGroup.process);
+  function handleDragStart(processIndex) {
+    return (e) => {
+      e.dataTransfer.setData('text/plain', processIndex);
+    };
+  }
+
+  function handleDragOver() {
+    return (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    };
+  }
+
+  function handleDrop(processIndex) {
+    return (e) => {
+      e.preventDefault();
+      const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+      dispatch({
+        type: 'MOVE_CARD',
+        payload: { fromIndex, toIndex: processIndex },
+      });
+    };
+  }
+
+  console.log(studyGroup.process);
+  console.log(processData);
   return (
     <Container>
       <SideMenu isOpen={true} />
       <Content isOpen={true}>
-        <h2>書名：{state.studyGroup.name}</h2>
+        <h2>書名：{studyGroup.name}</h2>
         <p>
-          作者：{state.studyGroup.author}
-          <span>舉辦時間：{state.studyGroup.hold}</span>
+          作者：{studyGroup.author}
+          <span>舉辦時間：{studyGroup.hold}</span>
         </p>
         <div>
-          {state.studyGroup.process !== undefined &&
-            state.studyGroup.process.map((item, processIndex) => {
-              console.log(item);
+          {processData !== undefined &&
+            processData.map((item, processIndex) => {
               return (
-                <ProcessCard key={processIndex}>
+                <ProcessCard
+                  key={processIndex}
+                  draggable="true" // 設定元素可被拖曳
+                  onDragStart={handleDragStart(processIndex)} // 拖曳開始
+                  onDragOver={handleDragOver()} // 拖曳進行中
+                  onDrop={handleDrop(processIndex)} // 拖曳放開執行
+                >
                   <p>{item.type}</p>
                   <hr />
                   <p>{item.description}</p>
                   <select
                     name="templateType"
                     value={item.type}
-                    onChange={(e) => handleProcessTypeChange(e, processIndex)}>
+                    onChange={(e) =>
+                      dispatch({
+                        type: 'CHANGE_CARD',
+                        payload: {
+                          processIndex: processIndex,
+                          templates: templates,
+                          e: e,
+                        },
+                      })
+                    }>
                     <option value="lecture">導讀講稿</option>
                     <option value="extension">衍伸分享</option>
                     <option value="stickyNote">便利貼分享</option>
@@ -174,9 +203,31 @@ function Process() {
                   <input
                     type="button"
                     value="新增流程"
-                    onClick={handleAddProcess}
+                    onClick={() => {
+                      const lecture = templates.find(
+                        (item) => item.type === 'lecture'
+                      );
+                      dispatch({ type: 'ADD_CARD', payload: { lecture } });
+                    }}
                   />
                   {renderCardContent(item)}
+                  <input
+                    type="button"
+                    value="複製"
+                    onClick={() => {
+                      dispatch({
+                        type: 'COPY_CARD',
+                        payload: { processIndex },
+                      });
+                    }}
+                  />
+                  <input
+                    type="button"
+                    value="刪除"
+                    onClick={() => {
+                      dispatch({ type: 'DEL_CARD', payload: { processIndex } });
+                    }}
+                  />
                 </ProcessCard>
               );
             })}
