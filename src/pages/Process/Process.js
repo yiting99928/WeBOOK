@@ -11,10 +11,13 @@ import Vote from './Vote';
 import QA from './QA';
 
 function reducer(processData, { type, payload = {} }) {
-  const { lecture, processIndex, templates, e, description, data } = payload;
+  const { lecture, processIndex, templates, e, description, data, process } =
+    payload;
   switch (type) {
-    case 'SET_CARD':
+    case 'INIT_CARD':
       return [{ ...lecture }];
+    case 'SET_CARD':
+      return [...process];
     case 'ADD_CARD':
       return [...processData, { ...lecture }];
     case 'CHANGE_CARD':
@@ -74,16 +77,33 @@ function Process() {
   const { id } = useParams();
 
   useEffect(() => {
-    getDoc(doc(db, 'studyGroups', id)).then((doc) => {
-      setStudyGroup(doc.data());
-    });
+    async function initData() {
+      try {
+        const studyGroupRef = doc(db, 'studyGroups', id);
+        const studyGroupSnapshot = await getDoc(studyGroupRef);
+        const studyGroupData = studyGroupSnapshot.data();
+        setStudyGroup(studyGroupData);
 
-    getDocs(collection(db, 'template')).then((snapshot) => {
-      const templatesData = snapshot.docs.map((doc) => doc.data());
-      setTemplates(templatesData);
-      const lecture = templatesData.find((item) => item.type === 'lecture');
-      dispatch({ type: 'SET_CARD', payload: { lecture } });
-    });
+        const templatesCollectionRef = collection(db, 'template');
+        const templatesSnapshot = await getDocs(templatesCollectionRef);
+        const templatesData = templatesSnapshot.docs.map((doc) => doc.data());
+        setTemplates(templatesData);
+
+        if (studyGroupData.process === undefined) {
+          console.log(1);
+          const lecture = templatesData.find((item) => item.type === 'lecture');
+          dispatch({ type: 'INIT_CARD', payload: { lecture } });
+        } else {
+          console.log(2);
+          const process = studyGroupData.process;
+          dispatch({ type: 'SET_CARD', payload: { process } });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    initData();
   }, []);
 
   const renderCardContent = (item, processIndex) => {
@@ -126,8 +146,9 @@ function Process() {
     });
     setEditable(processIndex);
   };
+
   function handelSave(processData) {
-    setDoc(doc(db, 'studyGroups', id), { process: processData })
+    setDoc(doc(db, 'studyGroups', id), { ...studyGroup, process: processData })
       .then(() => {
         console.log('Process data saved successfully.');
       })
