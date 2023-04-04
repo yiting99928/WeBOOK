@@ -12,7 +12,6 @@ const Container = styled.div`
 
 const Content = styled.div`
   flex: 1;
-  background-color: #f2f2f2;
   transition: all 0.3s ease;
   padding: 20px;
   width: ${(props) => (props.isOpen ? 'calc(100% - 200px)' : '100%')};
@@ -31,8 +30,8 @@ const BookImg = styled.div`
   margin-right: 30px;
 `;
 const CardContent = styled.div`
-  width:800px
-`
+  width: 800px;
+`;
 const Profile = () => {
   const [groupData, setGroupData] = useState([]);
   useEffect(() => {
@@ -77,7 +76,7 @@ const Profile = () => {
               <p>公告：{item.post}</p>
               <input type="button" value="退出讀書會" />
               <Link to={`/study-group/${item.id}/process`}>
-                <input type="button" value="編輯流程"/>
+                <input type="button" value="編輯流程" />
               </Link>
               <input type="button" value="開始讀書會" />
             </CardContent>

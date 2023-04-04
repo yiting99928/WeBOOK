@@ -3,15 +3,15 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
 import Lecture from './Lecture';
 import Extension from './Extension';
 import StickyNote from './StickyNote';
 import Vote from './Vote';
 import QA from './QA';
 
-function reducer(processData, { type, payload }) {
-  const { lecture, processIndex, templates, e } = payload;
+function reducer(processData, { type, payload = {} }) {
+  const { lecture, processIndex, templates, e, description, data } = payload;
   switch (type) {
     case 'SET_CARD':
       return [{ ...lecture }];
@@ -45,16 +45,34 @@ function reducer(processData, { type, payload }) {
       updatedData.splice(fromIndex, 1);
       updatedData.splice(toIndex, 0, itemToMove);
       return updatedData;
+    case 'UPDATE_DESCRIPTION':
+      const updatedCards = processData.map((card, index) => {
+        if (index === processIndex) {
+          return { ...card, description: description };
+        }
+        return card;
+      });
+      return updatedCards;
+    case 'UPDATE_DATA':
+      const updatedCard = processData.map((card, index) => {
+        if (index === processIndex) {
+          return { ...card, data };
+        }
+        return card;
+      });
+      return updatedCard;
     default:
       throw new Error(`Unknown action: ${type}`);
   }
 }
+
 function Process() {
   const [processData, dispatch] = useReducer(reducer, []);
   const [templates, setTemplates] = useState([]);
   const [studyGroup, setStudyGroup] = useState({});
-
+  const [editable, setEditable] = useState(0);
   const { id } = useParams();
+
   useEffect(() => {
     getDoc(doc(db, 'studyGroups', id)).then((doc) => {
       setStudyGroup(doc.data());
@@ -68,10 +86,17 @@ function Process() {
     });
   }, []);
 
-  const renderCardContent = (item) => {
+  const renderCardContent = (item, processIndex) => {
     switch (item.type) {
       case 'lecture':
-        return <Lecture />;
+        return (
+          <Lecture
+            item={item}
+            processIndex={processIndex}
+            editable={editable}
+            dispatch={dispatch}
+          />
+        );
       case 'extension':
         return <Extension />;
       case 'stickyNote':
@@ -84,123 +109,168 @@ function Process() {
         return null;
     }
   };
-  function handleDragStart(processIndex) {
-    return (e) => {
-      e.dataTransfer.setData('text/plain', processIndex);
-    };
-  }
+  const handleDragStart = (e, processIndex) => {
+    e.dataTransfer.setData('text/plain', processIndex);
+  };
 
-  function handleDragOver() {
-    return (e) => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-    };
-  }
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
 
-  function handleDrop(processIndex) {
-    return (e) => {
-      e.preventDefault();
-      const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
-      dispatch({
-        type: 'MOVE_CARD',
-        payload: { fromIndex, toIndex: processIndex },
+  const handleDrop = (e, processIndex) => {
+    e.preventDefault();
+    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+    dispatch({
+      type: 'MOVE_CARD',
+      payload: { fromIndex, toIndex: processIndex },
+    });
+    setEditable(processIndex);
+  };
+  function handelSave(processData) {
+    setDoc(doc(db, 'studyGroups', id), { process: processData })
+      .then(() => {
+        console.log('Process data saved successfully.');
+      })
+      .catch((error) => {
+        console.error('Error while saving process data: ', error);
       });
-    };
   }
-
-  // console.log(studyGroup.process);
-  // console.log(processData);
+  console.log(processData);
   return (
-    <Container>
-      <SideMenu isOpen={true} />
-      <Content isOpen={true}>
-        <h2>書名：{studyGroup.name}</h2>
-        <p>
-          作者：{studyGroup.author}
-          <span>舉辦時間：{studyGroup.hold}</span>
-        </p>
-        <div>
-          {processData !== undefined &&
-            processData.map((item, processIndex) => {
-              return (
-                <ProcessCard
-                  key={processIndex}
-                  draggable="true" // 設定元素可被拖曳
-                  onDragStart={handleDragStart(processIndex)} // 拖曳開始
-                  onDragOver={handleDragOver()} // 拖曳進行中
-                  onDrop={handleDrop(processIndex)} // 拖曳放開執行
-                >
-                  <p>{item.type}</p>
-                  <hr />
-                  <p>{item.description}</p>
-                  <select
-                    name="templateType"
-                    value={item.type}
-                    onChange={(e) =>
-                      dispatch({
-                        type: 'CHANGE_CARD',
-                        payload: {
-                          processIndex: processIndex,
-                          templates: templates,
-                          e: e,
-                        },
-                      })
-                    }>
-                    <option value="lecture">導讀講稿</option>
-                    <option value="extension">衍伸分享</option>
-                    <option value="stickyNote">便利貼分享</option>
-                    <option value="QA">QA問答</option>
-                    <option value="vote">問題票選</option>
-                  </select>
-                  <input
-                    type="button"
-                    value="新增流程"
-                    onClick={() => {
-                      const lecture = templates.find(
-                        (item) => item.type === 'lecture'
-                      );
-                      dispatch({ type: 'ADD_CARD', payload: { lecture } });
-                    }}
-                  />
-                  {renderCardContent(item)}
-                  <input
-                    type="button"
-                    value="複製"
-                    onClick={() => {
-                      dispatch({
-                        type: 'COPY_CARD',
-                        payload: { processIndex },
-                      });
-                    }}
-                  />
-                  <input
-                    type="button"
-                    value="刪除"
-                    onClick={() => {
-                      dispatch({ type: 'DEL_CARD', payload: { processIndex } });
-                    }}
-                  />
-                </ProcessCard>
-              );
-            })}
-        </div>
-      </Content>
-    </Container>
+    <>
+      <Container>
+        <SideMenu isOpen={true} />
+        <Content isOpen={true}>
+          <h2>書名：{studyGroup.name}</h2>
+          <p>
+            作者：{studyGroup.author}
+            <span>舉辦時間：{studyGroup.hold}</span>
+          </p>
+          <div>
+            {processData !== undefined &&
+              processData.map((item, processIndex) => {
+                return (
+                  <ProcessCard
+                    key={processIndex}
+                    editable={editable === processIndex}
+                    onClick={() => setEditable(processIndex)}>
+                    <div
+                      draggable="true"
+                      onDragStart={(e) => handleDragStart(e, processIndex)}
+                      onDragOver={(e) => handleDragOver(e)}
+                      onDrop={(e) => handleDrop(e, processIndex)}>
+                      抓我移動
+                    </div>
+                    <Title>
+                      <input
+                        readOnly={editable === processIndex ? false : true}
+                        value={item.description}
+                        onChange={(e) => {
+                          dispatch({
+                            type: 'UPDATE_DESCRIPTION',
+                            payload: {
+                              description: e.target.value,
+                              processIndex: processIndex,
+                            },
+                          });
+                        }}
+                      />
+                      <TemplateType
+                        name="templateType"
+                        value={item.type}
+                        onChange={(e) =>
+                          dispatch({
+                            type: 'CHANGE_CARD',
+                            payload: {
+                              processIndex: processIndex,
+                              templates: templates,
+                              e: e,
+                            },
+                          })
+                        }>
+                        <option value="lecture">導讀講稿</option>
+                        <option value="extension">衍伸分享</option>
+                        <option value="stickyNote">便利貼分享</option>
+                        <option value="QA">QA問答</option>
+                        <option value="vote">問題票選</option>
+                      </TemplateType>
+                    </Title>
+
+                    {renderCardContent(item, processIndex)}
+                    <Buttons editable={editable === processIndex}>
+                      <input
+                        type="button"
+                        value="新增"
+                        onClick={() => {
+                          const lecture = templates.find(
+                            (item) => item.type === 'lecture'
+                          );
+                          dispatch({ type: 'ADD_CARD', payload: { lecture } });
+                        }}
+                      />
+                      <input
+                        type="button"
+                        value="複製"
+                        onClick={() => {
+                          dispatch({
+                            type: 'COPY_CARD',
+                            payload: { processIndex },
+                          });
+                        }}
+                      />
+                      <input
+                        type="button"
+                        value="刪除"
+                        onClick={() => {
+                          dispatch({
+                            type: 'DEL_CARD',
+                            payload: { processIndex },
+                          });
+                        }}
+                      />
+                    </Buttons>
+                  </ProcessCard>
+                );
+              })}
+          </div>
+          <input
+            type="button"
+            value="儲存"
+            onClick={() => handelSave(processData)}
+          />
+        </Content>
+      </Container>
+    </>
   );
 }
+const Buttons = styled.div`
+  display: ${({ editable }) => (editable ? 'block' : 'none')};
+`;
+const Title = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 10px;
+  border-bottom: 1px solid black;
+`;
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
 `;
 const Content = styled.div`
   flex: 1;
-  background-color: #f2f2f2;
   transition: all 0.3s ease;
   padding: 20px;
-  width: ${(props) => (props.isOpen ? 'calc(100% - 200px)' : '100%')};
+  width: ${({ isOpen }) => (isOpen ? 'calc(100% - 200px)' : '100%')};
 `;
 const ProcessCard = styled.div`
-  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: ${({ editable }) => (editable ? '1px solid red' : '1px solid black')};
   padding: 10px;
+`;
+const TemplateType = styled.select`
+  height: 25px;
 `;
 export default Process;

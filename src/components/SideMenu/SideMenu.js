@@ -7,12 +7,9 @@ const Sidebar = styled.div`
   color: #fff;
   transition: all 0.3s ease;
 `;
-const ToggleButton = styled.button`
-  background-color: #333;
+const ToggleButton = styled.div`
   color: #fff;
   border: none;
-  padding: 10px;
-  margin: 20px;
   cursor: pointer;
 `;
 
