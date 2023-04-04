@@ -2,9 +2,9 @@ import React from 'react';
 import { Reset } from 'styled-reset';
 import { createGlobalStyle } from 'styled-components';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import CreateStudyGroup from './pages/CreateStudyGroup/CreateStudyGroup';
-import MemberStudyGroup from './pages/Member/MemberStudyGroup';
-import Process from './pages/Member/Process';
+import Create from './pages/Create/Create';
+import Profile from './pages/Profile/Profile';
+import Process from './pages/Profile/Process';
 import Home from './pages/Home/Home';
 
 const GlobalStyle = createGlobalStyle`
@@ -46,8 +46,8 @@ function App() {
       <GlobalStyle />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/create" element={<CreateStudyGroup />} />
-        <Route path="/member" element={<MemberStudyGroup />} />
+        <Route path="/create" element={<Create />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/study-group/:id/process" element={<Process />} />
       </Routes>
     </BrowserRouter>

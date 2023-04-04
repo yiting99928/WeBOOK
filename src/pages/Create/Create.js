@@ -11,7 +11,7 @@ const CreateFrom = styled.form`
   width: 400px;
 `;
 
-function CreateStudyGroup() {
+function Create() {
   const [createForm, setCreateForm] = useState({
     createBy: 'Yumy',
     name: '',
@@ -177,4 +177,4 @@ function CreateStudyGroup() {
     </>
   );
 }
-export default CreateStudyGroup;
+export default Create;
