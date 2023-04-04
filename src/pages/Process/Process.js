@@ -4,23 +4,11 @@ import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
-
-const Container = styled.div`
-  display: flex;
-  min-height: 100vh;
-`;
-const Content = styled.div`
-  flex: 1;
-  background-color: #f2f2f2;
-  transition: all 0.3s ease;
-  padding: 20px;
-  width: ${(props) => (props.isOpen ? 'calc(100% - 200px)' : '100%')};
-`;
-const ProcessCard = styled.div`
-  border: 1px solid black;
-  padding: 10px;
-  cursor: pointer;
-`;
+import Lecture from './Lecture';
+import Extension from './Extension';
+import StickyNote from './StickyNote';
+import Vote from './Vote';
+import QA from './QA';
 
 function reducer(processData, { type, payload }) {
   const { lecture, processIndex, templates, e } = payload;
@@ -83,51 +71,15 @@ function Process() {
   const renderCardContent = (item) => {
     switch (item.type) {
       case 'lecture':
-        return (
-          <div>
-            <p>這是導讀講稿的文字內容</p>
-          </div>
-        );
+        return <Lecture />;
       case 'extension':
-        return (
-          <div>
-            <p>這是衍伸分享的書籍內容</p>
-            <p>這是衍伸分享的文字內容</p>
-          </div>
-        );
+        return <Extension />;
       case 'stickyNote':
-        return (
-          <div>
-            <p>這是便利貼分享message</p>
-            <p>這是便利貼分享user</p>
-          </div>
-        );
+        return <StickyNote />;
       case 'QA':
-        return (
-          <div>
-            <input type="radio" name="option" />
-            <label htmlFor="choose">選項一</label>
-            <input type="radio" name="option" />
-            <label htmlFor="choose">選項一</label>
-            <input type="radio" name="option" />
-            <label htmlFor="choose">選項一</label>
-            <input type="radio" name="option" />
-            <label htmlFor="choose">選項一</label>
-            <hr />
-            <div>答案</div>
-          </div>
-        );
+        return <QA />;
       case 'vote':
-        return (
-          <div>
-            <input type="radio" name="option" />
-            <label htmlFor="choose">選項一</label>
-            <p>0票</p>
-            <input type="radio" name="option" />
-            <label htmlFor="choose">選項一</label>
-            <p>0票</p>
-          </div>
-        );
+        return <Vote />;
       default:
         return null;
     }
@@ -156,8 +108,8 @@ function Process() {
     };
   }
 
-  console.log(studyGroup.process);
-  console.log(processData);
+  // console.log(studyGroup.process);
+  // console.log(processData);
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -236,4 +188,19 @@ function Process() {
     </Container>
   );
 }
+const Container = styled.div`
+  display: flex;
+  min-height: 100vh;
+`;
+const Content = styled.div`
+  flex: 1;
+  background-color: #f2f2f2;
+  transition: all 0.3s ease;
+  padding: 20px;
+  width: ${(props) => (props.isOpen ? 'calc(100% - 200px)' : '100%')};
+`;
+const ProcessCard = styled.div`
+  border: 1px solid black;
+  padding: 10px;
+`;
 export default Process;

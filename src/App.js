@@ -4,7 +4,7 @@ import { createGlobalStyle } from 'styled-components';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Create from './pages/Create/Create';
 import Profile from './pages/Profile/Profile';
-import Process from './pages/Profile/Process';
+import Process from './pages/Process/Process';
 import Home from './pages/Home/Home';
 
 const GlobalStyle = createGlobalStyle`
