@@ -13,14 +13,14 @@ const Content = styled.div`
   width: ${(props) => (props.isOpen ? 'calc(100% - 200px)' : '100%')};
 `;
 
-function Finished() {
+function Preparing() {
   return (
     <Container>
       <SideMenu />
       <Content>
-        <p>結束</p>
+        <p>準備</p>
       </Content>
     </Container>
   );
 }
-export default Finished;
+export default Preparing;

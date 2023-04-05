@@ -71,6 +71,7 @@ function Create() {
         createTime: Date.now(),
       });
       console.log(`Doc: ${docRef.id}`);
+      alert('已創建讀書會!');
     } catch (error) {
       console.error('Error: ', error);
     }

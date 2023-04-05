@@ -5,33 +5,7 @@ import { db } from '../../utils/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 
-const Container = styled.div`
-  display: flex;
-  height: 100vh;
-`;
 
-const Content = styled.div`
-  flex: 1;
-  transition: all 0.3s ease;
-  padding: 20px;
-  width: ${(props) => (props.isOpen ? 'calc(100% - 200px)' : '100%')};
-`;
-
-const StudyGroupCard = styled.div`
-  display: flex;
-  border: 1px solid black;
-  line-height: 30px;
-`;
-const BookImg = styled.div`
-  background-image: url(${(props) => props.imageUrl});
-  background-size: cover;
-  width: 300px;
-  height: 300px;
-  margin-right: 30px;
-`;
-const CardContent = styled.div`
-  width: 800px;
-`;
 const Profile = () => {
   const [groupData, setGroupData] = useState([]);
   useEffect(() => {
@@ -86,4 +60,31 @@ const Profile = () => {
     </Container>
   );
 };
+const Container = styled.div`
+  display: flex;
+  min-height: 100vh;
+`;
+
+const Content = styled.div`
+  flex: 1;
+  transition: all 0.3s ease;
+  padding: 20px;
+  width: ${(props) => (props.isOpen ? 'calc(100% - 200px)' : '100%')};
+`;
+
+const StudyGroupCard = styled.div`
+  display: flex;
+  border: 1px solid black;
+  line-height: 15px;
+`;
+const BookImg = styled.div`
+  background-image: url(${(props) => props.imageUrl});
+  background-size: cover;
+  width: 300px;
+  height: 300px;
+  margin-right: 30px;
+`;
+const CardContent = styled.div`
+  width: 800px;
+`;
 export default Profile;

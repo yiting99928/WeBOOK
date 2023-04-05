@@ -1,28 +1,34 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components/macro';
 
 function Lecture({ item, processIndex, editable, dispatch }) {
-  const onContentEditableInput = (e) => {
+  const onContentEditableBlur = (e) => {
     const data = e.currentTarget.innerHTML;
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data },
     });
   };
+
+  const onContentEditableInput = (e) => {
+    e.stopPropagation();
+  };
+
   const bold = () => {
-    document.execCommand('bold', false, null); // 在選取的文字前後加上 <b> 標籤
+    document.execCommand('bold'); // 在選取的文字前後加上 <b> 標籤
   };
   const italic = () => {
-    document.execCommand('italic', false, null); // 在選取的文字前後加上 <i> 標籤
+    document.execCommand('italic'); // 在選取的文字前後加上 <i> 標籤
   };
   const underlined = () => {
-    document.execCommand('underline', false, null); // 在選取的文字前後加上 <u> 標籤
+    document.execCommand('underline'); // 在選取的文字前後加上 <u> 標籤
   };
   return (
     <div>
       <div
         dangerouslySetInnerHTML={{ __html: item.data }}
         contentEditable
+        onBlur={onContentEditableBlur}
         onInput={onContentEditableInput}
       />
       <TitleEditIcons editable={editable === processIndex}>

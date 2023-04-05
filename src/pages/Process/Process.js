@@ -151,6 +151,7 @@ function Process() {
     setDoc(doc(db, 'studyGroups', id), { ...studyGroup, process: processData })
       .then(() => {
         console.log('Process data saved successfully.');
+        alert('已儲存讀書會流程');
       })
       .catch((error) => {
         console.error('Error while saving process data: ', error);
