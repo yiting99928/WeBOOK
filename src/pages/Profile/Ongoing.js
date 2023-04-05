@@ -34,7 +34,7 @@ const Ongoing = () => {
     <Container>
       <SideMenu isOpen={true} />
       <Content isOpen={true}>
-        {groupData.map((item, i) => (
+        {groupData.length===0?<p>目前沒有進行中的讀書會</p>:groupData.map((item, i) => (
           <StudyGroupCard key={i}>
             <BookImg imageUrl={item.image} />
             <CardContent>
@@ -91,8 +91,9 @@ const StudyGroupCard = styled.div`
 `;
 const BookImg = styled.div`
   background-image: url(${(props) => props.imageUrl});
-  background-size: cover;
-  width: 300px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 250px;
   height: 300px;
   margin-right: 30px;
 `;
