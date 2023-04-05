@@ -4,7 +4,6 @@ import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 
-
 const Profile = () => {
   const [groupData, setGroupData] = useState([]);
   useEffect(() => {
@@ -42,9 +41,6 @@ const Profile = () => {
                 章節:<span>{item.chapter}</span>
               </p>
               <p>
-                創建時間:<span>{item.createTime}</span>
-              </p>
-              <p>
                 舉辦時間:<span>{item.hold}</span>
               </p>
             </CardContent>
@@ -73,8 +69,9 @@ const StudyGroupCard = styled.div`
 `;
 const BookImg = styled.div`
   background-image: url(${(props) => props.imageUrl});
-  background-size: cover;
-  width: 300px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 250px;
   height: 300px;
   margin-right: 30px;
 `;
