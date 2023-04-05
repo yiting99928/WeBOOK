@@ -57,9 +57,6 @@ const Preparing = () => {
                   章節:<span>{item.chapter}</span>
                 </p>
                 <p>
-                  創建時間:<span>{item.createTime}</span>
-                </p>
-                <p>
                   舉辦時間:<span>{item.hold}</span>
                 </p>
                 <p>公告：{item.post}</p>
@@ -99,8 +96,9 @@ const StudyGroupCard = styled.div`
 `;
 const BookImg = styled.div`
   background-image: url(${(props) => props.imageUrl});
-  background-size: cover;
-  width: 300px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 250px;
   height: 300px;
   margin-right: 30px;
 `;
