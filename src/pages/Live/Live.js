@@ -9,6 +9,10 @@ import {
   query,
   onSnapshot,
   orderBy,
+  doc,
+  updateDoc,
+  getDoc,
+  setDoc,
 } from 'firebase/firestore';
 
 function Live() {
@@ -16,6 +20,24 @@ function Live() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
+  const [seconds, setSeconds] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [studyGroup, setStudyGroup] = useState([]);
+  const [note, setNote] = useState('');
+
+  useEffect(() => {
+    async function initData() {
+      try {
+        const studyGroupRef = doc(db, 'studyGroups', id);
+        const studyGroupSnapshot = await getDoc(studyGroupRef);
+        const studyGroupData = studyGroupSnapshot.data();
+        setStudyGroup(studyGroupData);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    initData();
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -33,6 +55,18 @@ function Live() {
     };
   }, [id]);
 
+  useEffect(() => {
+    let interval = null;
+    if (isActive) {
+      interval = setInterval(() => {
+        setSeconds((seconds) => seconds + 1);
+      }, 1000);
+    } else if (!isActive && seconds !== 0) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, seconds]);
+
   const sendMessage = async (e) => {
     e.preventDefault();
     await addDoc(collection(db, 'rooms', id, 'messages'), {
@@ -42,26 +76,81 @@ function Live() {
     setInput('');
   };
 
+  function handleStart() {
+    setIsActive(true);
+    alert('開始直播');
+  }
+
+  function handleStop() {
+    setIsActive(false);
+    setSeconds(0);
+    handleChangeState();
+  }
+  function formatTime(totalSeconds) {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+
+    const formattedHours = hours.toString().padStart(2, '0');
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+    const formattedSeconds = seconds.toString().padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+  }
+  function handleChangeState() {
+    const groupRef = doc(db, 'studyGroups', id);
+    updateDoc(groupRef, { status: 'finished' })
+      .then(() => {
+        console.log('Document successfully updated!');
+        alert('結束直播');
+      })
+      .catch((error) => {
+        console.error('Error updating document: ', error);
+      });
+  }
+
+  function handleNoteChange(e) {
+    const html = e.target.innerHTML;
+    setNote(html);
+  }
+
+  async function handleSaveNote() {
+    try {
+      const userRef = doc(db, 'users', 'yumy19990628@gmail.com');
+      const newGroupRef = doc(collection(userRef, 'UserStudyGroups'), id);
+      await setDoc(newGroupRef, {
+        note: note,
+      });
+
+      console.log(`儲存 ${id} 筆記`);
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  }
+
   return (
     <>
       <Container>
         <SideMenu isOpen={true} />
 
         <Content isOpen={true}>
-          <LiveScreen>
-            直播的畫面
-            <div>
-              <p>local</p>
-              <audio controls autoPlay muted />
-              <p>remote</p>
-              <audio controls autoPlay muted />
-              <div>
-                <button id="startButton">Start</button>
-                <button id="callButton">Call</button>
-                <button id="hangupButton">Hangup</button>
-              </div>
-            </div>
-          </LiveScreen>
+          <Input>
+            <input
+              type="button"
+              id="startButton"
+              value="Start"
+              onClick={handleStart}
+            />
+            <input type="button" id="startButton" value="Call" />
+            <input
+              type="button"
+              id="startButton"
+              value="Hangup"
+              onClick={handleStop}
+            />
+            <span>{formatTime(seconds)}</span>
+          </Input>
+          <LiveScreen>直播的畫面</LiveScreen>
           <ChatRoom>
             聊天室
             <Message>
@@ -78,7 +167,8 @@ function Live() {
               <div
                 ref={(el) => {
                   messagesEndRef.current = el;
-                }}/>
+                }}
+              />
             </Message>
             <ChatInput>
               <form onSubmit={sendMessage}>
@@ -90,12 +180,25 @@ function Live() {
               </form>
             </ChatInput>
           </ChatRoom>
-          <Note>小筆記</Note>
+          <Note
+            dangerouslySetInnerHTML={{ __html: studyGroup.note }}
+            contentEditable
+            onInput={handleNoteChange}
+          />
+          <input
+            type="button"
+            id="startButton"
+            value="儲存筆記"
+            onClick={handleSaveNote}
+          />
         </Content>
       </Container>
     </>
   );
 }
+const Input = styled.div`
+  width: 100%;
+`;
 const Guest = styled.div``;
 const User = styled.div`
   align-self: flex-end;
