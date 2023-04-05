@@ -1,43 +1,99 @@
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { db } from '../../utils/firebase';
+import {
+  collection,
+  addDoc,
+  query,
+  onSnapshot,
+  orderBy,
+} from 'firebase/firestore';
 
 function Live() {
   const { id } = useParams();
-  useEffect(()=>{
-    
-  },[])
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  useEffect(() => {
+    const chatRoomRef = collection(db, 'rooms', id, 'messages');
+    const q = query(chatRoomRef, orderBy('timestamp', 'asc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setMessages(snapshot.docs.map((doc) => doc.data()));
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [id]);
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    await addDoc(collection(db, 'rooms', id, 'messages'), {
+      message: input,
+      timestamp: new Date(),
+    });
+    setInput('');
+  };
+
   return (
-    <Container>
-      <SideMenu isOpen={true} />
-      <Content isOpen={true}>
-        <LiveScreen>直播的畫面</LiveScreen>
-        <ChatRoom>
-          聊天室
-          <Message>
-            <Guest>
-              <span>AAA：</span>嗨嗨
-            </Guest>
-            <Guest>
-              <span>AAA：</span>嗨嗨
-            </Guest>
-            <Guest>
-              <span>AAA：</span>嗨嗨
-            </Guest>
-            <User>嗨嗨</User>
-            <User>嗨嗨</User>
-            <User>嗨嗨</User>
-            <User>嗨嗨</User>
-          </Message>
-          <ChatInput>
-            <input />
-            <input type="button" value="送出" />
-          </ChatInput>
-        </ChatRoom>
-        <Note>小筆記</Note>
-      </Content>
-    </Container>
+    <>
+      <Container>
+        <SideMenu isOpen={true} />
+
+        <Content isOpen={true}>
+          <LiveScreen>
+            直播的畫面
+            <div>
+              <p>local</p>
+              <audio controls autoPlay muted />
+              <p>remote</p>
+              <audio controls autoPlay muted />
+              <div>
+                <button id="startButton">Start</button>
+                <button id="callButton">Call</button>
+                <button id="hangupButton">Hangup</button>
+              </div>
+            </div>
+          </LiveScreen>
+          <ChatRoom>
+            聊天室
+            <Message>
+              {messages.map((message, index) =>
+                message.sender === 'user' ? (
+                  <User key={index}>{message.message}</User>
+                ) : (
+                  <Guest key={index}>
+                    <span>Guest{message.sender}：</span>
+                    {message.message}
+                  </Guest>
+                )
+              )}
+              <div
+                ref={(el) => {
+                  messagesEndRef.current = el;
+                }}/>
+            </Message>
+            <ChatInput>
+              <form onSubmit={sendMessage}>
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                />
+                <input type="submit" value="送出" />
+              </form>
+            </ChatInput>
+          </ChatRoom>
+          <Note>小筆記</Note>
+        </Content>
+      </Container>
+    </>
   );
 }
 const Guest = styled.div``;
