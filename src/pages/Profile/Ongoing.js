@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, setDoc, doc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 
 const Ongoing = () => {
@@ -15,13 +15,21 @@ const Ongoing = () => {
         ...doc.data(),
       }));
       let ongoingGroups = groups.filter((group) => group.status === 'ongoing');
-      console.log(ongoingGroups);
       setGroupData(ongoingGroups);
     });
 
     return () => unsubscribe();
   }, []);
-
+  const setRoom = async (item) => {
+    try {
+      await setDoc(doc(db, 'rooms', `${item.id}`), {
+        offer: '',
+      });
+      console.log(`進入${item.id}直播間`);
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  };
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -50,7 +58,11 @@ const Ongoing = () => {
               </p>
               <p>公告：{item.post}</p>
               <Link to={`/study-group/${item.id}/live`}>
-                <input type="button" value="進入讀書會直播間" />
+                <input
+                  type="button"
+                  value="進入讀書會直播間"
+                  onClick={() => setRoom(item)}
+                />
               </Link>
             </CardContent>
           </StudyGroupCard>

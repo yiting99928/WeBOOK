@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { Link } from 'react-router-dom';
 
 
 const Profile = () => {
@@ -11,11 +10,11 @@ const Profile = () => {
   useEffect(() => {
     const groupsRef = collection(db, 'studyGroups');
     const unsubscribe = onSnapshot(groupsRef, (querySnapshot) => {
-      let groupData = querySnapshot.docs.map((doc) => ({
+      let groups = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setGroupData(groupData);
+      setGroupData(groups);
     });
 
     return () => unsubscribe();
@@ -29,6 +28,7 @@ const Profile = () => {
           <StudyGroupCard key={i}>
             <BookImg imageUrl={item.image} />
             <CardContent>
+              <p>{item.status}</p>
               <p>
                 書名:<span>{item.name}</span>
               </p>
@@ -47,12 +47,6 @@ const Profile = () => {
               <p>
                 舉辦時間:<span>{item.hold}</span>
               </p>
-              <p>公告：{item.post}</p>
-              <input type="button" value="退出讀書會" />
-              <Link to={`/study-group/${item.id}/process`}>
-                <input type="button" value="編輯流程" />
-              </Link>
-              <input type="button" value="開始讀書會" />
             </CardContent>
           </StudyGroupCard>
         ))}
