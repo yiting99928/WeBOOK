@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import SideMenu from '../../components/SideMenu';
 import { useEffect, useState, useRef } from 'react';
@@ -13,6 +13,7 @@ import {
   updateDoc,
   getDoc,
   setDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import EditContent from '../../components/EditContent';
 import Lecture from '../../pages/Process/Lecture';
@@ -23,6 +24,7 @@ import QA from '../../pages/Process/QA';
 
 function Live() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
@@ -31,6 +33,7 @@ function Live() {
   const [studyGroup, setStudyGroup] = useState([]);
   const [note, setNote] = useState('');
   const [currentCard, setCurrentCard] = useState(0);
+
   useEffect(() => {
     async function initData() {
       try {
@@ -43,6 +46,13 @@ function Live() {
       }
     }
     initData();
+    const studyGroupRef = doc(db, 'rooms', id);
+    const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
+      const studyGroupData = snapshot.data();
+      console.log(studyGroupData);
+      setCurrentCard(studyGroupData.currentCard);
+    });
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -82,8 +92,9 @@ function Live() {
     setInput('');
   };
 
-  function handleStart() {
+  async function handleStart() {
     setIsActive(true);
+    await setDoc(doc(db, 'rooms', id), { currentCard: 0 });
     alert('開始直播');
   }
 
@@ -91,6 +102,7 @@ function Live() {
     setIsActive(false);
     setSeconds(0);
     handleChangeState();
+    navigate({ pathname: '/profile/finished' }, { replace: true });
   }
   function formatTime(totalSeconds) {
     const hours = Math.floor(totalSeconds / 3600);
@@ -104,8 +116,8 @@ function Live() {
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   }
   function handleChangeState() {
-    const groupRef = doc(db, 'studyGroups', id);
-    updateDoc(groupRef, { status: 'finished' })
+    updateDoc(doc(db, 'studyGroups', id), { status: 'finished' });
+    deleteDoc(doc(db, 'rooms', id))
       .then(() => {
         console.log('Document successfully updated!');
         alert('結束直播');
@@ -114,7 +126,6 @@ function Live() {
         console.error('Error updating document: ', error);
       });
   }
-
   const onContentChange = (newContent) => {
     console.log(newContent);
     setNote(newContent);
@@ -149,6 +160,16 @@ function Live() {
         return null;
     }
   };
+
+  const updateCurrentCardInFirebase = async (newCard) => {
+    try {
+      const studyGroupRef = doc(db, 'rooms', id);
+      await setDoc(studyGroupRef, { currentCard: newCard });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <Container>
@@ -194,17 +215,24 @@ function Live() {
               type="button"
               value="前"
               onClick={() =>
-                setCurrentCard((prev) => (prev > 0 ? prev - 1 : prev))
+                setCurrentCard((prev) => {
+                  const newCard = prev > 0 ? prev - 1 : prev;
+                  updateCurrentCardInFirebase(newCard);
+                  return newCard;
+                })
               }
             />
             <ProcessInput
               type="button"
               value="後"
-              onClick={() =>
-                setCurrentCard((prev) =>
-                  prev < studyGroup.process.length - 1 ? prev + 1 : prev
-                )
-              }
+              onClick={() => {
+                setCurrentCard((prev) => {
+                  const newCard =
+                    prev < studyGroup.process.length - 1 ? prev + 1 : prev;
+                  updateCurrentCardInFirebase(newCard);
+                  return newCard;
+                });
+              }}
             />
           </LiveScreen>
           <ChatRoom>

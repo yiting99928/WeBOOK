@@ -19,14 +19,6 @@ const Ongoing = () => {
     getData();
   }, []);
 
-  const setRoom = async (item) => {
-    try {
-      await setDoc(doc(db, 'rooms', `${item.id}`), {});
-      console.log(`進入${item.id}直播間`);
-    } catch (error) {
-      console.error('Error: ', error);
-    }
-  };
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -61,7 +53,6 @@ const Ongoing = () => {
                   <input
                     type="button"
                     value="進入讀書會直播間"
-                    onClick={() => setRoom(item)}
                   />
                 </Link>
               </CardContent>
