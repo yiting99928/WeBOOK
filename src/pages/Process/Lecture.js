@@ -1,50 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/macro';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+const quillModules = {
+  toolbar: [
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ color: [] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    ['link', 'image'],
+    ['clean'],
+  ],
+  clipboard: {
+    matchVisual: false,
+  },
+};
 
 function Lecture({ item, processIndex, editable, dispatch }) {
-  const onContentEditableBlur = (e) => {
-    const data = e.currentTarget.innerHTML;
+  const [content, setContent] = useState(item.data);
+
+  const onContentChange = (newContent) => {
+    setContent(newContent);
+  };
+
+  const saveContent = () => {
+    console.log(content);
     dispatch({
       type: 'UPDATE_DATA',
-      payload: { processIndex, data },
+      payload: { processIndex, data: content },
     });
-  };
-
-  const onContentEditableInput = (e) => {
-    e.stopPropagation();
-  };
-
-  const bold = () => {
-    document.execCommand('bold'); // 在選取的文字前後加上 <b> 標籤
-  };
-  const italic = () => {
-    document.execCommand('italic'); // 在選取的文字前後加上 <i> 標籤
-  };
-  const underlined = () => {
-    document.execCommand('underline'); // 在選取的文字前後加上 <u> 標籤
   };
   return (
     <div>
-      <div
-        dangerouslySetInnerHTML={{ __html: item.data }}
-        contentEditable
-        onBlur={onContentEditableBlur}
-        onInput={onContentEditableInput}
+      <PreviewContent
+        dangerouslySetInnerHTML={{ __html: content }}
+        editing={editable === processIndex}
       />
-      <TitleEditIcons editable={editable === processIndex}>
-        <input type="button" onClick={bold} value="bold" />
-        <input type="button" onClick={italic} value="italic" />
-        <input type="button" onClick={underlined} value="underlined" />
-      </TitleEditIcons>
+      <Edit editing={editable === processIndex}>
+        <ReactQuill
+          value={content}
+          onChange={onContentChange}
+          modules={quillModules}
+        />
+        <button onClick={saveContent}>Save</button>
+      </Edit>
     </div>
   );
 }
-const TitleEditIcons = styled.div`
-  display: ${({ editable }) => (editable ? 'block' : 'none')};
-  margin-top: 15px;
+const PreviewContent = styled.div`
+  display: ${({ editing }) => (editing ? 'none' : 'block')};
 `;
-const TitleEdit = styled.span`
-  font-size: 18px;
-  margin-top: 5px;
+const Edit = styled.div`
+  display: ${({ editing }) => (editing ? 'block' : 'none')};
+  margin-top: 15px;
 `;
 export default Lecture;

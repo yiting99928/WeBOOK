@@ -131,7 +131,14 @@ function Process() {
       case 'QA':
         return <QA />;
       case 'vote':
-        return <Vote />;
+        return (
+          <Vote
+            item={item}
+            processIndex={processIndex}
+            editable={editable}
+            dispatch={dispatch}
+          />
+        );
       default:
         return null;
     }
