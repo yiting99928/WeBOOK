@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components/macro';
 import { storage, db } from '../../utils/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
 
 const CreateFrom = styled.form`
   display: flex;
@@ -13,7 +13,8 @@ const CreateFrom = styled.form`
 
 function Create() {
   const [createForm, setCreateForm] = useState({
-    createBy: 'Yumy',
+    createBy: 'yumy19990628@gmail.com',
+    host: 'Yumy',
     name: '',
     image: '',
     author: '',
@@ -58,7 +59,8 @@ function Create() {
       await uploadBytes(storageRef, createForm.image);
       const imageURL = await getDownloadURL(storageRef);
       const docRef = await addDoc(collection(db, 'studyGroups'), {
-        createBy: 'Yumy',
+        createBy: 'yumy19990628@gmail.com',
+        host: 'Yumy',
         name: createForm.name,
         image: imageURL,
         author: createForm.author,
@@ -70,7 +72,18 @@ function Create() {
         status: 'preparing',
         createTime: Date.now(),
       });
-      console.log(`Doc: ${docRef.id}`);
+      // 在使用者DATA集合中新增讀書會筆記
+      const userStudyGroupsRef = doc(
+        db,
+        'users',
+        'yumy19990628@gmail.com',
+        'userStudyGroups',
+        docRef.id
+      );
+      await setDoc(userStudyGroupsRef, {
+        note: '',
+      });
+      console.log(`User Study Group Doc: ${docRef.id}`);
       alert('已創建讀書會!');
     } catch (error) {
       console.error('Error: ', error);
@@ -78,7 +91,6 @@ function Create() {
   };
   const resetForm = () => {
     setCreateForm({
-      createBy: 'Yumy',
       name: '',
       image: '',
       author: '',
@@ -87,7 +99,6 @@ function Create() {
       hold: '',
       category: '',
       post: '',
-      status: 'preparing',
     });
   };
   return (

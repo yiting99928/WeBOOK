@@ -1,14 +1,19 @@
 function Vote() {
-    return (
+  
+  return (
+    <div>
       <div>
         <input type="radio" name="option" />
-        <label htmlFor="choose">選項一</label>
-        <p>0票</p>
-        <input type="radio" name="option" />
-        <label htmlFor="choose">選項一</label>
-        <p>0票</p>
+        <label htmlFor="choose">編輯選項</label>
+        <span>x</span>
       </div>
-    );
-  }
-  export default Vote;
-  
+      <div>
+        <input type="radio" name="option" />
+        <label htmlFor="choose">編輯選項</label>
+        <span>x</span>
+      </div>
+      <input type="button" value="+" />
+    </div>
+  );
+}
+export default Vote;

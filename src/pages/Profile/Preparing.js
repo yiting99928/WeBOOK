@@ -2,25 +2,21 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
-import { collection, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
+import data from '../../utils/data';
 
 const Preparing = () => {
   const [groupData, setGroupData] = useState([]);
   useEffect(() => {
-    const groupsRef = collection(db, 'studyGroups');
-    const unsubscribe = onSnapshot(groupsRef, (querySnapshot) => {
-      let groups = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      let ongoingGroups = groups.filter(
-        (group) => group.status === 'preparing'
+    async function getData() {
+      const groupData = await data.loadGroupData();
+      const preparingData = groupData.filter(
+        (item) => item.status === 'preparing'
       );
-      setGroupData(ongoingGroups);
-    });
-
-    return () => unsubscribe();
+      setGroupData(preparingData);
+    }
+    getData();
   }, []);
 
   function handleChangeState(item) {

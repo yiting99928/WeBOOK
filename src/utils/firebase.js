@@ -3,7 +3,7 @@ import { getStorage } from 'firebase/storage';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyD3XyLnJTIrQyiK4_5Na-ReoyewPxTbUv4',
+  apiKey: process.env.FIREBASE_KEY,
   authDomain: 'webook-online-study-group.firebaseapp.com',
   projectId: 'webook-online-study-group',
   storageBucket: 'webook-online-study-group.appspot.com',

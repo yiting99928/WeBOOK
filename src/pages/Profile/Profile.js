@@ -1,22 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
-import { db } from '../../utils/firebase';
-import { collection, onSnapshot } from 'firebase/firestore';
+import data from '../../utils/data';
 
 const Profile = () => {
   const [groupData, setGroupData] = useState([]);
   useEffect(() => {
-    const groupsRef = collection(db, 'studyGroups');
-    const unsubscribe = onSnapshot(groupsRef, (querySnapshot) => {
-      let groups = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setGroupData(groups);
-    });
-
-    return () => unsubscribe();
+    async function getData() {
+      const groupData = await data.loadGroupData();
+      setGroupData(groupData);
+    }
+    getData();
   }, []);
 
   return (

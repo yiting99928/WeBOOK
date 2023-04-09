@@ -14,13 +14,16 @@ function reducer(processData, { type, payload = {} }) {
   const { lecture, processIndex, templates, e, description, data, process } =
     payload;
   switch (type) {
-    case 'INIT_CARD':
+    case 'INIT_CARD': {
       return [{ ...lecture }];
-    case 'SET_CARD':
+    }
+    case 'SET_CARD': {
       return [...process];
-    case 'ADD_CARD':
+    }
+    case 'ADD_CARD': {
       return [...processData, { ...lecture }];
-    case 'CHANGE_CARD':
+    }
+    case 'CHANGE_CARD': {
       return processData.map((card, cardIndex) => {
         if (cardIndex === processIndex) {
           const newTemplate = templates.find(
@@ -30,33 +33,38 @@ function reducer(processData, { type, payload = {} }) {
         }
         return card;
       });
-    case 'COPY_CARD':
-      const cardToCopy = processData[processIndex];
+    }
+    case 'COPY_CARD': {
+      const updatedCard = processData[processIndex];
       return [
         ...processData.slice(0, processIndex + 1),
-        { ...cardToCopy },
+        { ...updatedCard },
         ...processData.slice(processIndex + 1),
       ];
-    case 'DEL_CARD':
-      const newData = [...processData];
-      newData.splice(processIndex, 1);
-      return newData;
-    case 'MOVE_CARD':
+    }
+    case 'DEL_CARD': {
+      const updatedCard = [...processData];
+      updatedCard.splice(processIndex, 1);
+      return updatedCard;
+    }
+    case 'MOVE_CARD': {
       const { fromIndex, toIndex } = payload;
       const itemToMove = processData[fromIndex];
-      const updatedData = [...processData];
-      updatedData.splice(fromIndex, 1);
-      updatedData.splice(toIndex, 0, itemToMove);
-      return updatedData;
-    case 'UPDATE_DESCRIPTION':
-      const updatedCards = processData.map((card, index) => {
+      const updatedCard = [...processData];
+      updatedCard.splice(fromIndex, 1);
+      updatedCard.splice(toIndex, 0, itemToMove);
+      return updatedCard;
+    }
+    case 'UPDATE_DESCRIPTION': {
+      const updatedCard = processData.map((card, index) => {
         if (index === processIndex) {
           return { ...card, description: description };
         }
         return card;
       });
-      return updatedCards;
-    case 'UPDATE_DATA':
+      return updatedCard;
+    }
+    case 'UPDATE_DATA': {
       const updatedCard = processData.map((card, index) => {
         if (index === processIndex) {
           return { ...card, data };
@@ -64,6 +72,7 @@ function reducer(processData, { type, payload = {} }) {
         return card;
       });
       return updatedCard;
+    }
     default:
       throw new Error(`Unknown action: ${type}`);
   }
@@ -90,11 +99,9 @@ function Process() {
         setTemplates(templatesData);
 
         if (studyGroupData.process === undefined) {
-          console.log(1);
           const lecture = templatesData.find((item) => item.type === 'lecture');
           dispatch({ type: 'INIT_CARD', payload: { lecture } });
         } else {
-          console.log(2);
           const process = studyGroupData.process;
           dispatch({ type: 'SET_CARD', payload: { process } });
         }
@@ -104,7 +111,7 @@ function Process() {
     }
 
     initData();
-  }, []);
+  }, [id]);
 
   const renderCardContent = (item, processIndex) => {
     switch (item.type) {
@@ -157,7 +164,7 @@ function Process() {
         console.error('Error while saving process data: ', error);
       });
   }
-  console.log(processData);
+  // console.log(processData);
   return (
     <>
       <Container>
@@ -181,7 +188,7 @@ function Process() {
                       onDragStart={(e) => handleDragStart(e, processIndex)}
                       onDragOver={(e) => handleDragOver(e)}
                       onDrop={(e) => handleDrop(e, processIndex)}>
-                      抓我移動
+                      MOVE
                     </div>
                     <Title>
                       <input

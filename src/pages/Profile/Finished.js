@@ -1,41 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
-import { db } from '../../utils/firebase';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import data from '../../utils/data';
 
 const Finished = () => {
   const [groupData, setGroupData] = useState([]);
   useEffect(() => {
-    async function loadGroupData() {
-      try {
-        const userRef = doc(db, 'users', 'yumy19990628@gmail.com');
-        const userStudyGroupsRef = collection(userRef, 'UserStudyGroups');
-        const userStudyGroupsSnapshot = await getDocs(userStudyGroupsRef);
-
-        const allGroupsData = [];
-
-        for (const groupDoc of userStudyGroupsSnapshot.docs) {
-          const groupId = groupDoc.id;
-          const groupNote = groupDoc.data().note;
-          const studyGroupRef = doc(db, 'studyGroups', groupId);
-          const studyGroupDoc = await getDoc(studyGroupRef);
-
-          allGroupsData.push({
-            id: groupId,
-            note: groupNote,
-            ...studyGroupDoc.data(),
-          });
-        }
-        setGroupData(allGroupsData);
-      } catch (error) {
-        console.error('Error: ', error);
-      }
+    async function getData() {
+      const groupData = await data.loadGroupData();
+      const finishedData = groupData.filter(item=>item.status==='finished')
+      setGroupData(finishedData);
     }
-
-    loadGroupData();
+    getData();
   }, []);
-
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -48,7 +25,7 @@ const Finished = () => {
               <BookImg imageUrl={item.image} />
               <CardContent>
                 <p>
-                書名:<span>{item.name}</span>
+                  書名:<span>{item.name}</span>
                 </p>
                 <p>
                   作者:<span>{item.author}</span>
