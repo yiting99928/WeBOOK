@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import SideMenu from '../../components/SideMenu';
 import { useEffect, useState, useRef } from 'react';
 import { db } from '../../utils/firebase';
@@ -14,6 +14,12 @@ import {
   getDoc,
   setDoc,
 } from 'firebase/firestore';
+import EditContent from '../../components/EditContent';
+import Lecture from '../../pages/Process/Lecture';
+import Extension from '../../pages/Process/Extension';
+import StickyNote from '../../pages/Process/StickyNote';
+import Vote from '../../pages/Process/Vote';
+import QA from '../../pages/Process/QA';
 
 function Live() {
   const { id } = useParams();
@@ -24,7 +30,7 @@ function Live() {
   const [isActive, setIsActive] = useState(false);
   const [studyGroup, setStudyGroup] = useState([]);
   const [note, setNote] = useState('');
-
+  const [currentCard, setCurrentCard] = useState(0);
   useEffect(() => {
     async function initData() {
       try {
@@ -109,15 +115,15 @@ function Live() {
       });
   }
 
-  function handleNoteChange(e) {
-    const html = e.target.innerHTML;
-    setNote(html);
-  }
+  const onContentChange = (newContent) => {
+    console.log(newContent);
+    setNote(newContent);
+  };
 
   async function handleSaveNote() {
     try {
       const userRef = doc(db, 'users', 'yumy19990628@gmail.com');
-      const newGroupRef = doc(collection(userRef, 'UserStudyGroups'), id);
+      const newGroupRef = doc(collection(userRef, 'userStudyGroups'), id);
       await setDoc(newGroupRef, {
         note: note,
       });
@@ -127,30 +133,80 @@ function Live() {
       console.error('Error: ', error);
     }
   }
-
+  const renderCardContent = (item) => {
+    switch (item.type) {
+      case 'lecture':
+        return <Lecture item={item} />;
+      case 'extension':
+        return <Extension />;
+      case 'stickyNote':
+        return <StickyNote />;
+      case 'QA':
+        return <QA />;
+      case 'vote':
+        return <Vote item={item} />;
+      default:
+        return null;
+    }
+  };
   return (
     <>
       <Container>
         <SideMenu isOpen={true} />
 
         <Content isOpen={true}>
-          <Input>
-            <input
+          <Menu>
+            <StudyGroupInfo>
+              <div>書名：{studyGroup.name}</div>
+              <div>章節：{studyGroup.chapter}</div>
+            </StudyGroupInfo>
+            <Input>
+              <input
+                type="button"
+                id="startButton"
+                value="Start"
+                onClick={handleStart}
+              />
+              <input type="button" id="startButton" value="Call" />
+              <input
+                type="button"
+                id="startButton"
+                value="Hangup"
+                onClick={handleStop}
+              />
+              <span>{formatTime(seconds)}</span>
+            </Input>
+          </Menu>
+          <LiveScreen>
+            <div>
+              {studyGroup.length === 0 ? (
+                <div></div>
+              ) : (
+                studyGroup.process.map((item, i) => (
+                  <Card key={i} active={i === currentCard}>
+                    <div>{item.description}</div>
+                    {renderCardContent(item)}
+                  </Card>
+                ))
+              )}
+            </div>
+            <ProcessInput
               type="button"
-              id="startButton"
-              value="Start"
-              onClick={handleStart}
+              value="前"
+              onClick={() =>
+                setCurrentCard((prev) => (prev > 0 ? prev - 1 : prev))
+              }
             />
-            <input type="button" id="startButton" value="Call" />
-            <input
+            <ProcessInput
               type="button"
-              id="startButton"
-              value="Hangup"
-              onClick={handleStop}
+              value="後"
+              onClick={() =>
+                setCurrentCard((prev) =>
+                  prev < studyGroup.process.length - 1 ? prev + 1 : prev
+                )
+              }
             />
-            <span>{formatTime(seconds)}</span>
-          </Input>
-          <LiveScreen>直播的畫面</LiveScreen>
+          </LiveScreen>
           <ChatRoom>
             聊天室
             <Message>
@@ -180,24 +236,34 @@ function Live() {
               </form>
             </ChatInput>
           </ChatRoom>
-          <Note
-            dangerouslySetInnerHTML={{ __html: studyGroup.note }}
-            contentEditable
-            onInput={handleNoteChange}
-          />
-          <input
-            type="button"
-            id="startButton"
-            value="儲存筆記"
-            onClick={handleSaveNote}
-          />
+          <Note>
+            <EditContent onChange={onContentChange} value={note} />
+            <input
+              type="button"
+              id="startButton"
+              value="儲存筆記"
+              onClick={handleSaveNote}
+            />
+          </Note>
         </Content>
       </Container>
     </>
   );
 }
-const Input = styled.div`
+const Card = styled.div`
+  display: ${({ active }) => (active ? 'block' : 'none')};
+`;
+
+const ProcessInput = styled.input``;
+const Menu = styled.div`
+  display: flex;
+  justify-content: space-between;
   width: 100%;
+`;
+const StudyGroupInfo = styled.div``;
+const Input = styled.div`
+  display: flex;
+  height: 25px;
 `;
 const Guest = styled.div``;
 const User = styled.div`
@@ -229,7 +295,7 @@ const ChatRoom = styled.div`
 `;
 
 const Note = styled.div`
-  height: 300px;
+  height: 200px;
   border: 1px solid black;
   width: 100%;
 `;

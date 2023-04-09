@@ -16,7 +16,7 @@ const quillModules = {
   },
 };
 
-function Lecture({ item, processIndex, editable, dispatch }) {
+function Lecture({ item, processIndex = 0, editable = false, dispatch = {} }) {
   const [content, setContent] = useState(item.data);
 
   const onContentChange = (newContent) => {

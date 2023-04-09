@@ -190,6 +190,9 @@ input {
     outline: none;
     ${'' /* border: none; */}
 }
+*{
+    ${'' /* border: 1px solid black !important; */}
+}
 `;
 
 export default App;

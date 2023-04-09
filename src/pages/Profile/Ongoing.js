@@ -21,9 +21,7 @@ const Ongoing = () => {
 
   const setRoom = async (item) => {
     try {
-      await setDoc(doc(db, 'rooms', `${item.id}`), {
-        offer: '',
-      });
+      await setDoc(doc(db, 'rooms', `${item.id}`), {});
       console.log(`進入${item.id}直播間`);
     } catch (error) {
       console.error('Error: ', error);

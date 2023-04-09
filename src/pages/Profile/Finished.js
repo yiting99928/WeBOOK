@@ -8,7 +8,9 @@ const Finished = () => {
   useEffect(() => {
     async function getData() {
       const groupData = await data.loadGroupData();
-      const finishedData = groupData.filter(item=>item.status==='finished')
+      const finishedData = groupData.filter(
+        (item) => item.status === 'finished'
+      );
       setGroupData(finishedData);
     }
     getData();
@@ -39,7 +41,7 @@ const Finished = () => {
                 <p>
                   舉辦時間:<span>{item.hold}</span>
                 </p>
-                <p>筆記：{item.note}</p>
+                <div>筆記：<div dangerouslySetInnerHTML={{ __html: item.note }} /></div>
               </CardContent>
             </StudyGroupCard>
           ))
