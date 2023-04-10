@@ -83,6 +83,7 @@ function Process() {
   const [studyGroup, setStudyGroup] = useState({});
   const [editable, setEditable] = useState(0);
   const { id } = useParams();
+  
   // console.log(studyGroup)
   useEffect(() => {
     async function initData() {
@@ -124,12 +125,14 @@ function Process() {
         );
       case 'stickyNote':
         return (
-          <StickyNote
-            item={item}
-            processIndex={processIndex}
-            editable={editable}
-            dispatch={dispatch}
-          />
+          <>
+            <StickyNote
+              item={item}
+              processIndex={processIndex}
+              editable={editable}
+              dispatch={dispatch}
+            />
+          </>
         );
       case 'QA':
         return (

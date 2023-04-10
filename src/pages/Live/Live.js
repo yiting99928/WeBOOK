@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import SideMenu from '../../components/SideMenu';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useReducer } from 'react';
 import { db } from '../../utils/firebase';
 import {
   collection,
@@ -21,6 +21,31 @@ import StickyNote from '../../pages/Process/StickyNote';
 import Vote from '../../pages/Process/Vote';
 import QA from '../../pages/Process/QA';
 
+function reducer(processData, { type, payload = {} }) {
+  const { processIndex, data, process } = payload;
+  switch (type) {
+    case 'SET_DATA': {
+      return process;
+    }
+    case 'DEL_CARD': {
+      const updatedCard = [...processData];
+      updatedCard.splice(processIndex, 1);
+      return updatedCard;
+    }
+    case 'UPDATE_DATA': {
+      const updatedCard = processData.map((card, index) => {
+        if (index === processIndex) {
+          return { ...card, data };
+        }
+        return card;
+      });
+      return updatedCard;
+    }
+    default:
+      throw new Error(`Unknown action: ${type}`);
+  }
+}
+
 function Live() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -32,6 +57,8 @@ function Live() {
   const [studyGroup, setStudyGroup] = useState([]);
   const [note, setNote] = useState('');
   const [currentCard, setCurrentCard] = useState(0);
+  // const [editable, setEditable] = useState(0);
+  const [processData, dispatch] = useReducer(reducer, []);
 
   useEffect(() => {
     async function initData() {
@@ -46,6 +73,10 @@ function Live() {
     }
     initData();
   }, []);
+
+  useEffect(() => {
+    dispatch({ type: 'SET_DATA', payload: { process: studyGroup.process } });
+  }, [studyGroup]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -63,17 +94,17 @@ function Live() {
     };
   }, [id]);
 
-  useEffect(() => {
-    let interval = null;
-    if (isActive) {
-      interval = setInterval(() => {
-        setSeconds((seconds) => seconds + 1);
-      }, 1000);
-    } else if (!isActive && seconds !== 0) {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, seconds]);
+  // useEffect(() => {
+  //   let interval = null;
+  //   if (isActive) {
+  //     interval = setInterval(() => {
+  //       setSeconds((seconds) => seconds + 1);
+  //     }, 1000);
+  //   } else if (!isActive && seconds !== 0) {
+  //     clearInterval(interval);
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [isActive, seconds]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -143,18 +174,40 @@ function Live() {
       console.error('Error: ', error);
     }
   }
-  const renderCardContent = (item) => {
+  const renderCardContent = (item, processIndex) => {
     switch (item.type) {
       case 'lecture':
-        return <Lecture item={item} />;
+        return (
+          <Lecture
+            item={item}
+            processIndex={processIndex}
+            dispatch={dispatch}
+          />
+        );
       case 'stickyNote':
-        return <StickyNote item={item} />;
+        return (
+          <StickyNote
+            item={item}
+            processIndex={processIndex}
+            dispatch={dispatch}
+          />
+        );
       case 'QA':
-        return <QA item={item} />;
+        return (
+          <QA item={item} processIndex={processIndex} dispatch={dispatch} />
+        );
       case 'vote':
-        return <Vote item={item} />;
+        return (
+          <Vote item={item} processIndex={processIndex} dispatch={dispatch} />
+        );
       default:
-        return null;
+        return (
+          <Lecture
+            item={item}
+            processIndex={processIndex}
+            dispatch={dispatch}
+          />
+        );
     }
   };
 
@@ -166,101 +219,106 @@ function Live() {
       console.error(error);
     }
   };
-
+  console.log(isActive);
   return (
     <>
       <Container>
         <SideMenu isOpen={true} />
-
         <Content isOpen={true}>
           <Menu>
             <StudyGroupInfo>
               <div>書名：{studyGroup.name}</div>
               <div>章節：{studyGroup.chapter}</div>
-            </StudyGroupInfo>
-            <Input>
-              <input
-                type="button"
-                id="startButton"
-                value="Start"
-                onClick={handleStart}
-              />
-              <input type="button" id="startButton" value="Call" />
-              <input
-                type="button"
-                id="startButton"
-                value="Hangup"
-                onClick={handleStop}
-              />
-            </Input>
-          </Menu>
-          <LiveScreen>
-            <div>
               {/* <span>{formatTime(seconds)}</span> */}
-              {studyGroup.length === 0 ? (
-                <div></div>
-              ) : (
-                studyGroup.process.map((item, i) => (
-                  <Card key={i} active={i === currentCard}>
-                    <div>{item.description}</div>
-                    {renderCardContent(item)}
-                  </Card>
-                ))
-              )}
-            </div>
-            <ProcessInput
+            </StudyGroupInfo>
+            <input
               type="button"
-              value="前"
-              onClick={() =>
-                setCurrentCard((prev) => {
-                  const newCard = prev > 0 ? prev - 1 : prev;
-                  updateCurrentCardInFirebase(newCard);
-                  return newCard;
-                })
-              }
+              id="startButton"
+              value="Hangup"
+              onClick={handleStop}
             />
-            <ProcessInput
-              type="button"
-              value="後"
-              onClick={() => {
-                setCurrentCard((prev) => {
-                  const newCard =
-                    prev < studyGroup.process.length - 1 ? prev + 1 : prev;
-                  updateCurrentCardInFirebase(newCard);
-                  return newCard;
-                });
-              }}
-            />
-          </LiveScreen>
-          <ChatRoom>
-            聊天室
-            <Message>
-              {messages.map((message, index) =>
-                message.sender === 'user' ? (
-                  <User key={index}>{message.message}</User>
-                ) : (
-                  <Guest key={index}>
-                    <span>Guest{message.sender}：</span>
-                    {message.message}
-                  </Guest>
-                )
-              )}
-              <div
-                ref={(el) => {
-                  messagesEndRef.current = el;
-                }}
-              />
-            </Message>
-            <ChatInput>
-              <form onSubmit={sendMessage}>
+          </Menu>
+          <LiveContainer>
+            <LiveScreen>
+              <Input isActive={isActive}>
                 <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  type="button"
+                  id="startButton"
+                  value="Start"
+                  onClick={handleStart}
                 />
-                <input type="submit" value="送出" />
-              </form>
-            </ChatInput>
-          </ChatRoom>
+                <input type="button" id="startButton" value="Join" />
+              </Input>
+              <Cards isActive={isActive}>
+                {!processData ? (
+                  <div></div>
+                ) : (
+                  processData.map((item, processIndex) => (
+                    <Card
+                      key={processIndex}
+                      active={processIndex === currentCard}>
+                      <div>{item.description}</div>
+                      {renderCardContent(item, processIndex)}
+                    </Card>
+                  ))
+                )}
+              </Cards>
+              <ProcessInputs>
+                <ProcessInput
+                  type="button"
+                  value="前"
+                  onClick={() =>
+                    setCurrentCard((prev) => {
+                      const newCard = prev > 0 ? prev - 1 : prev;
+                      updateCurrentCardInFirebase(newCard);
+                      return newCard;
+                    })
+                  }
+                />
+                <ProcessInput
+                  type="button"
+                  value="後"
+                  onClick={() => {
+                    setCurrentCard((prev) => {
+                      const newCard =
+                        prev < studyGroup.process.length - 1 ? prev + 1 : prev;
+                      updateCurrentCardInFirebase(newCard);
+                      return newCard;
+                    });
+                  }}
+                />
+              </ProcessInputs>
+            </LiveScreen>
+            <ChatRoom>
+              聊天室
+              <Message>
+                {messages.map((message, index) =>
+                  message.sender === 'user' ? (
+                    <User key={index}>{message.message}</User>
+                  ) : (
+                    <Guest key={index}>
+                      <span>Guest{message.sender}：</span>
+                      {message.message}
+                    </Guest>
+                  )
+                )}
+                <div
+                  ref={(el) => {
+                    messagesEndRef.current = el;
+                  }}
+                />
+              </Message>
+              <ChatInput>
+                <form onSubmit={sendMessage}>
+                  <input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                  />
+                  <input type="submit" value="送出" />
+                </form>
+              </ChatInput>
+            </ChatRoom>
+          </LiveContainer>
           <Note>
             <EditContent onChange={onContentChange} value={note} />
             <input
@@ -275,10 +333,20 @@ function Live() {
     </>
   );
 }
+const Cards = styled.div`
+  display: ${({ isActive }) => (isActive ? 'block' : 'none')};
+`;
 const Card = styled.div`
   display: ${({ active }) => (active ? 'block' : 'none')};
 `;
-
+const ProcessInputs = styled.div`
+  display: flex;
+  border: 1px solid black;
+  width: 100%;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 0px;
+`;
 const ProcessInput = styled.input``;
 const Menu = styled.div`
   display: flex;
@@ -287,7 +355,7 @@ const Menu = styled.div`
 `;
 const StudyGroupInfo = styled.div``;
 const Input = styled.div`
-  display: flex;
+  display: ${({ isActive }) => (isActive ? 'none' : 'flex')};
   height: 25px;
 `;
 const Guest = styled.div``;
@@ -298,43 +366,41 @@ const Message = styled.div`
   display: flex;
   flex-direction: column;
   line-height: 2;
-  height: 100%;
+  height: 400px;
   overflow: auto;
 `;
 const ChatInput = styled.div`
   margin-top: auto;
 `;
-const LiveScreen = styled.div`
-  height: 350px;
-  border: 1px solid black;
-  width: 70%;
-`;
-
-const ChatRoom = styled.div`
-  height: 350px;
-  padding: 10px;
+const LiveContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  border: 1px solid black;
-  width: 30%;
-`;
-
-const Note = styled.div`
-  height: 200px;
-  border: 1px solid black;
   width: 100%;
+`;
+const LiveScreen = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+  width: 75%;
+  position: relative;
+`;
+const ChatRoom = styled.div`
+  border: 1px solid black;
+  width: 25%;
+`;
+const Note = styled.div`
+  height: 255px;
+  ${'' /* border: 1px solid black; */}
+  ${'' /* width: 100%; */}
 `;
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
 `;
-
 const Content = styled.div`
-  display: flex;
-  flex-wrap: wrap;
   flex: 1;
   transition: all 0.3s ease;
   padding: 20px;
-  width: ${(props) => (props.isOpen ? 'calc(100% - 200px)' : '100%')};
+  width: ${({ isOpen }) => (isOpen ? 'calc(100% - 200px)' : '100%')};
 `;
 export default Live;

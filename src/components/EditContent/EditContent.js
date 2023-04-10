@@ -20,6 +20,7 @@ function EditContent({ onChange, value }) {
   }
   return (
       <ReactQuill
+        className='quill-editor'
         theme="snow"
         value={value}
         onChange={handleChange}

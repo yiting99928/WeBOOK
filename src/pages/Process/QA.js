@@ -53,7 +53,7 @@ function QA({ item, processIndex = 0, editable = false, dispatch = {} }) {
           />
           <div
             dangerouslySetInnerHTML={{ __html: item.option }}
-            contentEditable
+            contentEditable={editable === processIndex}
             onBlur={(e) => handleOptionBlur(index, e)}
             onInput={onContentEditableInput}
           />

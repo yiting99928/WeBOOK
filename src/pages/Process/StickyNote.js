@@ -1,11 +1,6 @@
 import styled from 'styled-components/macro';
 
-function StickyNote({
-  item,
-  dispatch = {},
-  processIndex = 0,
-  editable = false,
-}) {
+function StickyNote({ item, dispatch, processIndex, editable }) {
   const handleAddOption = () => {
     const newItem = {
       name: '請填寫名字',
@@ -32,6 +27,7 @@ function StickyNote({
   };
   const handleDelOption = (index) => {
     const updatedData = [...item.data];
+    console.log([...item.data]);
     updatedData.splice(index, 1);
     dispatch({
       type: 'UPDATE_DATA',
@@ -66,13 +62,13 @@ function StickyNote({
         value="+"
         type="button"
         onClick={handleAddOption}
-        editing={editable === processIndex}
+        // editing={editable === processIndex}
       />
     </div>
   );
 }
 const AddInput = styled.input`
-  display: ${({ editing }) => (editing ? 'block' : 'none')};
+  ${'' /* display: ${({ editing }) => (editing ? 'block' : 'none')}; */}
 `;
 const NoteContainer = styled.div`
   display: flex;

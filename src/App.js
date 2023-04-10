@@ -10,7 +10,6 @@ import Finished from './pages/Profile/Finished';
 import Preparing from './pages/Profile/Preparing';
 import Live from './pages/Live/Live';
 
-
 function App() {
   return (
     <BrowserRouter>
