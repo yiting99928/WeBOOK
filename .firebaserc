@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "webook-online-study-group"
-  }
+    "default": "WeBOOK-studyGroup",
+    "start": "webook-studygroup"
+  },
+  "targets": {},
+  "etags": {}
 }

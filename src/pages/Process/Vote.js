@@ -43,7 +43,7 @@ function Vote({ item, processIndex = 0, editable = false, dispatch = {} }) {
             dangerouslySetInnerHTML={{ __html: voteItem.option }}
             contentEditable={editable === processIndex}
             onBlur={(e) => handleOptionBlur(index, e)}
-            onInput={onContentEditableInput}></div>
+            onInput={onContentEditableInput}/>
           <DelOption
             editing={editable === processIndex}
             onClick={() => handleDelOption(index)}>

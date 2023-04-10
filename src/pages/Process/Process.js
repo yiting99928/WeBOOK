@@ -98,9 +98,7 @@ function Process() {
         const templatesData = templatesSnapshot.docs.map((doc) => doc.data());
         setTemplates(templatesData);
         if (studyGroupData.process === undefined) {
-          const lecture = templatesData.find(
-            (item) => item.type === 'stickyNote'
-          );
+          const lecture = templatesData.find((item) => item.type === 'lecture');
           dispatch({ type: 'INIT_CARD', payload: { lecture } });
         } else {
           const process = studyGroupData.process;
@@ -126,11 +124,32 @@ function Process() {
           />
         );
       case 'extension':
-        return <Extension />;
+        return (
+          <Extension
+            item={item}
+            processIndex={processIndex}
+            editable={editable}
+            dispatch={dispatch}
+          />
+        );
       case 'stickyNote':
-        return <StickyNote />;
+        return (
+          <StickyNote
+            item={item}
+            processIndex={processIndex}
+            editable={editable}
+            dispatch={dispatch}
+          />
+        );
       case 'QA':
-        return <QA />;
+        return (
+          <QA
+            item={item}
+            processIndex={processIndex}
+            editable={editable}
+            dispatch={dispatch}
+          />
+        );
       case 'vote':
         return (
           <Vote
@@ -141,7 +160,14 @@ function Process() {
           />
         );
       default:
-        return null;
+        return (
+          <Lecture
+            item={item}
+            processIndex={processIndex}
+            editable={editable}
+            dispatch={dispatch}
+          />
+        );
     }
   };
   const handleDragStart = (e, processIndex) => {
@@ -172,6 +198,16 @@ function Process() {
         console.error('Error while saving process data: ', error);
       });
   }
+
+  // const handleOptionBlur = (processIndex, e) => {
+  //   const updatedData = [...item.data];
+  //   updatedData[processIndex].option = e.target.innerText;
+  //   dispatch({
+  //     type: 'UPDATE_DESCRIPTION',
+  //     payload: { processIndex, data: updatedData },
+  //   });
+  // };
+
   // console.log(processData);
   return (
     <>
@@ -199,6 +235,12 @@ function Process() {
                       MOVE
                     </div>
                     <Title>
+                      {/* <div
+                        dangerouslySetInnerHTML={{ __html: item.description }}
+                        contentEditable={editable === processIndex}
+                        onBlur={(e) => handleOptionBlur(processIndex, e)}
+                        onInput={(e)=>e.stopPropagation()}
+                      /> */}
                       <input
                         readOnly={editable === processIndex ? false : true}
                         value={item.description}
@@ -207,7 +249,7 @@ function Process() {
                             type: 'UPDATE_DESCRIPTION',
                             payload: {
                               description: e.target.value,
-                              processIndex: processIndex,
+                              processIndex,
                             },
                           });
                         }}
