@@ -2,11 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
-import {
-  doc,
-  updateDoc,
-  onSnapshot,
-} from 'firebase/firestore';
+gitimport { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import data from '../../utils/data';
 
@@ -23,7 +19,7 @@ const Preparing = () => {
     }
 
     getData();
-    
+
     const unsubscribes = groupData.map((item) => {
       const studyGroupRef = doc(db, 'studyGroups', item.id);
       return onSnapshot(studyGroupRef, (doc) => {
@@ -36,7 +32,7 @@ const Preparing = () => {
     return () => {
       unsubscribes.forEach((unsubscribe) => unsubscribe());
     };
-  }, [groupData]);
+  }, []);
 
   function handleChangeState(item) {
     const groupRef = doc(db, 'studyGroups', item.id);

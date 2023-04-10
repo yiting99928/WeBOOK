@@ -84,7 +84,7 @@ function Process() {
   const [studyGroup, setStudyGroup] = useState({});
   const [editable, setEditable] = useState(0);
   const { id } = useParams();
-
+  // console.log(studyGroup)
   useEffect(() => {
     async function initData() {
       try {
@@ -93,13 +93,14 @@ function Process() {
         const studyGroupData = studyGroupSnapshot.data();
         setStudyGroup(studyGroupData);
 
-        const templatesCollectionRef = collection(db, 'template');
+        const templatesCollectionRef = collection(db, 'templates');
         const templatesSnapshot = await getDocs(templatesCollectionRef);
         const templatesData = templatesSnapshot.docs.map((doc) => doc.data());
         setTemplates(templatesData);
-
         if (studyGroupData.process === undefined) {
-          const lecture = templatesData.find((item) => item.type === 'lecture');
+          const lecture = templatesData.find(
+            (item) => item.type === 'stickyNote'
+          );
           dispatch({ type: 'INIT_CARD', payload: { lecture } });
         } else {
           const process = studyGroupData.process;

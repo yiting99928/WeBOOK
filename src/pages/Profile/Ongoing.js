@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
-import { db } from '../../utils/firebase';
-import { setDoc, doc } from 'firebase/firestore';
+// import { db } from '../../utils/firebase';
+// import { setDoc, doc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import data from '../../utils/data';
 

@@ -46,13 +46,6 @@ function Live() {
       }
     }
     initData();
-    const studyGroupRef = doc(db, 'rooms', id);
-    const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
-      const studyGroupData = snapshot.data();
-      console.log(studyGroupData);
-      setCurrentCard(studyGroupData.currentCard);
-    });
-    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -96,6 +89,13 @@ function Live() {
     setIsActive(true);
     await setDoc(doc(db, 'rooms', id), { currentCard: 0 });
     alert('開始直播');
+    const studyGroupRef = doc(db, 'rooms', id);
+    const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
+      const studyGroupData = snapshot.data();
+      console.log(studyGroupData);
+      setCurrentCard(studyGroupData.currentCard);
+    });
+    return () => unsubscribe();
   }
 
   function handleStop() {
@@ -195,11 +195,11 @@ function Live() {
                 value="Hangup"
                 onClick={handleStop}
               />
-              <span>{formatTime(seconds)}</span>
             </Input>
           </Menu>
           <LiveScreen>
             <div>
+              {/* <span>{formatTime(seconds)}</span> */}
               {studyGroup.length === 0 ? (
                 <div></div>
               ) : (
