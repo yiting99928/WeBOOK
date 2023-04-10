@@ -24,7 +24,15 @@ function QA({ item, processIndex = 0, editable = false, dispatch = {} }) {
   const onContentEditableInput = (e) => {
     e.stopPropagation();
   };
-
+  const handleCheckboxChange = (index, e) => {
+    const updatedData = [...item.data];
+    updatedData[index].answer = e.target.checked;
+    console.log(updatedData);
+    dispatch({
+      type: 'UPDATE_DATA',
+      payload: { processIndex, data: updatedData },
+    });
+  };
   const handleDelOption = (index) => {
     const updatedData = [...item.data];
     updatedData.splice(index, 1);
@@ -38,7 +46,11 @@ function QA({ item, processIndex = 0, editable = false, dispatch = {} }) {
     <div>
       {item.data.map((item, index = 0) => (
         <Option key={index}>
-          <input type="radio" name="option" onChange={console.log(1)} />
+          <input
+            type="checkbox"
+            onChange={(e) => handleCheckboxChange(index, e)}
+            checked={item.answer ? true : false}
+          />
           <div
             dangerouslySetInnerHTML={{ __html: item.option }}
             contentEditable

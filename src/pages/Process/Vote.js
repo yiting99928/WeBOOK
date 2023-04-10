@@ -37,13 +37,18 @@ function Vote({ item, processIndex = 0, editable = false, dispatch = {} }) {
     <div>
       {item.data.map((voteItem, index) => (
         <VoteItem key={index}>
-          <input type="radio" name="option" />
+          <input
+            type="radio"
+            name="option"
+            
+          />
           <div>{voteItem.number}票</div>
           <div
             dangerouslySetInnerHTML={{ __html: voteItem.option }}
             contentEditable={editable === processIndex}
             onBlur={(e) => handleOptionBlur(index, e)}
-            onInput={onContentEditableInput}/>
+            onInput={onContentEditableInput}
+          />
           <DelOption
             editing={editable === processIndex}
             onClick={() => handleDelOption(index)}>
