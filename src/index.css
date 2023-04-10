@@ -28,7 +28,7 @@ cite,
 code,
 del,
 dfn,
-em,
+/* em, */
 img,
 ins,
 kbd,
@@ -37,7 +37,7 @@ s,
 samp,
 small,
 strike,
-strong,
+/* strong, */
 sub,
 sup,
 tt,
@@ -165,7 +165,7 @@ a:visited {
     color: black;
 }
 
-input[type=text]:focus {
+/* input[type=text]:focus {
     outline: none;
 }
 
@@ -173,4 +173,4 @@ input {
     outline: none;
     border: none;
     background-color: none;
-}
+} */

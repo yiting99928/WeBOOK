@@ -4,11 +4,11 @@ import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_KEY,
-  authDomain: 'webook-study-group.firebaseapp.com',
-  projectId: 'webook-study-group',
-  storageBucket: 'webook-study-group.appspot.com',
-  messagingSenderId: '767078815989',
-  appId: '1:767078815989:web:814148f57b8c9813a50dbc',
+  authDomain: 'webook-studygroup.firebaseapp.com',
+  projectId: 'webook-studygroup',
+  storageBucket: 'webook-studygroup.appspot.com',
+  messagingSenderId: '650255613331',
+  appId: '1:650255613331:web:ea97eca77416047583bc66',
 };
 
 const app = initializeApp(firebaseConfig);
