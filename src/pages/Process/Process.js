@@ -5,7 +5,6 @@ import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
 import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
 import Lecture from './Lecture';
-import Extension from './Extension';
 import StickyNote from './StickyNote';
 import Vote from './Vote';
 import QA from './QA';
@@ -117,15 +116,6 @@ function Process() {
       case 'lecture':
         return (
           <Lecture
-            item={item}
-            processIndex={processIndex}
-            editable={editable}
-            dispatch={dispatch}
-          />
-        );
-      case 'extension':
-        return (
-          <Extension
             item={item}
             processIndex={processIndex}
             editable={editable}
@@ -268,7 +258,6 @@ function Process() {
                           })
                         }>
                         <option value="lecture">導讀講稿</option>
-                        <option value="extension">衍伸分享</option>
                         <option value="stickyNote">便利貼分享</option>
                         <option value="QA">QA問答</option>
                         <option value="vote">問題票選</option>

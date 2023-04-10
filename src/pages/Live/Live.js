@@ -17,7 +17,6 @@ import {
 } from 'firebase/firestore';
 import EditContent from '../../components/EditContent';
 import Lecture from '../../pages/Process/Lecture';
-import Extension from '../../pages/Process/Extension';
 import StickyNote from '../../pages/Process/StickyNote';
 import Vote from '../../pages/Process/Vote';
 import QA from '../../pages/Process/QA';
@@ -148,12 +147,10 @@ function Live() {
     switch (item.type) {
       case 'lecture':
         return <Lecture item={item} />;
-      case 'extension':
-        return <Extension />;
       case 'stickyNote':
-        return <StickyNote />;
+        return <StickyNote item={item} />;
       case 'QA':
-        return <QA />;
+        return <QA item={item} />;
       case 'vote':
         return <Vote item={item} />;
       default:

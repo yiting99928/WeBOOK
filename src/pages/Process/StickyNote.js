@@ -1,6 +1,11 @@
 import styled from 'styled-components/macro';
 
-function StickyNote({ item, dispatch, processIndex, editable }) {
+function StickyNote({
+  item,
+  dispatch = {},
+  processIndex = 0,
+  editable = false,
+}) {
   const handleAddOption = () => {
     const newItem = {
       name: '請填寫名字',
@@ -36,22 +41,26 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
   return (
     <div>
       <NoteContainer>
-        {item.data.map((item, index) => (
-          <Note key={index}>
-            <Message
-              dangerouslySetInnerHTML={{ __html: item.message }}
-              contentEditable
-              onBlur={(e) => handleOptionBlur(index, e)}
-              onInput={onContentEditableInput}
-            />
-            <Name>{item.name}</Name>
-            <input
-              value="x"
-              type="button"
-              onClick={() => handleDelOption(index)}
-            />
-          </Note>
-        ))}
+        {item.data === undefined ? (
+          <></>
+        ) : (
+          item.data.map((item, index = 0) => (
+            <Note key={index}>
+              <Message
+                dangerouslySetInnerHTML={{ __html: item.message }}
+                contentEditable
+                onBlur={(e) => handleOptionBlur(index, e)}
+                onInput={onContentEditableInput}
+              />
+              <Name>{item.name}</Name>
+              <input
+                value="x"
+                type="button"
+                onClick={() => handleDelOption(index)}
+              />
+            </Note>
+          ))
+        )}
       </NoteContainer>
       <AddInput
         value="+"
