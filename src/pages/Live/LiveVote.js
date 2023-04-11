@@ -29,33 +29,60 @@ function Vote({ item, id, processIndex }) {
       process: updatedProcess,
     });
   };
-
+  const maxVotes = Math.max(...item.data.map((voteItem) => voteItem.number));
+  const totalVotes = item.data.reduce(
+    (acc, voteItem) => acc + voteItem.number,
+    0
+  );
   return (
     <VoteItems>
-      {item.data.map((voteItem, index) => (
-        <VoteItem key={index}>
-          <input
-            type="radio"
-            name="option"
-            onChange={() => handleVote(index)}
-            // onChange={() => console.log(index)}
-            disabled={hasVoted}
-          />
-          <div>{voteItem.option}</div>
-          <Votes>{voteItem.number}票</Votes>
-        </VoteItem>
-      ))}
+      {item.data.map((voteItem, index) => {
+        const percentage = (voteItem.number / totalVotes) * 100;
+        return (
+          <VoteItem key={index}>
+            <ProgressBar
+              percentage={percentage}
+              votes={voteItem.number}
+              maxVotes={maxVotes}
+              hasVoted={hasVoted}>
+              <input
+                type="radio"
+                name="option"
+                onChange={() => handleVote(index)}
+                disabled={hasVoted}
+              />
+              <Option>{voteItem.option}</Option>
+            </ProgressBar>
+            <Votes hasVoted={hasVoted}>{voteItem.number}票</Votes>
+          </VoteItem>
+        );
+      })}
     </VoteItems>
   );
 }
+const Option = styled.div`
+  white-space: nowrap;
+`;
+const ProgressBar = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: ${({ percentage }) => `${percentage}%`};
+  height: 100%;
+  background-color: ${({ hasVoted }) => (hasVoted ? 'rgb(159, 223, 159)' : 'none')};;
+  transition: 0.3s ease-in-out;
+`;
 const Votes = styled.div`
   margin-left: auto;
+  display: ${({ hasVoted }) => (hasVoted ? 'block' : 'none')};
 `;
 const VoteItem = styled.div`
   display: flex;
+  align-items: center;
   gap: 5px;
+  height: 35px;
   background-color: #efefef;
-  padding: 10px;
+  padding: 5px;
 `;
 const VoteItems = styled.div`
   display: flex;
