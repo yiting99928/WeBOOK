@@ -31,7 +31,8 @@ function App() {
 const GlobalStyle = createGlobalStyle`
 * {
     box-sizing: border-box;
-    font-family: 'Poppins', sans-serif
+    font-family: 'Poppins', sans-serif;
+    ${'' /* border:1px solid black !important */}
 }
 `;
 

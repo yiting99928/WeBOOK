@@ -48,32 +48,31 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
                 onBlur={(e) => handleOptionBlur(index, e)}
                 onInput={onContentEditableInput}
               />
-              <Name>{item.name}</Name>
-              <input
-                value="x"
-                type="button"
-                onClick={() => handleDelOption(index)}
+              <Message
+                dangerouslySetInnerHTML={{ __html: item.name }}
+                contentEditable
+                onBlur={(e) => handleOptionBlur(index, e)}
+                onInput={onContentEditableInput}
               />
+              <div>
+                <AddInput value="+" type="button" onClick={handleAddOption} />
+                <input
+                  value="x"
+                  type="button"
+                  onClick={() => handleDelOption(index)}
+                />
+              </div>
             </Note>
           ))
         )}
       </NoteContainer>
-      <AddInput
-        value="+"
-        type="button"
-        onClick={handleAddOption}
-        editing={editable === processIndex}
-      />
     </div>
   );
 }
-const AddInput = styled.input`
-  display: ${({ editing }) => (editing ? 'block' : 'none')};
-`;
+const AddInput = styled.input``;
 const NoteContainer = styled.div`
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
 `;
 const Message = styled.div`
   padding: 5px 0;

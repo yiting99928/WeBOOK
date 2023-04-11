@@ -17,9 +17,9 @@ import {
 } from 'firebase/firestore';
 import EditContent from '../../components/EditContent';
 import Lecture from '../../pages/Process/Lecture';
-import StickyNote from '../../pages/Process/StickyNote';
-import Vote from '../../pages/Process/Vote';
-import QA from '../../pages/Process/QA';
+import StickyNote from './LiveStickyNote';
+import Vote from './LiveVote';
+import QA from './LiveQA';
 
 function reducer(processData, { type, payload = {} }) {
   const { processIndex, data, process } = payload;
@@ -219,18 +219,17 @@ function Live() {
       console.error(error);
     }
   };
-  console.log(isActive);
   return (
     <>
       <Container>
         <SideMenu isOpen={true} />
         <Content isOpen={true}>
           <Menu>
-            <StudyGroupInfo>
+            <div>
               <div>書名：{studyGroup.name}</div>
               <div>章節：{studyGroup.chapter}</div>
               {/* <span>{formatTime(seconds)}</span> */}
-            </StudyGroupInfo>
+            </div>
             <input
               type="button"
               id="startButton"
@@ -240,7 +239,7 @@ function Live() {
           </Menu>
           <LiveContainer>
             <LiveScreen>
-              <Input isActive={isActive}>
+              <LiveInputs isActive={isActive}>
                 <input
                   type="button"
                   id="startButton"
@@ -248,17 +247,19 @@ function Live() {
                   onClick={handleStart}
                 />
                 <input type="button" id="startButton" value="Join" />
-              </Input>
+              </LiveInputs>
               <Cards isActive={isActive}>
                 {!processData ? (
-                  <div></div>
+                  <></>
                 ) : (
                   processData.map((item, processIndex) => (
                     <Card
-                      key={processIndex}
-                      active={processIndex === currentCard}>
-                      <div>{item.description}</div>
-                      {renderCardContent(item, processIndex)}
+                      active={processIndex === currentCard}
+                      key={processIndex}>
+                      <Description>{item.description}</Description>
+                      <CardContent>
+                        {renderCardContent(item, processIndex)}
+                      </CardContent>
                     </Card>
                   ))
                 )}
@@ -290,7 +291,6 @@ function Live() {
               </ProcessInputs>
             </LiveScreen>
             <ChatRoom>
-              聊天室
               <Message>
                 {messages.map((message, index) =>
                   message.sender === 'user' ? (
@@ -319,44 +319,66 @@ function Live() {
               </ChatInput>
             </ChatRoom>
           </LiveContainer>
-          <Note>
-            <EditContent onChange={onContentChange} value={note} />
-            <input
-              type="button"
-              id="startButton"
-              value="儲存筆記"
-              onClick={handleSaveNote}
-            />
-          </Note>
         </Content>
       </Container>
     </>
   );
 }
-const Cards = styled.div`
-  display: ${({ isActive }) => (isActive ? 'block' : 'none')};
-`;
-const Card = styled.div`
-  display: ${({ active }) => (active ? 'block' : 'none')};
-`;
-const ProcessInputs = styled.div`
-  display: flex;
+const LiveContainer = styled.div`
   border: 1px solid black;
+  display: flex;
   width: 100%;
-  justify-content: space-between;
-  position: absolute;
-  bottom: 0px;
+  height: 500px;
+  ${'' /* overflow-x: auto; */}
 `;
-const ProcessInput = styled.input``;
 const Menu = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
 `;
-const StudyGroupInfo = styled.div``;
-const Input = styled.div`
+//---直播---//
+const LiveScreen = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 75%;
+  padding: 10px;
+`;
+const LiveInputs = styled.div`
   display: ${({ isActive }) => (isActive ? 'none' : 'flex')};
   height: 25px;
+  justify-content: center;
+`;
+//---卡片--//
+const Cards = styled.div`
+  display: ${({ isActive }) => (isActive ? 'block' : 'none')};
+  height: 100%;
+`;
+const Card = styled.div`
+  display: ${({ active }) => (active ? 'block' : 'none')};
+`;
+const Description = styled.div`
+  font-size: 20px;
+  font-weight: 600;
+`;
+const CardContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+`;
+const ProcessInputs = styled.div`
+  display: flex;
+  border: 1px solid black;
+  justify-content: space-between;
+  margin-top: auto;
+`;
+const ProcessInput = styled.input``;
+//---聊天室---//
+const ChatRoom = styled.div`
+  border: 1px solid black;
+  width: 25%;
 `;
 const Guest = styled.div``;
 const User = styled.div`
@@ -372,27 +394,13 @@ const Message = styled.div`
 const ChatInput = styled.div`
   margin-top: auto;
 `;
-const LiveContainer = styled.div`
-  display: flex;
-  width: 100%;
-`;
-const LiveScreen = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid black;
-  width: 75%;
-  position: relative;
-`;
-const ChatRoom = styled.div`
-  border: 1px solid black;
-  width: 25%;
-`;
+//---筆記---//
 const Note = styled.div`
   height: 255px;
   ${'' /* border: 1px solid black; */}
   ${'' /* width: 100%; */}
 `;
+//---全局---//
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
