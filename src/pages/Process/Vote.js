@@ -42,7 +42,7 @@ function Vote({ item, processIndex = 0, editable = false, dispatch = {} }) {
             name="option"
             
           />
-          <div>{voteItem.number}票</div>
+          <p>{index+1}</p>
           <div
             dangerouslySetInnerHTML={{ __html: voteItem.option }}
             contentEditable={editable === processIndex}

@@ -57,21 +57,23 @@ function Live() {
   const [studyGroup, setStudyGroup] = useState([]);
   const [note, setNote] = useState('');
   const [currentCard, setCurrentCard] = useState(0);
-  // const [editable, setEditable] = useState(0);
   const [processData, dispatch] = useReducer(reducer, []);
 
   useEffect(() => {
-    async function initData() {
-      try {
-        const studyGroupRef = doc(db, 'studyGroups', id);
-        const studyGroupSnapshot = await getDoc(studyGroupRef);
-        const studyGroupData = studyGroupSnapshot.data();
+    const unsubscribe = onSnapshot(
+      doc(db, 'studyGroups', id),
+      (snapshot) => {
+        const studyGroupData = snapshot.data();
         setStudyGroup(studyGroupData);
-      } catch (error) {
+      },
+      (error) => {
         console.error(error);
       }
-    }
-    initData();
+    );
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -190,6 +192,7 @@ function Live() {
             item={item}
             processIndex={processIndex}
             dispatch={dispatch}
+            id={id}
           />
         );
       case 'QA':
@@ -198,7 +201,12 @@ function Live() {
         );
       case 'vote':
         return (
-          <Vote item={item} processIndex={processIndex} dispatch={dispatch} />
+          <Vote
+            item={item}
+            processIndex={processIndex}
+            dispatch={dispatch}
+            id={id}
+          />
         );
       default:
         return (

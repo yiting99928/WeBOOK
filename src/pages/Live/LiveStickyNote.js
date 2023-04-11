@@ -1,6 +1,13 @@
 import styled from 'styled-components/macro';
+import { db } from '../../utils/firebase';
+import { updateDoc, doc, getDoc } from 'firebase/firestore';
+import { useEffect } from 'react';
 
-function StickyNote({ item, dispatch, processIndex, editable }) {
+function StickyNote({ item, dispatch, processIndex, id }) {
+  useEffect(() => {
+    handleUpdateNote();
+  }, [item.data]);
+
   const handleAddOption = () => {
     const newItem = {
       name: '請填寫名字',
@@ -12,10 +19,9 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
       payload: { processIndex, data: updatedData },
     });
   };
-
-  const handleOptionBlur = (index, e) => {
+  const handleOptionBlur = (index, e, field) => {
     const updatedData = [...item.data];
-    updatedData[index].option = e.target.innerText;
+    updatedData[index][field] = e.target.innerText;
     console.log(updatedData);
     dispatch({
       type: 'UPDATE_DATA',
@@ -25,54 +31,69 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
   const onContentEditableInput = (e) => {
     e.stopPropagation();
   };
-  const handleDelOption = (index) => {
+  const handleDelOption = async (index) => {
     const updatedData = [...item.data];
     console.log([...item.data]);
     updatedData.splice(index, 1);
-    dispatch({
+    await dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
+
+  const handleUpdateNote = async () => {
+    const studyGroupDocRef = doc(db, 'studyGroups', id);
+    const studyGroupDocSnapshot = await getDoc(studyGroupDocRef);
+    // console.log(studyGroupDocSnapshot.data().process[processIndex].data);
+
+    // 複製整個process
+    const updatedProcess = [...studyGroupDocSnapshot.data().process];
+    updatedProcess[processIndex].data = item.data;
+    console.log(updatedProcess);
+    // 更新整個process
+    await updateDoc(studyGroupDocRef, {
+      process: updatedProcess,
+    });
+  };
   return (
-    <div>
-      <NoteContainer>
-        {item.data === undefined ? (
-          <></>
-        ) : (
-          item.data.map((item, index = 0) => (
-            <Note key={index}>
-              <Message
-                dangerouslySetInnerHTML={{ __html: item.message }}
-                contentEditable
-                onBlur={(e) => handleOptionBlur(index, e)}
-                onInput={onContentEditableInput}
+    <NoteContainer>
+      {item.data === undefined ? (
+        <></>
+      ) : (
+        item.data.map((item, index = 0) => (
+          <Note key={index}>
+            <Message
+              dangerouslySetInnerHTML={{ __html: item.message }}
+              contentEditable
+              onBlur={(e) => handleOptionBlur(index, e, 'message')}
+              onInput={onContentEditableInput}
+            />
+            <Name
+              dangerouslySetInnerHTML={{ __html: item.name }}
+              contentEditable
+              onBlur={(e) => handleOptionBlur(index, e, 'name')}
+              onInput={onContentEditableInput}
+            />
+            <div>
+              <AddInput value="+" type="button" onClick={handleAddOption} />
+              <input
+                value="x"
+                type="button"
+                onClick={() => handleDelOption(index)}
               />
-              <Message
-                dangerouslySetInnerHTML={{ __html: item.name }}
-                contentEditable
-                onBlur={(e) => handleOptionBlur(index, e)}
-                onInput={onContentEditableInput}
-              />
-              <div>
-                <AddInput value="+" type="button" onClick={handleAddOption} />
-                <input
-                  value="x"
-                  type="button"
-                  onClick={() => handleDelOption(index)}
-                />
-              </div>
-            </Note>
-          ))
-        )}
-      </NoteContainer>
-    </div>
+            </div>
+          </Note>
+        ))
+      )}
+    </NoteContainer>
   );
 }
 const AddInput = styled.input``;
 const NoteContainer = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+  width: 100%;
 `;
 const Message = styled.div`
   padding: 5px 0;

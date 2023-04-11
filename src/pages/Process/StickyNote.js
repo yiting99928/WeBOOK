@@ -13,9 +13,9 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
     });
   };
 
-  const handleOptionBlur = (index, e) => {
+  const handleOptionBlur = (index, e, field) => {
     const updatedData = [...item.data];
-    updatedData[index].option = e.target.innerText;
+    updatedData[index][field] = e.target.innerText;
     console.log(updatedData);
     dispatch({
       type: 'UPDATE_DATA',
@@ -45,10 +45,15 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
               <Message
                 dangerouslySetInnerHTML={{ __html: item.message }}
                 contentEditable
-                onBlur={(e) => handleOptionBlur(index, e)}
+                onBlur={(e) => handleOptionBlur(index, e, 'message')}
                 onInput={onContentEditableInput}
               />
-              <Name>{item.name}</Name>
+              <Name
+                dangerouslySetInnerHTML={{ __html: item.name }}
+                contentEditable
+                onBlur={(e) => handleOptionBlur(index, e, 'name')}
+                onInput={onContentEditableInput}
+              />
               <input
                 value="x"
                 type="button"
