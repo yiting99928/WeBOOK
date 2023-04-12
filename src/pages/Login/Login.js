@@ -1,51 +1,78 @@
-import React, { useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
-import { db } from '../../utils/firebase';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../../context/authContext';
+import { useNavigate } from 'react-router-dom';
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { db, auth } from '../../utils/firebase';
 
 function Login() {
+  const { setUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [login, setLogin] = useState({
     email: '',
     password: '',
   });
   const [register, setRegister] = useState({
+    name: '',
     email: '',
     password: '',
   });
-  const handleSubmit = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // 在此處處理登入邏輯
+    const auth = getAuth();
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        login.email,
+        login.password
+      );
+      const user = userCredential.user;
+      const userDocRef = doc(db, 'users', user.email);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        setUser(userDoc.data());
+        console.log('有登入!');
+        navigate('/profile');
+      }
+    } catch (error) {
+      console.log(error.message);
+      alert('錯誤的帳號或密碼');
+    }
   };
 
-  //   const handleRegister = (e) => {
-  //     e.preventDefault();
-  //     console.log(email, password);
-  //     createUserWithEmailAndPassword(auth, email, password, name)
-  //       .then((userCredential) => {
-  //         setDoc(doc(db, 'users', email), {
-  //           name: name,
-  //           image: '',
-  //           account: email,
-  //           role: 'teacher',
-  //           classes: [],
-  //           uid: uid,
-  //         }).then(() => {
-  //           console.log('註冊成功');
-  //           // Redirect to the login page after successful registration
-  //           navigate('/login');
-  //         });
-  //         console.log(userCredential);
-  //       })
-  //       .catch((error) => {
-  //         // const errorCode = error.code;
-  //         const errorMessage = error.message;
-  //         console.log(errorMessage);
-  //       });
-  //   };
+  const handleRegister = (e) => {
+    e.preventDefault();
+    createUserWithEmailAndPassword(
+      auth,
+      register.email,
+      register.password,
+      register.name
+    )
+      .then((userCredential) => {
+        setDoc(doc(db, 'users', register.email), {
+          name: register.name,
+          password: register.password,
+          email: register.email,
+        }).then(() => {
+          console.log('註冊成功');
+          //   navigate('/profile');
+        });
+        console.log(userCredential);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
 
   const handleInputChange = (e, type) => {
     const { name, value } = e.target;
-  
+
     if (type === 'login') {
       setLogin((prev) => ({ ...prev, [name]: value }));
     } else if (type === 'register') {
@@ -53,13 +80,13 @@ function Login() {
     }
   };
 
-  console.log(login);
-    console.log(register);
+  //   console.log(login);
+  //   console.log(register);
   return (
     <>
       <div>
         <h1>登入</h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin}>
           <div>
             <label htmlFor="email">電子郵件：</label>
             <input
@@ -85,7 +112,17 @@ function Login() {
       </div>
       <div>
         <h1>註冊</h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleRegister}>
+          <div>
+            <label htmlFor="email">姓名：</label>
+            <input
+              type="text"
+              name="name"
+              value={register.name}
+              onChange={(e) => handleInputChange(e, 'register')}
+              required
+            />
+          </div>
           <div>
             <label htmlFor="email">電子郵件：</label>
             <input
@@ -97,7 +134,7 @@ function Login() {
             />
           </div>
           <div>
-            <label htmlFor="password">密碼：</label>
+            <label htmlFor="password">密碼：麻煩給我六個字</label>
             <input
               type="password"
               name="password"

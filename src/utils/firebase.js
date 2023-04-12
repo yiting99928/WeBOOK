@@ -1,9 +1,11 @@
 import { initializeApp } from 'firebase/app';
 import { getStorage } from 'firebase/storage';
 import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_KEY,
+  apiKey: process.env.REACT_APP_FIREBASE,
   authDomain: 'webook-studygroup.firebaseapp.com',
   projectId: 'webook-studygroup',
   storageBucket: 'webook-studygroup.appspot.com',
@@ -14,5 +16,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-export { storage, db };
+export { storage, db, auth };

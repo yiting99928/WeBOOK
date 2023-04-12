@@ -1,24 +1,36 @@
-// import { createContext, useState, useEffect } from "react";
-// import { getAuth,onAuthStateChanged } from "firebase/auth";
-// export const UserContext = createContext({});
+import { createContext, useState, useEffect } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
-// useEffect(() => {
-//     const auth = getAuth();
-//     onAuthStateChanged(auth, (user) => {
-//       console.log("usecontext_user",user)
-//       if (user) {
-//         const data = {
-//           name: user.name || "",
-//           account: user.email || "",
-//           image: user.photoURL || "",
-//           uid: user.uid || "",
-//           classes: user.classes || [],
-//         };
-//         setUser(data);        
-//         setIsLogin(true);
-//       } else {
-//         setUser();
-//         setIsLogin(false);
-//       }
-//     });
-//   }, []);
+export const AuthContext = createContext({});
+
+export const AuthContextProvider = ({ children }) => {
+  const [user, setUser] = useState();
+  const [isLogin, setIsLogin] = useState(false);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const data = {
+          name: user.name || '',
+          email: user.email || '',
+        };
+        setUser(data);
+        setIsLogin(true);
+      } else {
+        setUser(null);
+        setIsLogin(false);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user, isLogin, setUser, setIsLogin }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
