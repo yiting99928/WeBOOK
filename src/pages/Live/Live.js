@@ -49,11 +49,12 @@ function reducer(processData, { type, payload = {} }) {
 function Live() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
   const [seconds, setSeconds] = useState(0);
-  const [isActive, setIsActive] = useState(false);
+  const [isLive, setIsLive] = useState(false);
   const [studyGroup, setStudyGroup] = useState([]);
   const [note, setNote] = useState('');
   const [currentCard, setCurrentCard] = useState(0);
@@ -65,6 +66,10 @@ function Live() {
       (snapshot) => {
         const studyGroupData = snapshot.data();
         setStudyGroup(studyGroupData);
+        dispatch({
+          type: 'SET_DATA',
+          payload: { process: studyGroupData.process },
+        });
       },
       (error) => {
         console.error(error);
@@ -75,10 +80,6 @@ function Live() {
       unsubscribe();
     };
   }, []);
-
-  useEffect(() => {
-    dispatch({ type: 'SET_DATA', payload: { process: studyGroup.process } });
-  }, [studyGroup]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -98,15 +99,15 @@ function Live() {
 
   // useEffect(() => {
   //   let interval = null;
-  //   if (isActive) {
+  //   if (isLive) {
   //     interval = setInterval(() => {
   //       setSeconds((seconds) => seconds + 1);
   //     }, 1000);
-  //   } else if (!isActive && seconds !== 0) {
+  //   } else if (!isLive && seconds !== 0) {
   //     clearInterval(interval);
   //   }
   //   return () => clearInterval(interval);
-  // }, [isActive, seconds]);
+  // }, [isLive, seconds]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -116,37 +117,23 @@ function Live() {
     });
     setInput('');
   };
-
-  async function handleStart() {
-    setIsActive(true);
-    await setDoc(doc(db, 'rooms', id), { currentCard: 0 });
-    alert('開始直播');
-    const studyGroupRef = doc(db, 'rooms', id);
-    const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
-      const studyGroupData = snapshot.data();
-      console.log(studyGroupData);
-      setCurrentCard(studyGroupData.currentCard);
-    });
-    return () => unsubscribe();
-  }
-
   function handleStop() {
-    setIsActive(false);
+    setIsLive(false);
     setSeconds(0);
     handleChangeState();
     navigate({ pathname: '/profile/finished' }, { replace: true });
   }
-  function formatTime(totalSeconds) {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = Math.floor(totalSeconds % 60);
+  // function formatTime(totalSeconds) {
+  //   const hours = Math.floor(totalSeconds / 3600);
+  //   const minutes = Math.floor((totalSeconds % 3600) / 60);
+  //   const seconds = Math.floor(totalSeconds % 60);
 
-    const formattedHours = hours.toString().padStart(2, '0');
-    const formattedMinutes = minutes.toString().padStart(2, '0');
-    const formattedSeconds = seconds.toString().padStart(2, '0');
+  //   const formattedHours = hours.toString().padStart(2, '0');
+  //   const formattedMinutes = minutes.toString().padStart(2, '0');
+  //   const formattedSeconds = seconds.toString().padStart(2, '0');
 
-    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-  }
+  //   return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+  // }
   function handleChangeState() {
     updateDoc(doc(db, 'studyGroups', id), { status: 'finished' });
     deleteDoc(doc(db, 'rooms', id))
@@ -158,24 +145,24 @@ function Live() {
         console.error('Error updating document: ', error);
       });
   }
-  const onContentChange = (newContent) => {
-    console.log(newContent);
-    setNote(newContent);
-  };
+  // const onContentChange = (newContent) => {
+  //   // console.log(newContent);
+  //   setNote(newContent);
+  // };
 
-  async function handleSaveNote() {
-    try {
-      const userRef = doc(db, 'users', 'yumy19990628@gmail.com');
-      const newGroupRef = doc(collection(userRef, 'userStudyGroups'), id);
-      await setDoc(newGroupRef, {
-        note: note,
-      });
+  // async function handleSaveNote() {
+  //   try {
+  //     const userRef = doc(db, 'users', 'yumy19990628@gmail.com');
+  //     const newGroupRef = doc(collection(userRef, 'userStudyGroups'), id);
+  //     await setDoc(newGroupRef, {
+  //       note: note,
+  //     });
 
-      console.log(`儲存 ${id} 筆記`);
-    } catch (error) {
-      console.error('Error: ', error);
-    }
-  }
+  //     console.log(`儲存 ${id} 筆記`);
+  //   } catch (error) {
+  //     console.error('Error: ', error);
+  //   }
+  // }
   const renderCardContent = (item, processIndex) => {
     switch (item.type) {
       case 'lecture':
@@ -218,6 +205,29 @@ function Live() {
         );
     }
   };
+  async function handleStart() {
+    setIsLive(true);
+    await setDoc(doc(db, 'rooms', id), { currentCard: 0 });
+    alert('開始直播');
+    const studyGroupRef = doc(db, 'rooms', id);
+    const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
+      const studyGroupData = snapshot.data();
+      console.log(studyGroupData.currentCard);
+      setCurrentCard(studyGroupData.currentCard);
+    });
+    return () => unsubscribe();
+  }
+
+  async function handleJoin() {
+    alert('加入直播');
+    const studyGroupRef = doc(db, 'rooms', id);
+    const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
+      const studyGroupData = snapshot.data();
+      setIsLive(true);
+      setCurrentCard(studyGroupData.currentCard);
+    });
+    return () => unsubscribe();
+  }
 
   const updateCurrentCardInFirebase = async (newCard) => {
     try {
@@ -247,22 +257,17 @@ function Live() {
           </Menu>
           <LiveContainer>
             <LiveScreen>
-              <LiveInputs isActive={isActive}>
-                <input
-                  type="button"
-                  id="startButton"
-                  value="Start"
-                  onClick={handleStart}
-                />
-                <input type="button" id="startButton" value="Join" />
+              <LiveInputs isLive={isLive}>
+                <input type="button" value="Start" onClick={handleStart} />
+                <input type="button" value="Join" onClick={handleJoin} />
               </LiveInputs>
-              <Cards isActive={isActive}>
+              <Cards isLive={isLive}>
                 {!processData ? (
                   <></>
                 ) : (
                   processData.map((item, processIndex) => (
                     <Card
-                      active={processIndex === currentCard}
+                      activeCard={processIndex === currentCard} // 卡片index & 目前 currentCard 相同則 block
                       key={processIndex}>
                       <Description>{item.description}</Description>
                       <CardContent>
@@ -278,6 +283,7 @@ function Live() {
                   value="前"
                   onClick={() =>
                     setCurrentCard((prev) => {
+                      console.log('前');
                       const newCard = prev > 0 ? prev - 1 : prev;
                       updateCurrentCardInFirebase(newCard);
                       return newCard;
@@ -289,8 +295,9 @@ function Live() {
                   value="後"
                   onClick={() => {
                     setCurrentCard((prev) => {
+                      console.log('後');
                       const newCard =
-                        prev < studyGroup.process.length - 1 ? prev + 1 : prev;
+                        prev < processData.length - 1 ? prev + 1 : prev;
                       updateCurrentCardInFirebase(newCard);
                       return newCard;
                     });
@@ -353,17 +360,17 @@ const LiveScreen = styled.div`
   padding: 10px;
 `;
 const LiveInputs = styled.div`
-  display: ${({ isActive }) => (isActive ? 'none' : 'flex')};
+  display: ${({ isLive }) => (isLive ? 'none' : 'flex')};
   height: 25px;
   justify-content: center;
 `;
 //---卡片--//
 const Cards = styled.div`
-  display: ${({ isActive }) => (isActive ? 'block' : 'none')};
+  display: ${({ isLive }) => (isLive ? 'block' : 'none')};
   height: 100%;
 `;
 const Card = styled.div`
-  display: ${({ active }) => (active ? 'block' : 'none')};
+  display: ${({ activeCard }) => (activeCard ? 'block' : 'none')};
 `;
 const Description = styled.div`
   font-size: 20px;

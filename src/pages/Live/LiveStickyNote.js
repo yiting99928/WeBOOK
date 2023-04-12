@@ -49,7 +49,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
     // 複製整個process
     const updatedProcess = [...studyGroupDocSnapshot.data().process];
     updatedProcess[processIndex].data = item.data;
-    console.log(updatedProcess);
+    // console.log(updatedProcess);
     // 更新整個process
     await updateDoc(studyGroupDocRef, {
       process: updatedProcess,
