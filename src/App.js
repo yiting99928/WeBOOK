@@ -9,6 +9,7 @@ import Ongoing from './pages/Profile/Ongoing';
 import Finished from './pages/Profile/Finished';
 import Preparing from './pages/Profile/Preparing';
 import Live from './pages/Live/Live';
+import Login from './pages/Login/Login';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <GlobalStyle />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/create" element={<Create />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/ongoing" element={<Ongoing />} />
