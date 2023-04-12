@@ -1,7 +1,10 @@
 import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import styled from 'styled-components/macro';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext';
+import { getAuth, signOut } from 'firebase/auth';
 
 const Sidebar = styled.div`
   width: ${(props) => (props.isOpen ? '200px' : '50px')};
@@ -17,13 +20,29 @@ const ToggleButton = styled.div`
 `;
 
 function SideMenu() {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
-
+  function logOut() {
+    const auth = getAuth();
+    signOut(auth)
+      .then(() => {
+        console.log(' Sign-out successful');
+      })
+      .then(() => {
+        setUser({});
+      })
+      .then(() => {
+        navigate('/');
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   return (
     <Sidebar isOpen={isOpen}>
       <ToggleButton onClick={toggleSidebar}>
@@ -47,6 +66,7 @@ function SideMenu() {
         <Link to={`/profile/finished`}>
           <li>已結束</li>
         </Link>
+        <li onClick={logOut}>登出</li>
       </ul>
     </Sidebar>
   );
