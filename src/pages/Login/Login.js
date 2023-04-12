@@ -36,6 +36,7 @@ function Login() {
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
+        // console.log(userDoc.data());
         setUser(userDoc.data());
         console.log('有登入!');
         navigate('/profile');

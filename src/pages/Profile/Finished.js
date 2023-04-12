@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import data from '../../utils/data';
+import { AuthContext } from '../../context/authContext';
 
 const Finished = () => {
   const [groupData, setGroupData] = useState([]);
+  const { user } = useContext(AuthContext);
+
   useEffect(() => {
     async function getData() {
-      const groupData = await data.loadGroupData();
+      const groupData = await data.loadGroupData(user.email);
       const finishedData = groupData.filter(
         (item) => item.status === 'finished'
       );
@@ -41,7 +44,10 @@ const Finished = () => {
                 <p>
                   舉辦時間:<span>{item.hold}</span>
                 </p>
-                <div>筆記：<div dangerouslySetInnerHTML={{ __html: item.note }} /></div>
+                <div>
+                  筆記：
+                  <div dangerouslySetInnerHTML={{ __html: item.note }} />
+                </div>
               </CardContent>
             </StudyGroupCard>
           ))

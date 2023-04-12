@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components/macro';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../../context/authContext';
 
 const Sidebar = styled.div`
   width: ${(props) => (props.isOpen ? '200px' : '50px')};
@@ -17,6 +18,7 @@ const ToggleButton = styled.div`
 
 function SideMenu() {
   const [isOpen, setIsOpen] = useState(true);
+  const { user } = useContext(AuthContext);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -28,7 +30,7 @@ function SideMenu() {
         {isOpen ? '收合' : '展開'}
       </ToggleButton>
       <ul>
-        <li>會員名稱:Yumy</li>
+        <li>會員名稱:{user.name}</li>
         <li>舉辦讀書會:5場</li>
         <li>參加讀書會:2場</li>
       </ul>

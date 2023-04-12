@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 // import { db } from '../../utils/firebase';
 // import { setDoc, doc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import data from '../../utils/data';
+import { AuthContext } from '../../context/authContext';
 
 const Ongoing = () => {
   const [groupData, setGroupData] = useState([]);
+  const { user } = useContext(AuthContext);
+
+
   useEffect(() => {
     async function getData() {
-      const groupData = await data.loadGroupData();
+      const groupData = await data.loadGroupData(user.email);
       const finishedData = groupData.filter(
         (item) => item.status === 'ongoing'
       );

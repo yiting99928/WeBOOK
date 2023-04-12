@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import data from '../../utils/data';
+import { AuthContext } from '../../context/authContext';
 
 const Preparing = () => {
   const [groupData, setGroupData] = useState([]);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     async function getData() {
-      const groupData = await data.loadGroupData();
+      const groupData = await data.loadGroupData(user.email);
       const preparingData = groupData.filter(
         (item) => item.status === 'preparing'
       );

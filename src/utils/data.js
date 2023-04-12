@@ -1,9 +1,11 @@
+import React, { useContext } from 'react';
+
 import { db } from './firebase';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 
 const data = {
-  async loadGroupData() {
-    const userRef = doc(db, 'users', 'yumy19990628@gmail.com');
+  async loadGroupData(email) {
+    const userRef = doc(db, 'users', email);
     const userStudyGroupsRef = collection(userRef, 'userStudyGroups');
     const userStudyGroupsSnapshot = await getDocs(userStudyGroupsRef);
 
