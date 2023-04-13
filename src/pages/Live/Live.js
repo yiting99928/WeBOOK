@@ -207,8 +207,10 @@ function Live() {
     const studyGroupRef = doc(db, 'rooms', id);
     const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
       const studyGroupData = snapshot.data();
-      console.log(studyGroupData.currentCard);
-      setCurrentCard(studyGroupData.currentCard);
+      if (studyGroupData && studyGroupData.currentCard !== undefined) {
+        console.log(studyGroupData.currentCard);
+        setCurrentCard(studyGroupData.currentCard);
+      }
     });
     return () => unsubscribe();
   }
@@ -225,9 +227,7 @@ function Live() {
   }
   function handleStop() {
     setIsLive(false);
-    // setSeconds(0);
     handleChangeState();
-    // navigate({ pathname: '/profile/finished' }, { replace: true });
   }
   function handleChangeState() {
     updateDoc(doc(db, 'studyGroups', id), { status: 'finished' });

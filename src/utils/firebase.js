@@ -6,11 +6,11 @@ import 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE,
-  authDomain: 'webook-studygroup.firebaseapp.com',
-  projectId: 'webook-studygroup',
-  storageBucket: 'webook-studygroup.appspot.com',
-  messagingSenderId: '650255613331',
-  appId: '1:650255613331:web:ea97eca77416047583bc66',
+  authDomain: "webook-book-group.firebaseapp.com",
+  projectId: "webook-book-group",
+  storageBucket: "webook-book-group.appspot.com",
+  messagingSenderId: "677704191801",
+  appId: "1:677704191801:web:7a80ad109451995760e2e8"
 };
 
 const app = initializeApp(firebaseConfig);

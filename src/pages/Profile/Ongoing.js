@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 // import { db } from '../../utils/firebase';
@@ -11,18 +11,24 @@ const Ongoing = () => {
   const [groupData, setGroupData] = useState([]);
   const { user } = useContext(AuthContext);
 
-
   useEffect(() => {
     async function getData() {
-      const groupData = await data.loadGroupData(user?.email);
+      const groupData = await data.loadGroupData(user.email);
       const finishedData = groupData.filter(
         (item) => item.status === 'ongoing'
       );
       setGroupData(finishedData);
     }
     getData();
-  }, [user]);
-
+  }, []);
+  function formatUnixTimestamp(unixTimestamp) {
+    const date = new Date(unixTimestamp * 1000);
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    const formattedDate = year + '-' + month + '-' + day;
+    return formattedDate;
+  }
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -47,17 +53,15 @@ const Ongoing = () => {
                   章節:<span>{item.chapter}</span>
                 </p>
                 <p>
-                  創建時間:<span>{item.createTime}</span>
+                  創建時間:<span>{formatUnixTimestamp(item.createTime)}</span>
+                  {console.log(item.createTime)}
                 </p>
                 <p>
                   舉辦時間:<span>{item.hold}</span>
                 </p>
                 <p>公告：{item.post}</p>
                 <Link to={`/study-group/${item.id}/live`}>
-                  <input
-                    type="button"
-                    value="進入讀書會直播間"
-                  />
+                  <input type="button" value="進入讀書會直播間" />
                 </Link>
               </CardContent>
             </StudyGroupCard>

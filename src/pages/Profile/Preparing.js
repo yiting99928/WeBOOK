@@ -34,8 +34,8 @@ const Preparing = () => {
     return () => {
       unsubscribes.forEach((unsubscribe) => unsubscribe());
     };
-  }, [groupData, user]);
-  
+  }, []);
+
   function handleChangeState(item) {
     const groupRef = doc(db, 'studyGroups', item.id);
     updateDoc(groupRef, { status: 'ongoing' })

@@ -10,7 +10,7 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../../utils/firebase';
 
 function Login() {
-  const { user, setUser } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   console.log('user', user);
   const [login, setLogin] = useState({
