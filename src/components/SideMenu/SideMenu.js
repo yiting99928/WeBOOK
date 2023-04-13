@@ -1,9 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { AuthContext } from '../../context/authContext';
+import { db } from '../../utils/firebase';
 import styled from 'styled-components/macro';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../../context/authContext';
 import { getAuth, signOut } from 'firebase/auth';
 
 const Sidebar = styled.div`
@@ -22,7 +22,7 @@ const ToggleButton = styled.div`
 function SideMenu() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
-  const { setUser } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -49,7 +49,7 @@ function SideMenu() {
         {isOpen ? '收合' : '展開'}
       </ToggleButton>
       <ul>
-        {/* <li>會員名稱:{user.name}</li> */}
+        <li>會員名稱:{user.name}</li>
         <li>舉辦讀書會:5場</li>
         <li>參加讀書會:2場</li>
       </ul>

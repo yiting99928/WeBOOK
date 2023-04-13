@@ -10,7 +10,7 @@ const Finished = () => {
 
   useEffect(() => {
     async function getData() {
-      const groupData = await data.loadGroupData(user);
+      const groupData = await data.loadGroupData(user.email);
       const finishedData = groupData.filter(
         (item) => item.status === 'finished'
       );

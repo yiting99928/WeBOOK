@@ -13,7 +13,7 @@ const Preparing = () => {
 
   useEffect(() => {
     async function getData() {
-      const groupData = await data.loadGroupData(user);
+      const groupData = await data.loadGroupData(user.email);
       const preparingData = groupData.filter(
         (item) => item.status === 'preparing'
       );

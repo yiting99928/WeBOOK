@@ -1,18 +1,25 @@
 import { createContext, useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { db } from '../utils/firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 export const AuthContext = createContext({});
 
 export const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState({
+    email: '',
+    name: '',
+  });
   const [isLogin, setIsLogin] = useState(false);
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log('usecontext_user', user);
       if (user) {
-        setUser(user.email);
+        const userDocRef = doc(db, 'users', user.email);
+        const userDoc = await getDoc(userDocRef);
+        setUser(userDoc.data());
         setIsLogin(true);
       } else {
         setUser(null);

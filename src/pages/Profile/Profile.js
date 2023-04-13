@@ -12,7 +12,7 @@ const Profile = () => {
   useEffect(() => {
     if (user) {
       async function getData() {
-        const groupData = await data.loadGroupData(user);
+        const groupData = await data.loadGroupData(user.email);
         setGroupData(groupData);
       }
       getData();

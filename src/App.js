@@ -25,7 +25,6 @@ function App() {
           <Route path="/profile/ongoing" element={<Ongoing />} />
           <Route path="/profile/preparing" element={<Preparing />} />
           <Route path="/profile/finished" element={<Finished />} />
-
           <Route path="/study-group/:id/process" element={<Process />} />
           <Route path="/study-group/:id/live" element={<Live />} />
         </Routes>
