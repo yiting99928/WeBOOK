@@ -8,13 +8,16 @@ const Profile = () => {
   const { user } = useContext(AuthContext);
   console.log(user);
   const [groupData, setGroupData] = useState([]);
+
   useEffect(() => {
-    async function getData() {
-      const groupData = await data.loadGroupData(user.email);
-      setGroupData(groupData);
+    if (user) {
+      async function getData() {
+        const groupData = await data.loadGroupData(user);
+        setGroupData(groupData);
+      }
+      getData();
     }
-    getData();
-  }, []);
+  }, [user]);
 
   return (
     <Container>

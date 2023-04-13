@@ -10,12 +10,9 @@ export const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('usecontext_user', user);
       if (user) {
-        const data = {
-          name: user.name || '',
-          email: user.email || '',
-        };
-        setUser(data);
+        setUser(user.email);
         setIsLogin(true);
       } else {
         setUser(null);
@@ -27,7 +24,7 @@ export const AuthContextProvider = ({ children }) => {
       unsubscribe();
     };
   }, []);
-
+  console.log(isLogin);
   return (
     <AuthContext.Provider value={{ user, isLogin, setUser, setIsLogin }}>
       {children}

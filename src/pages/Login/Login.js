@@ -10,9 +10,9 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../../utils/firebase';
 
 function Login() {
-  const { setUser } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
-
+  console.log('user', user);
   const [login, setLogin] = useState({
     email: '',
     password: '',
@@ -29,16 +29,17 @@ function Login() {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         login.email,
-        login.password
+        login.password,
+        login.name
       );
       const user = userCredential.user;
       const userDocRef = doc(db, 'users', user.email);
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
-        // console.log(userDoc.data());
+        console.log('userdoc', userDoc.data());
         setUser(userDoc.data());
-        console.log('有登入!');
+        // console.log('有登入!');
         navigate('/profile');
       }
     } catch (error) {
@@ -62,7 +63,7 @@ function Login() {
           email: register.email,
         }).then(() => {
           console.log('註冊成功');
-          //   navigate('/profile');
+          navigate('/profile');
         });
         console.log(userCredential);
       })
