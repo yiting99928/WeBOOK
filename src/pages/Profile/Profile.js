@@ -6,7 +6,6 @@ import { AuthContext } from '../../context/authContext';
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
-  console.log(user);
   const [groupData, setGroupData] = useState([]);
 
   useEffect(() => {

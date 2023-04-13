@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Create from './pages/Create/Create';
@@ -10,25 +10,26 @@ import Finished from './pages/Profile/Finished';
 import Preparing from './pages/Profile/Preparing';
 import Live from './pages/Live/Live';
 import Login from './pages/Login/Login';
-import { AuthContextProvider } from './context/authContext';
-
+import { AuthContext } from './context/authContext';
 function App() {
+  const { user } = useContext(AuthContext);
+  if (user === null || user === undefined) {
+    return <div>Loading...</div>;
+  }
   return (
     <BrowserRouter>
       <GlobalStyle />
-      <AuthContextProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/create" element={<Create />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/ongoing" element={<Ongoing />} />
-          <Route path="/profile/preparing" element={<Preparing />} />
-          <Route path="/profile/finished" element={<Finished />} />
-          <Route path="/study-group/:id/process" element={<Process />} />
-          <Route path="/study-group/:id/live" element={<Live />} />
-        </Routes>
-      </AuthContextProvider>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/create" element={<Create />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/ongoing" element={<Ongoing />} />
+        <Route path="/profile/preparing" element={<Preparing />} />
+        <Route path="/profile/finished" element={<Finished />} />
+        <Route path="/study-group/:id/process" element={<Process />} />
+        <Route path="/study-group/:id/live" element={<Live />} />
+      </Routes>
     </BrowserRouter>
   );
 }
