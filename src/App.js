@@ -10,6 +10,7 @@ import Finished from './pages/Profile/Finished';
 import Preparing from './pages/Profile/Preparing';
 import Live from './pages/Live/Live';
 import Login from './pages/Login/Login';
+import StudyGroups from './pages/StudyGroups/StudyGroups';
 function App() {
   return (
     <BrowserRouter>
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/create" element={<Create />} />
+        <Route path="/studyGroups" element={<StudyGroups />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/ongoing" element={<Ongoing />} />
         <Route path="/profile/preparing" element={<Preparing />} />
