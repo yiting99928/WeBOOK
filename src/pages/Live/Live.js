@@ -99,6 +99,22 @@ function Live() {
     };
   }, [id]);
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      doc(db, 'studyGroups', id),
+      (docSnapshot) => {
+        if (docSnapshot.exists() && docSnapshot.data().status === 'finished') {
+          alert('結束直播');
+          navigate({ pathname: '/profile/finished' }, { replace: true });
+        }
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [id, navigate]);
+
   // useEffect(() => {
   //   let interval = null;
   //   if (isLive) {
@@ -129,24 +145,6 @@ function Live() {
     });
     setInput('');
   };
-  function handleStop() {
-    setIsLive(false);
-    // setSeconds(0);
-    handleChangeState();
-    navigate({ pathname: '/profile/finished' }, { replace: true });
-  }
-
-  function handleChangeState() {
-    updateDoc(doc(db, 'studyGroups', id), { status: 'finished' });
-    deleteDoc(doc(db, 'rooms', id))
-      .then(() => {
-        console.log('Document successfully updated!');
-        alert('結束直播');
-      })
-      .catch((error) => {
-        console.error('Error updating document: ', error);
-      });
-  }
   async function handleSaveNote() {
     try {
       const userRef = doc(db, 'users', user.email);
@@ -225,7 +223,16 @@ function Live() {
     });
     return () => unsubscribe();
   }
-
+  function handleStop() {
+    setIsLive(false);
+    // setSeconds(0);
+    handleChangeState();
+    // navigate({ pathname: '/profile/finished' }, { replace: true });
+  }
+  function handleChangeState() {
+    updateDoc(doc(db, 'studyGroups', id), { status: 'finished' });
+    deleteDoc(doc(db, 'rooms', id));
+  }
   const updateCurrentCardInFirebase = async (newCard) => {
     try {
       const studyGroupRef = doc(db, 'rooms', id);
