@@ -10,14 +10,15 @@ const Finished = () => {
 
   useEffect(() => {
     async function getData() {
-      const groupData = await data.loadGroupData(user.email);
+      const groupData = await data.loadGroupData(user?.email);
       const finishedData = groupData.filter(
         (item) => item.status === 'finished'
       );
       setGroupData(finishedData);
     }
     getData();
-  }, []);
+  }, [user]);
+
   return (
     <Container>
       <SideMenu isOpen={true} />

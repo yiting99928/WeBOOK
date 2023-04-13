@@ -7,8 +7,7 @@ export const AuthContext = createContext({});
 
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLogin, setIsLogin] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -16,23 +15,23 @@ export const AuthContextProvider = ({ children }) => {
         const userDocRef = doc(db, 'users', user.email);
         const userDoc = await getDoc(userDocRef);
         setUser(userDoc.data());
-        setIsLogin(true);
       } else {
         setUser(null);
-        setIsLogin(false);
       }
+      setIsLoading(false);
     });
 
     return () => {
       unsubscribe();
     };
   }, []);
-  console.log('usecontext_user', user);
-  console.log('isLogin', isLogin);
+  if (!user && isLoading) {
+    return;
+  }
   console.log(user);
-
+  console.log(isLoading);
   return (
-    <AuthContext.Provider value={{ user, isLogin, setUser, setIsLogin }}>
+    <AuthContext.Provider value={{ user, isLoading, setUser, setIsLoading }}>
       {children}
     </AuthContext.Provider>
   );

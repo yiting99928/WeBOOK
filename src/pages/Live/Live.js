@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import SideMenu from '../../components/SideMenu';
-import { useEffect, useState, useRef, useReducer } from 'react';
+import { useEffect, useState, useRef, useReducer, useContext } from 'react';
 import { db } from '../../utils/firebase';
+import { AuthContext } from '../../context/authContext';
 import {
   collection,
   addDoc,
@@ -48,6 +49,7 @@ function reducer(processData, { type, payload = {} }) {
 
 function Live() {
   const { id } = useParams();
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState([]);
@@ -108,21 +110,6 @@ function Live() {
   //   }
   //   return () => clearInterval(interval);
   // }, [isLive, seconds]);
-
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    await addDoc(collection(db, 'rooms', id, 'messages'), {
-      message: input,
-      timestamp: new Date(),
-    });
-    setInput('');
-  };
-  function handleStop() {
-    setIsLive(false);
-    setSeconds(0);
-    handleChangeState();
-    navigate({ pathname: '/profile/finished' }, { replace: true });
-  }
   // function formatTime(totalSeconds) {
   //   const hours = Math.floor(totalSeconds / 3600);
   //   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -134,6 +121,21 @@ function Live() {
 
   //   return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   // }
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    await addDoc(collection(db, 'rooms', id, 'messages'), {
+      message: input,
+      timestamp: new Date(),
+    });
+    setInput('');
+  };
+  function handleStop() {
+    setIsLive(false);
+    // setSeconds(0);
+    handleChangeState();
+    navigate({ pathname: '/profile/finished' }, { replace: true });
+  }
+
   function handleChangeState() {
     updateDoc(doc(db, 'studyGroups', id), { status: 'finished' });
     deleteDoc(doc(db, 'rooms', id))
@@ -145,24 +147,19 @@ function Live() {
         console.error('Error updating document: ', error);
       });
   }
-  // const onContentChange = (newContent) => {
-  //   // console.log(newContent);
-  //   setNote(newContent);
-  // };
+  async function handleSaveNote() {
+    try {
+      const userRef = doc(db, 'users', user.email);
+      const newGroupRef = doc(collection(userRef, 'userStudyGroups'), id);
+      await setDoc(newGroupRef, {
+        note: note,
+      });
 
-  // async function handleSaveNote() {
-  //   try {
-  //     const userRef = doc(db, 'users', 'yumy19990628@gmail.com');
-  //     const newGroupRef = doc(collection(userRef, 'userStudyGroups'), id);
-  //     await setDoc(newGroupRef, {
-  //       note: note,
-  //     });
-
-  //     console.log(`儲存 ${id} 筆記`);
-  //   } catch (error) {
-  //     console.error('Error: ', error);
-  //   }
-  // }
+      console.log(`儲存 ${id} 筆記`);
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  }
   const renderCardContent = (item, processIndex) => {
     switch (item.type) {
       case 'lecture':
@@ -258,8 +255,18 @@ function Live() {
           <LiveContainer>
             <LiveScreen>
               <LiveInputs isLive={isLive}>
-                <input type="button" value="Start" onClick={handleStart} />
-                <input type="button" value="Join" onClick={handleJoin} />
+                <StartInput
+                  isHost={studyGroup.createBy === user.email}
+                  type="button"
+                  value="Start"
+                  onClick={handleStart}
+                />
+                <JoinInput
+                  isHost={studyGroup.createBy === user.email}
+                  type="button"
+                  value="Join"
+                  onClick={handleJoin}
+                />
               </LiveInputs>
               <Cards isLive={isLive}>
                 {!processData ? (
@@ -277,7 +284,7 @@ function Live() {
                   ))
                 )}
               </Cards>
-              <ProcessInputs>
+              <ProcessInputs isHost={studyGroup.createBy === user.email}>
                 <ProcessInput
                   type="button"
                   value="前"
@@ -334,6 +341,10 @@ function Live() {
               </ChatInput>
             </ChatRoom>
           </LiveContainer>
+          <Note>
+            <EditContent onChange={setNote} value={note} />
+            <input type="button" value="儲存筆記" onClick={handleSaveNote} />
+          </Note>
         </Content>
       </Container>
     </>
@@ -364,6 +375,12 @@ const LiveInputs = styled.div`
   height: 25px;
   justify-content: center;
 `;
+const StartInput = styled.input`
+  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+`;
+const JoinInput = styled.input`
+  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
+`;
 //---卡片--//
 const Cards = styled.div`
   display: ${({ isLive }) => (isLive ? 'block' : 'none')};
@@ -384,7 +401,7 @@ const CardContent = styled.div`
   height: 100%;
 `;
 const ProcessInputs = styled.div`
-  display: flex;
+  display: ${({ isHost }) => (isHost ? 'flex' : 'none')};
   border: 1px solid black;
   justify-content: space-between;
   margin-top: auto;
@@ -411,7 +428,7 @@ const ChatInput = styled.div`
 `;
 //---筆記---//
 const Note = styled.div`
-  height: 255px;
+  height: 500px;
   ${'' /* border: 1px solid black; */}
   ${'' /* width: 100%; */}
 `;

@@ -15,15 +15,13 @@ const quillModules = {
   },
 };
 function EditContent({ onChange, value }) {
-  function handleChange(content) {
-    onChange(content);
-  }
+
   return (
       <ReactQuill
         className='quill-editor'
         theme="snow"
         value={value}
-        onChange={handleChange}
+        onChange={onChange}
         modules={quillModules}
       />
   );

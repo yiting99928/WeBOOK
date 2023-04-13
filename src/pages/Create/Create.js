@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components/macro';
 import { storage, db } from '../../utils/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
-
+import {
+  collection,
+  addDoc,
+  doc,
+  setDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
+import { AuthContext } from '../../context/authContext';
 const CreateFrom = styled.form`
   display: flex;
   flex-direction: column;
@@ -12,17 +18,10 @@ const CreateFrom = styled.form`
 `;
 
 function Create() {
+  const { user } = useContext(AuthContext);
   const [createForm, setCreateForm] = useState({
-    createBy: 'yumy19990628@gmail.com',
-    host: 'Yumy',
-    name: '',
-    image: '',
-    author: '',
-    chapter: '',
-    totalNum: 2,
-    hold: '',
-    category: '',
-    post: '',
+    createBy: user.email,
+    host: user.name,
     status: 'preparing',
   });
 
@@ -55,12 +54,14 @@ function Create() {
   };
   const formPost = async () => {
     try {
-      const storageRef = ref(storage, `image/${createForm.image.name}`);
+      const storageRef = ref(
+        storage,
+        `image/${createForm.image.name + createForm.name}`
+      );
       await uploadBytes(storageRef, createForm.image);
       const imageURL = await getDownloadURL(storageRef);
       const docRef = await addDoc(collection(db, 'studyGroups'), {
-        createBy: 'yumy19990628@gmail.com',
-        host: 'Yumy',
+        ...createForm,
         name: createForm.name,
         image: imageURL,
         author: createForm.author,
@@ -69,14 +70,13 @@ function Create() {
         hold: createForm.hold,
         category: createForm.category,
         post: createForm.post,
-        status: 'preparing',
-        createTime: Date.now(),
+        createTime: serverTimestamp(),
       });
       // 在使用者DATA集合中新增讀書會筆記
       const userStudyGroupsRef = doc(
         db,
         'users',
-        'yumy19990628@gmail.com',
+        user.email,
         'userStudyGroups',
         docRef.id
       );
@@ -101,6 +101,7 @@ function Create() {
       post: '',
     });
   };
+  console.log(createForm);
   return (
     <>
       <CreateFrom>
@@ -139,14 +140,12 @@ function Create() {
         </div>
         <div>
           <label>人數上限</label>
-          <span>-</span>
           <input
             type="number"
             name="totalNum"
             value={createForm.totalNum}
             onChange={handleInputChange}
           />
-          <span>+</span>
         </div>
         <div>
           <label>舉辦時間</label>

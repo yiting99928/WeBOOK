@@ -34,9 +34,7 @@ function SideMenu() {
         console.log(' Sign-out successful');
       })
       .then(() => {
-        setUser({});
-      })
-      .then(() => {
+        setUser(null);
         navigate('/');
       })
       .catch((error) => {

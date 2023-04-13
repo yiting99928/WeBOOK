@@ -14,14 +14,14 @@ const Ongoing = () => {
 
   useEffect(() => {
     async function getData() {
-      const groupData = await data.loadGroupData(user.email);
+      const groupData = await data.loadGroupData(user?.email);
       const finishedData = groupData.filter(
         (item) => item.status === 'ongoing'
       );
       setGroupData(finishedData);
     }
     getData();
-  }, []);
+  }, [user]);
 
   return (
     <Container>

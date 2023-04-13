@@ -10,12 +10,7 @@ import Finished from './pages/Profile/Finished';
 import Preparing from './pages/Profile/Preparing';
 import Live from './pages/Live/Live';
 import Login from './pages/Login/Login';
-import { AuthContext } from './context/authContext';
 function App() {
-  const { user } = useContext(AuthContext);
-  if (user === null || user === undefined) {
-    return <div>Loading...</div>;
-  }
   return (
     <BrowserRouter>
       <GlobalStyle />
@@ -38,6 +33,9 @@ const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
     ${'' /* border:1px solid black !important */}
+}
+.ql-container{
+  height:400px
 }
 `;
 

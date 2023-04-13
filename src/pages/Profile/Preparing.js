@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
@@ -13,7 +13,7 @@ const Preparing = () => {
 
   useEffect(() => {
     async function getData() {
-      const groupData = await data.loadGroupData(user.email);
+      const groupData = await data.loadGroupData(user?.email);
       const preparingData = groupData.filter(
         (item) => item.status === 'preparing'
       );
@@ -34,8 +34,8 @@ const Preparing = () => {
     return () => {
       unsubscribes.forEach((unsubscribe) => unsubscribe());
     };
-  }, []);
-
+  }, [groupData, user]);
+  
   function handleChangeState(item) {
     const groupRef = doc(db, 'studyGroups', item.id);
     updateDoc(groupRef, { status: 'ongoing' })
