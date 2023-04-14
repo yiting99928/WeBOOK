@@ -97,7 +97,7 @@ function Live() {
     return () => {
       unsubscribe();
     };
-  }, [id]);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -142,6 +142,7 @@ function Live() {
     await addDoc(collection(db, 'rooms', id, 'messages'), {
       message: input,
       timestamp: new Date(),
+      sender: user.email,
     });
     setInput('');
   };
@@ -250,6 +251,7 @@ function Live() {
             <div>
               <div>書名：{studyGroup.name}</div>
               <div>章節：{studyGroup.chapter}</div>
+              <div>章節：{studyGroup.host}</div>
               {/* <span>{formatTime(seconds)}</span> */}
             </div>
             <input
@@ -322,11 +324,11 @@ function Live() {
             <ChatRoom>
               <Message>
                 {messages.map((message, index) =>
-                  user.email ===  studyGroup.createBy? (
+                  user.email === message.sender ? (
                     <User key={index}>{message.message}</User>
                   ) : (
                     <Guest key={index}>
-                      <span>Guest{user.name}：</span>
+                      <span>{user.name}：</span>
                       {message.message}
                     </Guest>
                   )

@@ -20,9 +20,16 @@ const CreateFrom = styled.form`
 function Create() {
   const { user } = useContext(AuthContext);
   const [createForm, setCreateForm] = useState({
+    name: '',
+    image: '',
+    author: '',
+    chapter: '',
     createBy: user.email,
     host: user.name,
+    hold: '',
     status: 'preparing',
+    category: '',
+    post: '',
   });
 
   const handleInputChange = (e) => {
@@ -34,10 +41,11 @@ function Create() {
     } else {
       setCreateForm((prevContact) => ({
         ...prevContact,
-        [e.target.name]:
-          e.target.name === 'totalNum'
-            ? parseInt(e.target.value)
-            : e.target.value,
+        [e.target.name]: e.target.value,
+        // [e.target.name]:
+        //   e.target.name === 'totalNum'
+        //     ? parseInt(e.target.value)
+        //     : e.target.value,
       }));
     }
   };
@@ -66,7 +74,7 @@ function Create() {
         image: imageURL,
         author: createForm.author,
         chapter: createForm.chapter,
-        totalNum: createForm.totalNum,
+        // totalNum: createForm.totalNum,
         hold: createForm.hold,
         category: createForm.category,
         post: createForm.post,
@@ -95,7 +103,7 @@ function Create() {
       image: '',
       author: '',
       chapter: '',
-      totalNum: 2,
+      // totalNum: 2,
       hold: '',
       category: '',
       post: '',
@@ -138,7 +146,7 @@ function Create() {
             onChange={handleInputChange}
           />
         </div>
-        <div>
+        {/* <div>
           <label>人數上限</label>
           <input
             type="number"
@@ -146,7 +154,7 @@ function Create() {
             value={createForm.totalNum}
             onChange={handleInputChange}
           />
-        </div>
+        </div> */}
         <div>
           <label>舉辦時間</label>
           <input
