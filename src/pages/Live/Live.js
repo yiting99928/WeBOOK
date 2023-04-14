@@ -293,33 +293,37 @@ function Live() {
                   ))
                 )}
               </Cards>
-              <ProcessInputs isHost={studyGroup.createBy === user.email}>
-                <ProcessInput
-                  type="button"
-                  value="前"
-                  onClick={() =>
-                    setCurrentCard((prev) => {
-                      console.log('前');
-                      const newCard = prev > 0 ? prev - 1 : prev;
-                      updateCurrentCardInFirebase(newCard);
-                      return newCard;
-                    })
-                  }
-                />
-                <ProcessInput
-                  type="button"
-                  value="後"
-                  onClick={() => {
-                    setCurrentCard((prev) => {
-                      console.log('後');
-                      const newCard =
-                        prev < processData.length - 1 ? prev + 1 : prev;
-                      updateCurrentCardInFirebase(newCard);
-                      return newCard;
-                    });
-                  }}
-                />
-              </ProcessInputs>
+              {!processData ? (
+                <></>
+              ) : (
+                <ProcessInputs isHost={studyGroup.createBy === user.email}>
+                  <ProcessInput
+                    type="button"
+                    value="前"
+                    onClick={() =>
+                      setCurrentCard((prev) => {
+                        console.log('前');
+                        const newCard = prev > 0 ? prev - 1 : prev;
+                        updateCurrentCardInFirebase(newCard);
+                        return newCard;
+                      })
+                    }
+                  />
+                  <ProcessInput
+                    type="button"
+                    value="後"
+                    onClick={() => {
+                      setCurrentCard((prev) => {
+                        console.log('後');
+                        const newCard =
+                          prev < processData.length - 1 ? prev + 1 : prev;
+                        updateCurrentCardInFirebase(newCard);
+                        return newCard;
+                      });
+                    }}
+                  />
+                </ProcessInputs>
+              )}
             </LiveScreen>
             <ChatRoom>
               <Message>

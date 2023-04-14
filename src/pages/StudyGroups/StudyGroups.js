@@ -24,7 +24,18 @@ function StudyGroups() {
     const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
     await setDoc(userGroupRef, { note: '' }).then(alert('已加入讀書會'));
   };
+  function toReadableDate(dateString, locale = 'zh-TW') {
+    const dateObj = new Date(dateString);
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    };
 
+    return new Intl.DateTimeFormat(locale, options).format(dateObj);
+  }
   return (
     <Container>
       {allGroupsData.length === 0 ? (
@@ -35,7 +46,7 @@ function StudyGroups() {
             <BookImg imageUrl={card.image} />
             <h3>{card.name}</h3>
             <p>{card.author}</p>
-            <p>舉辦時間：{card.author}</p>
+            <p>舉辦時間：{toReadableDate(card.hold)}</p>
             <p>導讀者：{card.host}</p>
             <input
               type="button"

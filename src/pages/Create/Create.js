@@ -10,12 +10,6 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { AuthContext } from '../../context/authContext';
-const CreateFrom = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  width: 400px;
-`;
 
 function Create() {
   const { user } = useContext(AuthContext);
@@ -50,7 +44,8 @@ function Create() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     for (let key in createForm) {
       if (!createForm[key]) {
         alert('請填寫完整');
@@ -107,6 +102,9 @@ function Create() {
       hold: '',
       category: '',
       post: '',
+      createBy: user.email,
+      host: user.name,
+      status: 'preparing',
     });
   };
   console.log(createForm);
@@ -158,7 +156,7 @@ function Create() {
         <div>
           <label>舉辦時間</label>
           <input
-            type="date"
+            type="datetime-local"
             name="hold"
             value={createForm.hold}
             onChange={handleInputChange}
@@ -185,7 +183,7 @@ function Create() {
         </div>
         <div>
           <p>讀書會公告</p>
-          <textarea
+          <Post
             name="post"
             value={createForm.post}
             onChange={handleInputChange}
@@ -196,4 +194,14 @@ function Create() {
     </>
   );
 }
+const Post = styled.textarea`
+  width: 400px;
+  height: 300px;
+`;
+const CreateFrom = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 400px;
+`;
 export default Create;
