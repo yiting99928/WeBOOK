@@ -322,11 +322,11 @@ function Live() {
             <ChatRoom>
               <Message>
                 {messages.map((message, index) =>
-                  message.sender === 'user' ? (
+                  user.email ===  studyGroup.createBy? (
                     <User key={index}>{message.message}</User>
                   ) : (
                     <Guest key={index}>
-                      <span>Guest{message.sender}：</span>
+                      <span>Guest{user.name}：</span>
                       {message.message}
                     </Guest>
                   )

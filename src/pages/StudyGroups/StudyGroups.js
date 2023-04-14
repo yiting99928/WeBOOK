@@ -28,7 +28,7 @@ function StudyGroups() {
   return (
     <Container>
       {allGroupsData.length === 0 ? (
-        <>loading</>
+        <>目前無讀書會</>
       ) : (
         allGroupsData.map((card, index) => (
           <Card key={index}>

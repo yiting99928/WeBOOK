@@ -8,6 +8,9 @@ import {
   onSnapshot,
   deleteDoc,
   collection,
+  getDocs,
+  query,
+  where,
 } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import data from '../../utils/data';
@@ -59,6 +62,38 @@ const Preparing = () => {
     const groupRef = doc(userStudyGroupsRef, id);
     await deleteDoc(groupRef).then(alert('已退出讀書會'));
   }
+
+  async function handleDelGroup(id) {
+    try {
+      await Promise.all([
+        deleteAllDocs(id),
+        deleteDoc(doc(db, 'studyGroups', id)),
+      ]);
+      alert('取消讀書會');
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  async function deleteAllDocs(id) {
+    const usersQuerySnapshot = await getDocs(collection(db, 'users'));
+
+    for (const userDoc of usersQuerySnapshot.docs) {
+      const userStudyGroupsRef = collection(userDoc.ref, 'userStudyGroups');
+      const matchingGroupsQuery = query(
+        userStudyGroupsRef,
+        where('__name__', '==', id)
+      );
+      const matchingGroupsSnapshot = await getDocs(matchingGroupsQuery);
+
+      for (const matchingGroupDoc of matchingGroupsSnapshot.docs) {
+        try {
+          await deleteDoc(matchingGroupDoc.ref);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
+  }
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -86,25 +121,26 @@ const Preparing = () => {
                   舉辦時間:<span>{item.hold}</span>
                 </p>
                 <p>公告：{item.post}</p>
-                <input
+                <UserEditInput
                   type="button"
                   value="退出讀書會"
-                  // isHost={user.email === item.createBy}
+                  isHost={user.email === item.createBy}
                   onClick={() => handleQuitGroup(item.id)}
                 />
-                <input
+                <HostEditInput
                   type="button"
                   value="取消讀書會"
-                  // isHost={user.email === item.createBy}
+                  isHost={user.email === item.createBy}
+                  onClick={() => handleDelGroup(item.id)}
                 />
                 <Link to={`/study-group/${item.id}/process`}>
-                  <EditProcessInput
+                  <HostEditInput
                     type="button"
                     value="編輯流程"
                     isHost={user.email === item.createBy}
                   />
                 </Link>
-                <EditProcessInput
+                <HostEditInput
                   type="button"
                   value="開始讀書會"
                   isHost={user.email === item.createBy}
@@ -118,7 +154,11 @@ const Preparing = () => {
     </Container>
   );
 };
-const EditProcessInput = styled.input`
+
+const UserEditInput = styled.input`
+  display: ${({ isHost }) => (isHost ? 'none' : 'inline-block')};
+`;
+const HostEditInput = styled.input`
   display: ${({ isHost }) => (isHost ? 'inline-block' : 'none')};
 `;
 const Container = styled.div`
