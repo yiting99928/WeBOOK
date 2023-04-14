@@ -1,17 +1,12 @@
-import { collection, getDocs } from 'firebase/firestore';
+import { setDoc, collection, doc, getDocs } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components/macro';
-const cardsData = [
-  { name: 'Card 1', author: '作者.', hold: '2023-04-28', host: 'Yumy' },
-  { name: 'Card 1', author: '作者.', hold: '2023-04-28', host: 'Yumy' },
-  { name: 'Card 1', author: '作者.', hold: '2023-04-28', host: 'Yumy' },
-  { name: 'Card 1', author: '作者.', hold: '2023-04-28', host: 'Yumy' },
-  { name: 'Card 1', author: '作者.', hold: '2023-04-28', host: 'Yumy' },
-  { name: 'Card 1', author: '作者.', hold: '2023-04-28', host: 'Yumy' },
-];
+import { AuthContext } from '../../context/authContext';
+
 function StudyGroups() {
   const [allGroupsData, setAllGroupsData] = useState([]);
+  const { user } = useContext(AuthContext);
   useEffect(() => {
     async function getData() {
       const StudyGroupsData = collection(db, 'studyGroups');
@@ -25,6 +20,10 @@ function StudyGroups() {
     }
     getData();
   }, []);
+  const handleJoinGroup = async (id) => {
+    const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
+    await setDoc(userGroupRef, { note: '' }).then(alert('已加入讀書會'));
+  };
 
   return (
     <Container>
@@ -38,7 +37,11 @@ function StudyGroups() {
             <p>{card.author}</p>
             <p>舉辦時間：{card.author}</p>
             <p>導讀者：{card.host}</p>
-            <input type="button" value="加入讀書會" />
+            <input
+              type="button"
+              value="加入讀書會"
+              onClick={() => handleJoinGroup(card.id)}
+            />
           </Card>
         ))
       )}
@@ -63,7 +66,7 @@ const Container = styled.div`
 
 const Card = styled.div`
   width: 250px;
-  height:400px;
+  height: 400px;
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
   border-radius: 8px;

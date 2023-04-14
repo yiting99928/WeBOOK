@@ -2,7 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
-import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import {
+  doc,
+  updateDoc,
+  onSnapshot,
+  deleteDoc,
+  collection,
+} from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import data from '../../utils/data';
 import { AuthContext } from '../../context/authContext';
@@ -46,6 +52,13 @@ const Preparing = () => {
         console.error('Error updating document: ', error);
       });
   }
+  async function handleQuitGroup(id) {
+    console.log(id);
+    const usersDocRef = doc(db, 'users', user.email);
+    const userStudyGroupsRef = collection(usersDocRef, 'userStudyGroups');
+    const groupRef = doc(userStudyGroupsRef, id);
+    await deleteDoc(groupRef).then(alert('已退出讀書會'));
+  }
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -73,13 +86,28 @@ const Preparing = () => {
                   舉辦時間:<span>{item.hold}</span>
                 </p>
                 <p>公告：{item.post}</p>
-                <input type="button" value="退出讀書會" />
-                <Link to={`/study-group/${item.id}/process`}>
-                  <input type="button" value="編輯流程" />
-                </Link>
                 <input
                   type="button"
+                  value="退出讀書會"
+                  // isHost={user.email === item.createBy}
+                  onClick={() => handleQuitGroup(item.id)}
+                />
+                <input
+                  type="button"
+                  value="取消讀書會"
+                  // isHost={user.email === item.createBy}
+                />
+                <Link to={`/study-group/${item.id}/process`}>
+                  <EditProcessInput
+                    type="button"
+                    value="編輯流程"
+                    isHost={user.email === item.createBy}
+                  />
+                </Link>
+                <EditProcessInput
+                  type="button"
                   value="開始讀書會"
+                  isHost={user.email === item.createBy}
                   onClick={() => handleChangeState(item)}
                 />
               </CardContent>
@@ -90,6 +118,9 @@ const Preparing = () => {
     </Container>
   );
 };
+const EditProcessInput = styled.input`
+  display: ${({ isHost }) => (isHost ? 'inline-block' : 'none')};
+`;
 const Container = styled.div`
   display: flex;
   min-height: 100vh;

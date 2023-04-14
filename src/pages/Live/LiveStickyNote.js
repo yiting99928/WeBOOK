@@ -74,6 +74,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
               onBlur={(e) => handleOptionBlur(index, e, 'name')}
               onInput={onContentEditableInput}
             />
+            
             <div>
               <AddInput value="+" type="button" onClick={handleAddOption} />
               <input
