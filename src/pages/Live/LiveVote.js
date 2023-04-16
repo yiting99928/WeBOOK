@@ -23,7 +23,7 @@ function Vote({ item, id, processIndex }) {
 
     // 用新的newVoteItems取代process[processIndex].data
     updatedProcess[processIndex].data = newVoteItems;
-    console.log(updatedProcess);
+    // console.log(updatedProcess);
     // 更新整個process
     await updateDoc(studyGroupDocRef, {
       process: updatedProcess,
@@ -69,7 +69,8 @@ const ProgressBar = styled.div`
   gap: 5px;
   width: ${({ percentage }) => `${percentage}%`};
   height: 100%;
-  background-color: ${({ hasVoted }) => (hasVoted ? 'rgb(159, 223, 159)' : 'none')};;
+  background-color: ${({ hasVoted }) =>
+    hasVoted ? 'rgb(159, 223, 159)' : 'none'};
   transition: 0.3s ease-in-out;
 `;
 const Votes = styled.div`
