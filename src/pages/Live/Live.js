@@ -110,6 +110,7 @@ function Live() {
         if (docSnapshot.exists() && docSnapshot.data().status === 'finished') {
           alert('結束直播');
           navigate({ pathname: '/profile/finished' }, { replace: true });
+          deleteDoc(doc(db, 'rooms', id));
         }
       }
     );
@@ -119,28 +120,6 @@ function Live() {
     };
   }, [id, navigate]);
 
-  // useEffect(() => {
-  //   let interval = null;
-  //   if (isLive) {
-  //     interval = setInterval(() => {
-  //       setSeconds((seconds) => seconds + 1);
-  //     }, 1000);
-  //   } else if (!isLive && seconds !== 0) {
-  //     clearInterval(interval);
-  //   }
-  //   return () => clearInterval(interval);
-  // }, [isLive, seconds]);
-  // function formatTime(totalSeconds) {
-  //   const hours = Math.floor(totalSeconds / 3600);
-  //   const minutes = Math.floor((totalSeconds % 3600) / 60);
-  //   const seconds = Math.floor(totalSeconds % 60);
-
-  //   const formattedHours = hours.toString().padStart(2, '0');
-  //   const formattedMinutes = minutes.toString().padStart(2, '0');
-  //   const formattedSeconds = seconds.toString().padStart(2, '0');
-
-  //   return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-  // }
   const sendMessage = async (e) => {
     e.preventDefault();
     await addDoc(collection(db, 'rooms', id, 'messages'), {
@@ -224,9 +203,15 @@ function Live() {
     alert('加入直播');
     const studyGroupRef = doc(db, 'rooms', id);
     const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
-      const studyGroupData = snapshot.data();
-      setIsLive(true);
-      setCurrentCard(studyGroupData.currentCard);
+      if (
+        snapshot.exists() &&
+        snapshot.data() &&
+        'currentCard' in snapshot.data()
+      ) {
+        const studyGroupData = snapshot.data();
+        setIsLive(true);
+        setCurrentCard(studyGroupData.currentCard);
+      }
     });
     return () => unsubscribe();
   }
@@ -236,7 +221,6 @@ function Live() {
   }
   function handleChangeState() {
     updateDoc(doc(db, 'studyGroups', id), { status: 'finished' });
-    deleteDoc(doc(db, 'rooms', id));
   }
   const updateCurrentCardInFirebase = async (newCard) => {
     try {
@@ -257,13 +241,13 @@ function Live() {
               <div>書名：{studyGroup.name}</div>
               <div>章節：{studyGroup.chapter}</div>
               <div>章節：{studyGroup.host}</div>
-              {/* <span>{formatTime(seconds)}</span> */}
             </div>
-            <input
+            <HangupInput
               type="button"
               id="startButton"
               value="Hangup"
               onClick={handleStop}
+              isHost={studyGroup.createBy === user.email}
             />
           </Menu>
           <LiveContainer>
@@ -307,7 +291,6 @@ function Live() {
                     value="前"
                     onClick={() =>
                       setCurrentCard((prev) => {
-                        console.log('前');
                         const newCard = prev > 0 ? prev - 1 : prev;
                         updateCurrentCardInFirebase(newCard);
                         return newCard;
@@ -319,7 +302,6 @@ function Live() {
                     value="後"
                     onClick={() => {
                       setCurrentCard((prev) => {
-                        console.log('後');
                         const newCard =
                           prev < processData.length - 1 ? prev + 1 : prev;
                         updateCurrentCardInFirebase(newCard);
@@ -398,6 +380,10 @@ const StartInput = styled.input`
 `;
 const JoinInput = styled.input`
   display: ${({ isHost }) => (isHost ? 'none' : 'block')};
+`;
+const HangupInput = styled.input`
+  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  height: 25px;
 `;
 //---卡片--//
 const Cards = styled.div`
