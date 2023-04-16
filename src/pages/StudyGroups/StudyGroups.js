@@ -3,6 +3,7 @@ import { db } from '../../utils/firebase';
 import { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
+import { Link } from 'react-router-dom';
 
 function StudyGroups() {
   const [allGroupsData, setAllGroupsData] = useState([]);
@@ -42,18 +43,20 @@ function StudyGroups() {
         <>目前無讀書會</>
       ) : (
         allGroupsData.map((card, index) => (
-          <Card key={index}>
-            <BookImg imageUrl={card.image} />
-            <h3>{card.name}</h3>
-            <p>{card.author}</p>
-            <p>舉辦時間：{toReadableDate(card.hold)}</p>
-            <p>導讀者：{card.host}</p>
-            <input
-              type="button"
-              value="加入讀書會"
-              onClick={() => handleJoinGroup(card.id)}
-            />
-          </Card>
+          <Link to={`/studyGroup/${card.id}`} key={index}>
+            <Card key={index}>
+              <BookImg imageUrl={card.image} />
+              <h3>{card.name}</h3>
+              <p>{card.author}</p>
+              <p>舉辦時間：{toReadableDate(card.hold)}</p>
+              <p>導讀者：{card.host}</p>
+              <input
+                type="button"
+                value="加入讀書會"
+                onClick={() => handleJoinGroup(card.id)}
+              />
+            </Card>
+          </Link>
         ))
       )}
     </Container>

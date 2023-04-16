@@ -1,4 +1,3 @@
-import React, { useContext } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Create from './pages/Create/Create';
@@ -11,6 +10,7 @@ import Preparing from './pages/Profile/Preparing';
 import Live from './pages/Live/Live';
 import Login from './pages/Login/Login';
 import StudyGroups from './pages/StudyGroups/StudyGroups';
+import StudyGroup from './pages/StudyGroup/StudyGroup';
 function App() {
   return (
     <BrowserRouter>
@@ -20,6 +20,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/create" element={<Create />} />
         <Route path="/studyGroups" element={<StudyGroups />} />
+        <Route path="/studyGroup/:id" element={<StudyGroup />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/ongoing" element={<Ongoing />} />
         <Route path="/profile/preparing" element={<Preparing />} />
