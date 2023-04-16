@@ -175,10 +175,13 @@ function Create() {
             <option>醫療保健</option>
             <option>言情小說</option>
             <option>社會科學</option>
-            <option>言情小說</option>
             <option>生活風格</option>
             <option>勵志成長</option>
+            <option>旅遊觀光</option>
+            <option>自然科普</option>
             <option>宗教</option>
+            <option>漫畫</option>
+            <option>科技</option>
           </select>
         </div>
         <div>
