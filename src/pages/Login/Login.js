@@ -85,8 +85,8 @@ function Login() {
       <div>
         <p>yumy19990628@gmail.com</p>
         <p>yumytest</p>
-        <p>guestguest@gmail.com</p>
-        <p>guestguest</p>
+        <p>guest@gmail.com</p>
+        <p>aaaaaa</p>
         <h1>登入</h1>
         <form onSubmit={handleLogin}>
           <div>

@@ -12,7 +12,6 @@ import {
   orderBy,
   doc,
   updateDoc,
-  getDoc,
   setDoc,
   deleteDoc,
 } from 'firebase/firestore';
@@ -21,6 +20,7 @@ import Lecture from '../../pages/Process/Lecture';
 import StickyNote from './LiveStickyNote';
 import Vote from './LiveVote';
 import QA from './LiveQA';
+import Broadcast from './Broadcast';
 
 function reducer(processData, { type, payload = {} }) {
   const { processIndex, data, process } = payload;
@@ -55,7 +55,7 @@ function Live() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
-  const [seconds, setSeconds] = useState(0);
+  // const [seconds, setSeconds] = useState(0);
   const [isLive, setIsLive] = useState(false);
   const [studyGroup, setStudyGroup] = useState([]);
   const [note, setNote] = useState('');
@@ -84,7 +84,11 @@ function Live() {
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'start',
+    });
   }, [messages]);
 
   useEffect(() => {
@@ -247,6 +251,7 @@ function Live() {
       <Container>
         <SideMenu isOpen={true} />
         <Content isOpen={true}>
+          <Broadcast id={id} />
           <Menu>
             <div>
               <div>書名：{studyGroup.name}</div>
