@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext';
-import { db } from '../../utils/firebase';
+// import { db } from '../../utils/firebase';
 import styled from 'styled-components/macro';
 import { Link } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
@@ -46,11 +46,13 @@ function SideMenu() {
       <ToggleButton onClick={toggleSidebar}>
         {isOpen ? '收合' : '展開'}
       </ToggleButton>
+      <br/>
       <ul>
         <li>會員名稱:{user.name}</li>
-        <li>舉辦讀書會:5場</li>
-        <li>參加讀書會:2場</li>
+        {/* <li>舉辦讀書會:5場</li> */}
+        {/* <li>參加讀書會:2場</li> */}
       </ul>
+      <br/>
       <ul>
         <Link to={`/profile`}>
           <li>所有讀書會</li>
