@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import styled from 'styled-components/macro';
 import {
   doc,
   addDoc,
@@ -12,11 +13,10 @@ import {
 import { db } from '../../utils/firebase';
 import { v4 as uuidv4 } from 'uuid';
 function Broadcast({ id }) {
-  // const [peerConnections, setPeerConnections] = useState([]);
   const [localStream, setLocalStream] = useState(null);
   const remoteVideoRef = useRef(null);
   const localVideoRef = useRef(null);
-  // const [roomId, setRoomId] = useState('');
+
   async function openUserMedia() {
     const constraints = { video: true, audio: true };
     try {
@@ -55,8 +55,6 @@ function Broadcast({ id }) {
       peerConnection.addTrack(track, localStream);
     });
 
-    // const roomRef = doc(collection(db, 'rooms'), id);
-
     onSnapshot(doc(db, 'rooms', id), async (doc) => {
       const { offer } = doc.data();
       if (!peerConnection.currentRemoteDescription && offer) {
@@ -80,6 +78,7 @@ function Broadcast({ id }) {
         addDoc(collection(db, 'rooms', id, 'host'), json);
       }
     });
+
     onSnapshot(collection(db, 'rooms', id, 'guest'), async (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'added') {
@@ -96,18 +95,7 @@ function Broadcast({ id }) {
     await updateDoc(roomRef, {
       viewers: arrayUnion(userUUID),
     });
-    // 等待 createRoom 執行完畢
-    // let createRoomCompleted = false;
-    // while (!createRoomCompleted) {
-    //   // 從 Firebase 獲取 createRoomCompleted 欄位
-    //   const roomSnapshot = await getDoc(roomRef);
-    //   createRoomCompleted = roomSnapshot.data().createRoomCompleted;
 
-    //   // 如果 createRoom 尚未執行完畢，稍作暫停再次檢查
-    //   if (!createRoomCompleted) {
-    //     await new Promise((resolve) => setTimeout(resolve, 500));
-    //   }
-    // }
     const configuration = {
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     };
@@ -118,6 +106,8 @@ function Broadcast({ id }) {
       console.log('Join remoteStream', event);
       const [remoteStream] = event.streams;
       remoteVideoRef.current.srcObject = remoteStream;
+      //開始播放刪除 offer & answer
+      await deleteOfferAndAnswer();
     });
 
     const mutedAudioStream = await createMutedAudioStream();
@@ -149,6 +139,7 @@ function Broadcast({ id }) {
         addDoc(collection(db, 'rooms', id, 'guest'), json);
       }
     });
+
     onSnapshot(collection(db, 'rooms', id, 'host'), async (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'added') {
@@ -158,22 +149,38 @@ function Broadcast({ id }) {
       });
     });
   }
+  async function deleteOfferAndAnswer() {
+    const roomRef = doc(db, 'rooms', id);
+    await updateDoc(roomRef, {
+      offer: deleteField(),
+      answer: deleteField(),
+    });
+  }
   return (
-    <div className="App">
-      <input type="button" value="open media" onClick={openUserMedia} />
-      <input type="button" value="create room" onClick={createRoom} />
-      <input type="button" value="join room" onClick={joinRoom} />
-      {/* <input type="button" value="join room" onClick={getDocId} /> */}
-      {/* <input
-        type="text"
-        onChange={(e) => setRoomId(e.target.value)}
-        value={roomId}
-      /> */}
-      <h4>Local</h4>
-      <video autoPlay playsInline controls ref={localVideoRef} muted />
-      <h4>Remote</h4>
-      <video autoPlay playsInline controls ref={remoteVideoRef} />
+    <div>
+      <div>
+        <input type="button" value="open media" onClick={openUserMedia} />
+        <input type="button" value="create room" onClick={createRoom} />
+        <input type="button" value="join room" onClick={joinRoom} />
+      </div>
+      <Screen>
+        <div>
+          <h4>Local</h4>
+          <Video autoPlay playsInline controls ref={localVideoRef} muted />
+        </div>
+        <div>
+          <h4>Remote</h4>
+          <Video autoPlay playsInline controls ref={remoteVideoRef} />
+        </div>
+      </Screen>
     </div>
   );
 }
+const Video = styled.video`
+  width: 250px;
+`;
+const Screen = styled.div`
+  display: flex;
+  gap: 2px;
+`;
 export default Broadcast;
