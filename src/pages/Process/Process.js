@@ -229,22 +229,9 @@ function Process() {
                       <div
                         dangerouslySetInnerHTML={{ __html: item.description }}
                         contentEditable={editable === processIndex}
-                        onBlur={(e) => handleOptionBlur(item, processIndex, e)}
+                        onBlur={(e) => handleOptionBlur(processIndex, e)}
                         onInput={(e) => e.stopPropagation()}
                       />
-                      {/* <input
-                        readOnly={editable === processIndex ? false : true}
-                        value={item.description}
-                        onChange={(e) => {
-                          dispatch({
-                            type: 'UPDATE_DESCRIPTION',
-                            payload: {
-                              description: e.target.value,
-                              processIndex,
-                            },
-                          });
-                        }}
-                      /> */}
                       <TemplateType
                         name="templateType"
                         value={item.type}
