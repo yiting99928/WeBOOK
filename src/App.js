@@ -11,10 +11,13 @@ import Live from './pages/Live/Live';
 import Login from './pages/Login/Login';
 import StudyGroups from './pages/StudyGroups/StudyGroups';
 import StudyGroup from './pages/StudyGroup/StudyGroup';
+import Header from './components/Header/Header';
+
 function App() {
   return (
     <BrowserRouter>
       <GlobalStyle />
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
