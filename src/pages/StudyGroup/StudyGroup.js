@@ -1,4 +1,4 @@
-import { setDoc, collection, doc, getDocs, getDoc } from 'firebase/firestore';
+import { setDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components/macro';
@@ -89,5 +89,4 @@ const BookImg = styled.div`
 const GroupInfo = styled.div`
   display: flex;
 `;
-const Recommend = styled.div``;
 export default StudyGroup;
