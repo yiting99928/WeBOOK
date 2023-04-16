@@ -101,7 +101,7 @@ function Live() {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
