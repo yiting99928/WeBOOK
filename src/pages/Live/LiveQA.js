@@ -18,7 +18,8 @@ function QA({ item }) {
       ? '#e6f4ea'
       : '#fce8e6';
   };
-  console.log(item.data);
+  // console.log(item.data);
+
   const correctAnswer = () => {
     const correctAnswer = item.data
       .map((item, index) => (item.answer ? index + 1 : null))
