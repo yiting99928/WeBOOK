@@ -57,7 +57,7 @@ function reducer(processData, { type, payload = {} }) {
     case 'UPDATE_DESCRIPTION': {
       const updatedCard = processData.map((card, index) => {
         if (index === processIndex) {
-          return { ...card, description: description };
+          return { ...card, description: data };
         }
         return card;
       });
@@ -83,7 +83,7 @@ function Process() {
   const [studyGroup, setStudyGroup] = useState({});
   const [editable, setEditable] = useState(0);
   const { id } = useParams();
-  
+
   // console.log(studyGroup)
   useEffect(() => {
     async function initData() {
@@ -192,16 +192,15 @@ function Process() {
       });
   }
 
-  // const handleOptionBlur = (processIndex, e) => {
-  //   const updatedData = [...item.data];
-  //   updatedData[processIndex].option = e.target.innerText;
-  //   dispatch({
-  //     type: 'UPDATE_DESCRIPTION',
-  //     payload: { processIndex, data: updatedData },
-  //   });
-  // };
+  const handleOptionBlur = (processIndex, e) => {
+    const updatedDescription = e.target.innerText;
+    dispatch({
+      type: 'UPDATE_DESCRIPTION',
+      payload: { processIndex, data: updatedDescription },
+    });
+  };
 
-  // console.log(processData);
+  console.log(processData);
   return (
     <>
       <Container>
@@ -228,13 +227,13 @@ function Process() {
                       MOVE
                     </div>
                     <Title>
-                      {/* <div
+                      <div
                         dangerouslySetInnerHTML={{ __html: item.description }}
                         contentEditable={editable === processIndex}
-                        onBlur={(e) => handleOptionBlur(processIndex, e)}
-                        onInput={(e)=>e.stopPropagation()}
-                      /> */}
-                      <input
+                        onBlur={(e) => handleOptionBlur(item, processIndex, e)}
+                        onInput={(e) => e.stopPropagation()}
+                      />
+                      {/* <input
                         readOnly={editable === processIndex ? false : true}
                         value={item.description}
                         onChange={(e) => {
@@ -246,7 +245,7 @@ function Process() {
                             },
                           });
                         }}
-                      />
+                      /> */}
                       <TemplateType
                         name="templateType"
                         value={item.type}
