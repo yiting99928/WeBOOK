@@ -10,8 +10,7 @@ import Vote from './Vote';
 import QA from './QA';
 
 function reducer(processData, { type, payload = {} }) {
-  const { lecture, processIndex, templates, e, description, data, process } =
-    payload;
+  const { lecture, processIndex, templates, e, data, process } = payload;
   switch (type) {
     case 'INIT_CARD': {
       return [{ ...lecture }];
