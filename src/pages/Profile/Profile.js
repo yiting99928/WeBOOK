@@ -63,16 +63,19 @@ const Content = styled.div`
 
 const StudyGroupCard = styled.div`
   display: flex;
+  align-items: center;
   border: 1px solid black;
-  line-height: 15px;
+  line-height: 1.3;
+  padding: 10px;
 `;
 const BookImg = styled.div`
   background-image: url(${(props) => props.imageUrl});
   background-size: contain;
   background-repeat: no-repeat;
   width: 250px;
-  height: 300px;
+  height: 200px;
   margin-right: 30px;
+  background-position: center;
 `;
 const CardContent = styled.div`
   width: 800px;
