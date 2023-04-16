@@ -11,6 +11,7 @@ import {
   getDocs,
   query,
   where,
+  getDoc,
 } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import data from '../../utils/data';
@@ -51,18 +52,25 @@ const Preparing = () => {
     };
   }, [groupData, user]);
 
-  function handleChangeState(item) {
+  async function handleChangeState(item) {
     const groupRef = doc(db, 'studyGroups', item.id);
-    updateDoc(groupRef, { status: 'ongoing' })
-      .then(() => {
-        console.log('Document successfully updated!');
-      })
-      .catch((error) => {
-        console.error('Error updating document: ', error);
-      });
+
+    try {
+      const groupSnapshot = await getDoc(groupRef);
+      const groupData = groupSnapshot.data();
+
+      if (groupData.process && groupData.process.length === 0) {
+        alert('請新增至少一個流程!');
+      } else {
+        updateDoc(groupRef, { status: 'ongoing' });
+      }
+    } catch (error) {
+      console.error('Error fetching group data: ', error);
+    }
   }
+
   async function handleQuitGroup(id) {
-    console.log(id);
+    // console.log(id);
     const usersDocRef = doc(db, 'users', user.email);
     const userStudyGroupsRef = collection(usersDocRef, 'userStudyGroups');
     const groupRef = doc(userStudyGroupsRef, id);
