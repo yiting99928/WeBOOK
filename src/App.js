@@ -47,6 +47,7 @@ const GlobalStyle = createGlobalStyle`
   flex-direction:column;
   min-height:100vh;
   font-family:'Poppins', sans-serif;
+  position:relative;
 }
 `;
 

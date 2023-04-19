@@ -3,59 +3,49 @@
 // import { AuthContext } from '../../context/authContext';
 import styled from 'styled-components/macro';
 import bannerImg from './bannerImg.png';
-
+import DecoBg from '../../components/DecoBg';
 function Home() {
   // const { user } = useContext(AuthContext);
   return (
     <div>
-      <Container>
-        <Banner>
-          <BannerInfo>
-            <Title>
-              走進書適圈
-              <br />
-              找到你的閱讀舒適圈
-            </Title>
-            <SubTitle>Cozy up with books!</SubTitle>
-          </BannerInfo>
-          <BannerImg>
-            <img src={bannerImg} alt="banner" />
-          </BannerImg>
-        </Banner>
-      </Container>
-      ;
+      <Banner>
+        <DecoBg></DecoBg>
+        <BannerInfo>
+          <Title>
+            走進書適圈
+            <br />
+            找到你的閱讀舒適圈
+          </Title>
+          <SubTitle>Cozy up with books!</SubTitle>
+        </BannerInfo>
+        <BannerImg>
+          <img src={bannerImg} alt="banner" />
+        </BannerImg>
+      </Banner>
+      <Feature>
+        <div></div>
+        <div>
+          <div>協助導讀的流程</div>
+          <div>協助導讀者規劃有趣的讀書流程，讓導讀更輕鬆。</div>
+          <div>
+            <div>
+              <span></span>編輯導讀流程
+            </div>
+            <div>
+              <span></span>線上直播導讀
+            </div>
+          </div>
+        </div>
+      </Feature>
     </div>
   );
 }
-const BackgroundColor1 = styled.div`
-  width: 500px;
-  height: 500px;
-
-  background: rgba(239, 140, 138, 0.3);
-  filter: blur(100px);
+//-----Feature-----//
+const Feature = styled.div`
+  max-width: 1440;
+  margin: 0 auto;
 `;
-const BackgroundColor2 = styled.div`
-  width: 140px;
-  height: 140px;
-
-  background: rgba(231, 93, 16, 0.3);
-  filter: blur(75px);
-`;
-const BackgroundColor3 = styled.div`
-  width: 300px;
-  height: 300px;
-
-  background: rgba(96, 160, 255, 0.3);
-  filter: blur(100px);
-`;
-const BackgroundColor4 = styled.div`
-  width: 350px;
-  height: 350px;
-
-  background: rgba(255, 172, 76, 0.3);
-  filter: blur(100px);
-`;
-
+//-----Banner-----//
 const SubTitle = styled.div`
   margin-top: 16px;
   font-size: 24px;
@@ -70,18 +60,19 @@ const Title = styled.div`
 `;
 const BannerImg = styled.div`
   padding: 30px;
-`;
-const Background = styled.div``;
-const Container = styled.div`
-  max-width: 1440;
-  margin: 0 auto;
+  z-index: 1;
 `;
 const Banner = styled.div`
-  height: 500px;
+  height: 600px;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 100px;
+  max-width: 1440;
+  margin: 0 auto;
+  position: relative;
 `;
-const BannerInfo = styled.div``;
+const BannerInfo = styled.div`
+  z-index: 1;
+`;
 export default Home;
