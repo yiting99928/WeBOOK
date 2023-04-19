@@ -71,9 +71,7 @@ function StudyGroups() {
     const groups = await searchByCategory(event.target.value);
     setAllGroupsData(groups);
   };
-  // useEffect(() => {
-  //   handleSearchByCategory();
-  // }, []);
+
   return (
     <Container>
       <SearchInputs>
@@ -88,7 +86,6 @@ function StudyGroups() {
             onClick={handleSearchByCategory}
           />
           <input type="button" value="最新創辦" onClick={() => {}} />
-          <input type="button" value="即將開始" onClick={() => {}} />
           <input
             type="button"
             value="文學小說"
