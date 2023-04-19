@@ -2,7 +2,7 @@
   "projects": {
     "default": "WeBOOK-studyGroup",
     "start": "webook-studygroup",
-    "staging": "webook-book-group"
+    "staging": "webook-studygroup"
   },
   "targets": {},
   "etags": {}
