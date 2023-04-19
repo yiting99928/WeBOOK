@@ -17,11 +17,11 @@ function Header() {
           <Link to="./">
             <Logo />
           </Link>
-          <HamburgerIcon onClick={handleClick}>
+          {/* <HamburgerIcon onClick={handleClick}>
             <HamburgerLine1 isOpen={isOpen} />
             <HamburgerLine2 isOpen={isOpen} />
             <HamburgerLine3 isOpen={isOpen} />
-          </HamburgerIcon>
+          </HamburgerIcon> */}
           <Menu>
             <li>
               <Link to={user ? '/create' : '/login'}>創建讀書會</Link>
@@ -35,6 +35,11 @@ function Header() {
           </Menu>
         </Wrapper>
       </Container>
+      <HamburgerIcon onClick={handleClick}>
+        <HamburgerLine1 isOpen={isOpen} />
+        <HamburgerLine2 isOpen={isOpen} />
+        <HamburgerLine3 isOpen={isOpen} />
+      </HamburgerIcon>
       <MobileMenuBlack isOpen={isOpen} />
       <MobileWrap isOpen={isOpen}>
         <MobileMenu>
@@ -58,14 +63,15 @@ const HamburgerIcon = styled.div`
   height: 20px;
   flex-direction: column;
   justify-content: space-between;
+  position: absolute;
+  top: 45px;
+  right: 50px;
   cursor: pointer;
-  position: relative;
+  position: fixed;
+  z-index: 20;
   display: none;
   @media screen and (max-width: 768px) {
-    position: fixed;
-    z-index: 99;
     display: flex;
-    right: 20px;
   }
 `;
 
@@ -98,7 +104,6 @@ const MobileWrap = styled.div`
   display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
   @media screen and (max-width: 768px) {
     font-size: 18px;
-    ${'' /* display: flex; */}
     position: fixed;
     padding-top: 100px;
     padding-left: 50px;
@@ -107,6 +112,7 @@ const MobileWrap = styled.div`
     height: 100vh;
     right: 0;
     top: 0;
+    z-index: 2;
   }
 `;
 const MobileMenu = styled.ul`
@@ -117,7 +123,6 @@ const MobileMenu = styled.ul`
 const MobileMenuBlack = styled.div`
   display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
   @media screen and (max-width: 768px) {
-    ${'' /* display: block; */}
     position: fixed;
     background-color: black;
     width: 100%;
@@ -125,6 +130,7 @@ const MobileMenuBlack = styled.div`
     opacity: 0.5;
     right: 0;
     top: 0;
+    z-index: 1;
   }
 `;
 const Container = styled.div`
@@ -133,6 +139,10 @@ const Container = styled.div`
   font-size: 20px;
   color: #5b5b5b;
   letter-spacing: 1.5;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #fff;
 `;
 const Wrapper = styled.div`
   display: flex;

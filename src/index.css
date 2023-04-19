@@ -153,6 +153,7 @@ b {
 
 img {
     display: block;
+    width: 100%
 }
 
 a:link {
@@ -164,6 +165,7 @@ a:visited {
     text-decoration: none;
     color: black;
 }
+
 
 /* input[type=text]:focus {
     outline: none;
