@@ -12,6 +12,7 @@ import Login from './pages/Login/Login';
 import StudyGroups from './pages/StudyGroups/StudyGroups';
 import StudyGroup from './pages/StudyGroup/StudyGroup';
 import Header from './components/Header/Header';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/study-group/:id/process" element={<Process />} />
         <Route path="/study-group/:id/live" element={<Live />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

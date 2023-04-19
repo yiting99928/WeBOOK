@@ -1,5 +1,5 @@
 import styled from 'styled-components/macro';
-export default function DecoGb() {
+function DecoBg() {
   return (
     <Decos>
       <Deco />
@@ -41,3 +41,4 @@ const Deco4 = styled(Deco)`
   height: 350px;
   background: rgba(255, 172, 76, 0.3);
 `;
+export default DecoBg;

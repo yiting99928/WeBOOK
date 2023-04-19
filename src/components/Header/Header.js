@@ -17,11 +17,6 @@ function Header() {
           <Link to="./">
             <Logo />
           </Link>
-          {/* <HamburgerIcon onClick={handleClick}>
-            <HamburgerLine1 isOpen={isOpen} />
-            <HamburgerLine2 isOpen={isOpen} />
-            <HamburgerLine3 isOpen={isOpen} />
-          </HamburgerIcon> */}
           <Menu>
             <li>
               <Link to={user ? '/create' : '/login'}>創建讀書會</Link>
