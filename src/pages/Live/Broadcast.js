@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components/macro';
 import {
   doc,
@@ -14,6 +14,8 @@ import { db } from '../../utils/firebase';
 import { v4 as uuidv4 } from 'uuid';
 function Broadcast({ id }) {
   const [localStream, setLocalStream] = useState(null);
+  const [peerConnections, setPeerConnections] = useState([]);
+
   const remoteVideoRef = useRef(null);
   const localVideoRef = useRef(null);
 
@@ -30,18 +32,25 @@ function Broadcast({ id }) {
     }
   }
 
-  async function createMutedAudioStream() {
+  async function createMutedAudioAndEmptyVideoStream() {
     const audioContext = new AudioContext();
     const oscillator = audioContext.createOscillator();
     const dst = oscillator.connect(audioContext.createMediaStreamDestination());
     oscillator.start();
 
-    const stream = dst.stream;
-    const tracks = stream.getAudioTracks();
-    return new MediaStream(tracks);
+    const stream = new MediaStream();
+    stream.addTrack(dst.stream.getAudioTracks()[0]);
+
+    const videoTrack = (
+      await navigator.mediaDevices.getUserMedia({ video: true })
+    ).getVideoTracks()[0];
+    videoTrack.stop();
+    stream.addTrack(videoTrack);
+
+    return stream;
   }
 
-  async function createRoom() {
+  async function createRoom(userUUID) {
     const roomRef = doc(collection(db, 'rooms'), id);
 
     const configuration = {
@@ -49,6 +58,10 @@ function Broadcast({ id }) {
     };
 
     const peerConnection = new RTCPeerConnection(configuration);
+    setPeerConnections((prevConnections) => [
+      ...prevConnections,
+      peerConnection,
+    ]);
 
     localStream.getTracks().forEach((track) => {
       console.log(track);
@@ -110,11 +123,12 @@ function Broadcast({ id }) {
       await deleteOfferAndAnswer();
     });
 
-    const mutedAudioStream = await createMutedAudioStream();
-    setLocalStream(mutedAudioStream);
+    const mutedAudioAndEmptyVideoStream =
+      await createMutedAudioAndEmptyVideoStream();
+    setLocalStream(mutedAudioAndEmptyVideoStream);
 
-    mutedAudioStream.getTracks().forEach((track) => {
-      peerConnection.addTrack(track, mutedAudioStream);
+    mutedAudioAndEmptyVideoStream.getTracks().forEach((track) => {
+      peerConnection.addTrack(track, mutedAudioAndEmptyVideoStream);
     });
 
     onSnapshot(roomRef, async (doc) => {
@@ -156,6 +170,26 @@ function Broadcast({ id }) {
       answer: deleteField(),
     });
   }
+
+  useEffect(() => {
+    const roomRef = doc(db, 'rooms', id);
+
+    const unsubscribe = onSnapshot(roomRef, (doc) => {
+      const data = doc.data();
+      if (data) {
+        const { viewers } = data;
+        if (viewers && viewers.length > peerConnections.length) {
+          const newUserUUID = viewers[viewers.length - 1];
+          createRoom(newUserUUID);
+        }
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [peerConnections]);
+
   return (
     <div>
       <div>
