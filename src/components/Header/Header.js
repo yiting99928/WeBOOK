@@ -125,7 +125,7 @@ const MobileMenuBlack = styled.div`
     opacity: 0.5;
     right: 0;
     top: 0;
-    z-index: 1;
+    z-index: 2;
   }
 `;
 const Container = styled.div`
@@ -136,7 +136,7 @@ const Container = styled.div`
   letter-spacing: 1.5;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 2;
   background-color: #fff;
 `;
 const Wrapper = styled.div`

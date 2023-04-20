@@ -14,6 +14,7 @@ export default function Footer() {
   );
 }
 const Container = styled.div`
+  z-index: 2;
   margin-top: auto;
   font-size: 14px;
   color: #fff;
@@ -29,6 +30,7 @@ const Container = styled.div`
 const ContactIcon = styled.div`
   display: flex;
   margin-left: auto;
+  gap: 10px;
 `;
 const ContactImg = styled.div`
   height: 35px;

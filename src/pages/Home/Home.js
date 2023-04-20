@@ -54,12 +54,11 @@ const SubTitle = styled.div`
 const Title = styled.div`
   font-weight: 600;
   color: #e95f5c;
-  font-size: 46px;
+  font-size: 42px;
   letter-spacing: 0.05em;
   line-height: 1.2;
 `;
 const BannerImg = styled.div`
-  padding: 30px;
   z-index: 1;
 `;
 const Banner = styled.div`
@@ -67,10 +66,10 @@ const Banner = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 100px;
-  max-width: 1440;
+  max-width: 1300;
   margin: 0 auto;
   position: relative;
+  justify-content: space-between;
 `;
 const BannerInfo = styled.div`
   z-index: 1;
