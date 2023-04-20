@@ -18,8 +18,6 @@ const Container = styled.div`
   margin-top: auto;
   font-size: 14px;
   color: #fff;
-  position: fixed;
-  bottom: 0;
   width: 100%;
   height: 60px;
   background-color: #df524d;
