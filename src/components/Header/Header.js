@@ -59,7 +59,7 @@ const HamburgerIcon = styled.div`
   flex-direction: column;
   justify-content: space-between;
   position: absolute;
-  top: 45px;
+  top: 30px;
   right: 50px;
   cursor: pointer;
   position: fixed;
@@ -130,7 +130,8 @@ const MobileMenuBlack = styled.div`
 `;
 const Container = styled.div`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-  padding: 20px;
+  ${'' /* padding: 20px; */}
+  padding: 10px 70px;
   font-size: 20px;
   color: #5b5b5b;
   letter-spacing: 1.5;
@@ -142,9 +143,10 @@ const Container = styled.div`
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
-  max-width: 1300px;
-  margin: 0 auto;
   justify-content: space-between;
+  @media screen and (max-width: 768px) {
+    justify-content: center;
+  }
 `;
 const Logo = styled.div`
   width: 230px;

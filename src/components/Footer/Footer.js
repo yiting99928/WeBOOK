@@ -15,7 +15,9 @@ export default function Footer() {
 }
 const Container = styled.div`
   z-index: 2;
-  margin-top: auto;
+  ${'' /* margin-top: auto; */}
+  position:absolute;
+  bottom: 0;
   font-size: 14px;
   color: #fff;
   width: 100%;

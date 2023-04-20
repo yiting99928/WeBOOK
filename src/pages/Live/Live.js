@@ -55,7 +55,6 @@ function Live() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
-  // const [seconds, setSeconds] = useState(0);
   const [isLive, setIsLive] = useState(false);
   const [studyGroup, setStudyGroup] = useState([]);
   const [note, setNote] = useState('');
@@ -235,7 +234,7 @@ function Live() {
       <Container>
         <SideMenu isOpen={true} />
         <Content isOpen={true}>
-          <Broadcast id={id} />
+          <Broadcast id={id} studyGroup={studyGroup} />
           <Menu>
             <div>
               <div>書名：{studyGroup.name}</div>

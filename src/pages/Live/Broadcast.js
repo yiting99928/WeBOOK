@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import styled from 'styled-components/macro';
 import {
   doc,
@@ -8,11 +8,13 @@ import {
   updateDoc,
   arrayUnion,
   deleteField,
-  getDoc,
 } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { v4 as uuidv4 } from 'uuid';
-function Broadcast({ id }) {
+import { AuthContext } from '../../context/authContext';
+
+function Broadcast({ id, studyGroup }) {
+  const { user } = useContext(AuthContext);
   const [localStream, setLocalStream] = useState(null);
   const [peerConnections, setPeerConnections] = useState([]);
 
@@ -198,18 +200,26 @@ function Broadcast({ id }) {
         <input type="button" value="join room" onClick={joinRoom} />
       </div>
       <Screen>
-        <div>
+        <Host isHost={studyGroup.createBy === user.email}>
           <h4>Local</h4>
           <Video autoPlay playsInline controls ref={localVideoRef} muted />
-        </div>
-        <div>
+        </Host>
+        <Guest isHost={studyGroup.createBy === user.email}>
           <h4>Remote</h4>
           <Video autoPlay playsInline controls ref={remoteVideoRef} />
-        </div>
+        </Guest>
       </Screen>
     </div>
   );
 }
+const Host = styled.div`
+  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  transition: 0s;
+`;
+const Guest = styled.div`
+  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
+  transition: 0s;
+`;
 const Video = styled.video`
   width: 250px;
 `;
