@@ -21,6 +21,25 @@ function Broadcast({ id, studyGroup }) {
   const remoteVideoRef = useRef(null);
   const localVideoRef = useRef(null);
 
+  useEffect(() => {
+    const roomRef = doc(db, 'rooms', id);
+
+    const unsubscribe = onSnapshot(roomRef, (doc) => {
+      const data = doc.data();
+      if (data) {
+        const { viewers } = data;
+        if (viewers && viewers.length > peerConnections.length) {
+          const newUserUUID = viewers[viewers.length - 1];
+          createRoom(newUserUUID);
+        }
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [peerConnections]);
+
   async function openUserMedia() {
     const constraints = { video: true, audio: true };
     try {
@@ -165,6 +184,7 @@ function Broadcast({ id, studyGroup }) {
       });
     });
   }
+  
   async function deleteOfferAndAnswer() {
     const roomRef = doc(db, 'rooms', id);
     await updateDoc(roomRef, {
@@ -172,25 +192,6 @@ function Broadcast({ id, studyGroup }) {
       answer: deleteField(),
     });
   }
-
-  useEffect(() => {
-    const roomRef = doc(db, 'rooms', id);
-
-    const unsubscribe = onSnapshot(roomRef, (doc) => {
-      const data = doc.data();
-      if (data) {
-        const { viewers } = data;
-        if (viewers && viewers.length > peerConnections.length) {
-          const newUserUUID = viewers[viewers.length - 1];
-          createRoom(newUserUUID);
-        }
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [peerConnections]);
 
   return (
     <div>

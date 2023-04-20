@@ -4,6 +4,7 @@ import SideMenu from '../../components/SideMenu';
 import { useEffect, useState, useRef, useReducer, useContext } from 'react';
 import { db } from '../../utils/firebase';
 import { AuthContext } from '../../context/authContext';
+import { v4 as uuidv4 } from 'uuid';
 import {
   collection,
   addDoc,
@@ -14,13 +15,15 @@ import {
   updateDoc,
   setDoc,
   deleteDoc,
+  arrayUnion,
+  deleteField,
 } from 'firebase/firestore';
 import EditContent from '../../components/EditContent';
 import Lecture from '../../pages/Process/Lecture';
 import StickyNote from './LiveStickyNote';
 import Vote from './LiveVote';
 import QA from './LiveQA';
-import Broadcast from './Broadcast';
+// import Broadcast from './Broadcast';
 
 function reducer(processData, { type, payload = {} }) {
   const { processIndex, data, process } = payload;
@@ -60,6 +63,27 @@ function Live() {
   const [note, setNote] = useState('');
   const [currentCard, setCurrentCard] = useState(0);
   const [processData, dispatch] = useReducer(reducer, []);
+  const [localStream, setLocalStream] = useState(null);
+  const [peerConnections, setPeerConnections] = useState([]);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoDisabled, setIsVideoDisabled] = useState(false);
+
+  const remoteVideoRef = useRef(null);
+  const localVideoRef = useRef(null);
+
+  function toggleMute() {
+    if (localStream) {
+      localStream.getAudioTracks()[0].enabled = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  }
+
+  function toggleVideo() {
+    if (localStream) {
+      localStream.getVideoTracks()[0].enabled = !isVideoDisabled;
+      setIsVideoDisabled(!isVideoDisabled);
+    }
+  }
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -119,6 +143,178 @@ function Live() {
     };
   }, [id, navigate]);
 
+  useEffect(() => {
+    const roomRef = doc(db, 'rooms', id);
+
+    const unsubscribe = onSnapshot(roomRef, (doc) => {
+      const data = doc.data();
+      if (data) {
+        const { viewers } = data;
+        if (viewers && viewers.length > peerConnections.length) {
+          const newUserUUID = viewers[viewers.length - 1];
+          createRoom(newUserUUID);
+        }
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [peerConnections, id]);
+
+  async function openUserMedia() {
+    const constraints = { video: true, audio: true };
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setLocalStream(stream);
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      console.log('stream Error.', error);
+    }
+  }
+
+  async function createMutedAudioAndEmptyVideoStream() {
+    const audioContext = new AudioContext();
+    const oscillator = audioContext.createOscillator();
+    const dst = oscillator.connect(audioContext.createMediaStreamDestination());
+    oscillator.start();
+
+    const stream = new MediaStream();
+    stream.addTrack(dst.stream.getAudioTracks()[0]);
+
+    const videoTrack = (
+      await navigator.mediaDevices.getUserMedia({ video: true })
+    ).getVideoTracks()[0];
+    videoTrack.stop();
+    stream.addTrack(videoTrack);
+
+    return stream;
+  }
+
+  async function createRoom(userUUID) {
+    const roomRef = doc(collection(db, 'rooms'), id);
+
+    const configuration = {
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+    };
+
+    const peerConnection = new RTCPeerConnection(configuration);
+    setPeerConnections((prevConnections) => [
+      ...prevConnections,
+      peerConnection,
+    ]);
+
+    localStream.getTracks().forEach((track) => {
+      console.log(track);
+      peerConnection.addTrack(track, localStream);
+    });
+
+    onSnapshot(doc(db, 'rooms', id), async (doc) => {
+      const { offer } = doc.data();
+      if (!peerConnection.currentRemoteDescription && offer) {
+        const remoteDesc = new RTCSessionDescription(offer);
+        await peerConnection.setRemoteDescription(remoteDesc);
+
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        await updateDoc(roomRef, {
+          answer: {
+            type: answer.type,
+            sdp: answer.sdp,
+          },
+        });
+      }
+    });
+    peerConnection.addEventListener('icecandidate', (event) => {
+      console.log(event);
+      if (event.candidate) {
+        const json = event.candidate.toJSON();
+        addDoc(collection(db, 'rooms', id, 'host'), json);
+      }
+    });
+
+    onSnapshot(collection(db, 'rooms', id, 'guest'), async (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          const candidate = new RTCIceCandidate(change.doc.data());
+          peerConnection.addIceCandidate(candidate);
+        }
+      });
+    });
+  }
+
+  async function joinRoom() {
+    const roomRef = doc(db, 'rooms', id);
+    const userUUID = uuidv4();
+    await updateDoc(roomRef, {
+      viewers: arrayUnion(userUUID),
+    });
+
+    const configuration = {
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+    };
+
+    const peerConnection = new RTCPeerConnection(configuration);
+
+    peerConnection.addEventListener('track', async (event) => {
+      console.log('Join remoteStream', event);
+      const [remoteStream] = event.streams;
+      remoteVideoRef.current.srcObject = remoteStream;
+      //開始播放刪除 offer & answer
+      await deleteOfferAndAnswer();
+    });
+
+    const mutedAudioAndEmptyVideoStream =
+      await createMutedAudioAndEmptyVideoStream();
+    setLocalStream(mutedAudioAndEmptyVideoStream);
+
+    mutedAudioAndEmptyVideoStream.getTracks().forEach((track) => {
+      peerConnection.addTrack(track, mutedAudioAndEmptyVideoStream);
+    });
+
+    onSnapshot(roomRef, async (doc) => {
+      const { answer } = doc.data();
+      if (answer) {
+        const remoteDesc = new RTCSessionDescription(answer);
+        await peerConnection.setRemoteDescription(remoteDesc);
+      }
+    });
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    await updateDoc(roomRef, {
+      offer: {
+        type: offer.type,
+        sdp: offer.sdp,
+      },
+    });
+    peerConnection.addEventListener('icecandidate', (event) => {
+      console.log('icecandidate', event);
+      if (event.candidate) {
+        const json = event.candidate.toJSON();
+        addDoc(collection(db, 'rooms', id, 'guest'), json);
+      }
+    });
+
+    onSnapshot(collection(db, 'rooms', id, 'host'), async (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          const candidate = new RTCIceCandidate(change.doc.data());
+          peerConnection.addIceCandidate(candidate);
+        }
+      });
+    });
+  }
+
+  async function deleteOfferAndAnswer() {
+    const roomRef = doc(db, 'rooms', id);
+    await updateDoc(roomRef, {
+      offer: deleteField(),
+      answer: deleteField(),
+    });
+  }
+
   const sendMessage = async (e) => {
     e.preventDefault();
     await addDoc(collection(db, 'rooms', id, 'messages'), {
@@ -128,6 +324,7 @@ function Live() {
     });
     setInput('');
   };
+
   async function handleSaveNote() {
     try {
       const userRef = doc(db, 'users', user.email);
@@ -141,6 +338,7 @@ function Live() {
       console.error('Error: ', error);
     }
   }
+
   const renderCardContent = (item, processIndex) => {
     switch (item.type) {
       case 'lecture':
@@ -183,6 +381,7 @@ function Live() {
         );
     }
   };
+
   async function handleStart() {
     setIsLive(true);
     await setDoc(doc(db, 'rooms', id), { currentCard: 0 });
@@ -195,6 +394,7 @@ function Live() {
         setCurrentCard(studyGroupData.currentCard);
       }
     });
+    createRoom();
     return () => unsubscribe();
   }
 
@@ -212,15 +412,19 @@ function Live() {
         setCurrentCard(studyGroupData.currentCard);
       }
     });
+    joinRoom();
     return () => unsubscribe();
   }
+
   function handleStop() {
     setIsLive(false);
     handleChangeState();
   }
+
   function handleChangeState() {
     updateDoc(doc(db, 'studyGroups', id), { status: 'finished' });
   }
+
   const updateCurrentCardInFirebase = async (newCard) => {
     try {
       const studyGroupRef = doc(db, 'rooms', id);
@@ -229,12 +433,26 @@ function Live() {
       console.error(error);
     }
   };
+
   return (
     <>
       <Container>
         <SideMenu isOpen={true} />
         <Content isOpen={true}>
-          <Broadcast id={id} studyGroup={studyGroup} />
+          {/* <Broadcast id={id} studyGroup={studyGroup} /> */}
+          <input type="button" value="open media" onClick={openUserMedia} />
+          <input type="button" value="靜音" onClick={toggleMute} />
+          <input type="button" value="關閉視訊" onClick={toggleVideo} />
+          <Screen>
+            <HostMedia isHost={studyGroup.createBy === user.email}>
+              <h4>Local</h4>
+              <Video autoPlay playsInline controls ref={localVideoRef} muted />
+            </HostMedia>
+            <GuestMedia isHost={studyGroup.createBy === user.email}>
+              <h4>Remote</h4>
+              <Video autoPlay playsInline controls ref={remoteVideoRef} />
+            </GuestMedia>
+          </Screen>
           <Menu>
             <div>
               <div>書名：{studyGroup.name}</div>
@@ -315,12 +533,12 @@ function Live() {
               <Message>
                 {messages.map((message, index) =>
                   user.email === message.sender ? (
-                    <User key={index}>{message.message}</User>
+                    <UserMessage key={index}>{message.message}</UserMessage>
                   ) : (
-                    <Guest key={index}>
+                    <GuestMessage key={index}>
                       <span>{user.name}：</span>
                       {message.message}
-                    </Guest>
+                    </GuestMessage>
                   )
                 )}
                 <div
@@ -349,6 +567,22 @@ function Live() {
     </>
   );
 }
+const HostMedia = styled.div`
+  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  transition: 0s;
+`;
+const GuestMedia = styled.div`
+  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
+  transition: 0s;
+`;
+const Video = styled.video`
+  width: 250px;
+`;
+const Screen = styled.div`
+  display: flex;
+  gap: 2px;
+`;
+
 const LiveContainer = styled.div`
   border: 1px solid black;
   display: flex;
@@ -415,8 +649,8 @@ const ChatRoom = styled.div`
   border: 1px solid black;
   width: 25%;
 `;
-const Guest = styled.div``;
-const User = styled.div`
+const GuestMessage = styled.div``;
+const UserMessage = styled.div`
   align-self: flex-end;
 `;
 const Message = styled.div`
@@ -431,7 +665,7 @@ const ChatInput = styled.div`
 `;
 //---筆記---//
 const Note = styled.div`
-  height: 500px;
+  height: 600px;
   ${'' /* border: 1px solid black; */}
   ${'' /* width: 100%; */}
 `;
