@@ -39,7 +39,7 @@ function App() {
 const GlobalStyle = createGlobalStyle`
 * {
     box-sizing: border-box;
-    ${'' /* border:1px solid black !important */}
+    border:1px solid black !important
 }
 .ql-container{
   height:400px

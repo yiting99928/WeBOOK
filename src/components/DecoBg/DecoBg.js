@@ -18,27 +18,31 @@ const Decos = styled.div`
   justify-content: space-between;
 `;
 const Deco = styled.div`
-  width: 414px;
-  height: 414px;
+  width: 50%;
+  height: 50%;
   background: rgba(239, 140, 138, 0.3);
   filter: blur(100px);
-  margin-top: -80px;
+  margin-top: -10%;
+  margin-left: -30%;
 `;
-const Deco2 = styled(Deco)`
-  width: 140px;
-  height: 140px;
+const Deco2 = styled.div`
+  width: 20%;
+  height: 20%;
   background: rgba(231, 93, 16, 0.3);
+  filter: blur(80px);
 `;
-const Deco3 = styled(Deco)`
-  width: 228px;
-  height: 228px;
+const Deco3 = styled.div`
+  width: 25%;
+  height: 25%;
   background: rgba(96, 160, 255, 0.3);
   align-self: flex-end;
-  margin-top: -50px;
+  filter: blur(80px);
+  margin-bottom: 50px;
 `;
-const Deco4 = styled(Deco)`
-  width: 350px;
-  height: 350px;
+const Deco4 = styled.div`
+  width: 10%;
+  height: 35%;
   background: rgba(255, 172, 76, 0.3);
+  filter: blur(80px);
 `;
 export default DecoBg;
