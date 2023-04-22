@@ -11,7 +11,7 @@ const Profile = () => {
   useEffect(() => {
     if (user) {
       async function getData() {
-        const groupData = await data.loadGroupData(user?.email);
+        const groupData = await data.loadGroupData(user.email);
         setGroupData(groupData);
       }
       getData();
@@ -55,10 +55,10 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  flex: 1;
   transition: all 0.3s ease;
+  margin: 0 auto;
   padding: 20px;
-  width: ${(props) => (props.isOpen ? 'calc(100% - 200px)' : '100%')};
+  width: 960px;
 `;
 
 const StudyGroupCard = styled.div`
