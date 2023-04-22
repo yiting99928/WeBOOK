@@ -16,6 +16,7 @@ const Decos = styled.div`
   height: 600px;
   align-items: center;
   justify-content: space-between;
+  z-index: -1;
 `;
 const Deco = styled.div`
   width: 50%;

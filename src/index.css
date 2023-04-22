@@ -167,7 +167,7 @@ a:visited {
 }
 
 
-/* input[type=text]:focus {
+input[type=text]:focus {
     outline: none;
 }
 
@@ -175,4 +175,4 @@ input {
     outline: none;
     border: none;
     background-color: none;
-} */
+}

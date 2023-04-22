@@ -13,7 +13,7 @@ function Home() {
   return (
     <div>
       <Banner>
-        <DecoBg></DecoBg>
+        <DecoBg/>
         <BannerInfo>
           <Title>
             走進書適圈
