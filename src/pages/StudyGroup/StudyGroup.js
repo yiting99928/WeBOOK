@@ -24,7 +24,7 @@ function StudyGroup() {
 
     fetchStudyGroup();
   }, [id]);
-  console.log(studyGroup);
+  // console.log(studyGroup);
   function toReadableDate(dateString, locale = 'zh-TW') {
     const dateObj = new Date(dateString);
     const options = {
