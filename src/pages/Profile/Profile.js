@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import data from '../../utils/data';
@@ -7,6 +8,9 @@ import { AuthContext } from '../../context/authContext';
 const Profile = () => {
   const { user } = useContext(AuthContext);
   const [groupData, setGroupData] = useState([]);
+
+  const { status } = useParams();
+  console.log(status);
 
   useEffect(() => {
     if (user) {
@@ -17,7 +21,34 @@ const Profile = () => {
       getData();
     }
   }, [user]);
-
+  const renderCardContent = (item) => {
+    console.log(item);
+    switch (status) {
+      case undefined:
+        return (
+          <>
+            <Status>{item.status}</Status>
+            <Title>{item.name}</Title>
+            <p>作者:{item.author}</p>
+            <Creator>
+              導讀者:{item.createBy}
+              <br />
+              章節:{item.chapter}
+              <br />
+              舉辦時間:{item.hold}
+            </Creator>
+          </>
+        );
+      // case 'ongoing':
+      //   return <></>;
+      // case 'preparing':
+      //   return <></>;
+      // case 'finished':
+      //   return <></>;
+      default:
+        return <></>;
+    }
+  };
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -27,18 +58,7 @@ const Profile = () => {
             <BookGroupImg>
               <img src={item.image} alt="feature" />
             </BookGroupImg>
-            <CardContent>
-              <Status>{item.status}</Status>
-              <Title>{item.name}</Title>
-              <p>作者:{item.author}</p>
-              <Creator>
-                導讀者:{item.createBy}
-                <br />
-                章節:{item.chapter}
-                <br />
-                舉辦時間:{item.hold}
-              </Creator>
-            </CardContent>
+            <CardContent>{renderCardContent(item)}</CardContent>
           </StudyGroupCard>
         ))}
       </Content>

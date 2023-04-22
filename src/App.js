@@ -26,9 +26,10 @@ function App() {
         <Route path="/studyGroups" element={<StudyGroups />} />
         <Route path="/studyGroup/:id" element={<StudyGroup />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/profile/ongoing" element={<Ongoing />} />
-        <Route path="/profile/preparing" element={<Preparing />} />
-        <Route path="/profile/finished" element={<Finished />} />
+        <Route path="/profile/:status" element={<Profile />} />
+        {/* <Route path="/profile/ongoing" element={<Ongoing />} /> */}
+        {/* <Route path="/profile/preparing" element={<Preparing />} /> */}
+        {/* <Route path="/profile/finished" element={<Finished />} /> */}
         <Route path="/study-group/:id/process" element={<Process />} />
         <Route path="/study-group/:id/live" element={<Live />} />
       </Routes>
