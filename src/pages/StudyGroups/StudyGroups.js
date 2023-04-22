@@ -13,7 +13,6 @@ import { AuthContext } from '../../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import { GrSearch } from 'react-icons/gr';
 import moment from 'moment';
-import bookImg from './bookImg.jpg';
 
 function StudyGroups() {
   const [allGroupsData, setAllGroupsData] = useState([]);
@@ -195,20 +194,6 @@ function StudyGroups() {
               </div>
             ))
           )}
-          <BookGroup>
-            <BookGroupImg>
-              <img src={bookImg} alt="feature" />
-            </BookGroupImg>
-            <BookGroupInfo>
-              <BookTitle>如何成為不完美主義者</BookTitle>
-              <BookAuthor>史帝芬 蓋斯</BookAuthor>
-              <Creator>
-                舉辦時間：2023.05.06 6:00AM <br />
-                導讀人：Yumy
-              </Creator>
-              <GroupButton>加入讀書會</GroupButton>
-            </BookGroupInfo>
-          </BookGroup>
         </BookGroupWrap>
       </Container>
     </div>
@@ -327,7 +312,7 @@ const SearchBtnTitle = styled.div``;
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  ${'' /* margin: 0 auto; */}
-  ${'' /* margin: 60px; */}
+  margin-top: 60px;
+  margin-bottom: 200px;
 `;
 export default StudyGroups;
