@@ -13,7 +13,7 @@ function Home() {
   return (
     <div>
       <Banner>
-        <DecoBg/>
+        <DecoBg />
         <BannerInfo>
           <Title>
             走進書適圈
@@ -168,7 +168,7 @@ const GroupButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 16px 32px;
+  height: 36px;
   background: #ffac4c;
   border-radius: 10px;
   color: white;
@@ -222,7 +222,7 @@ const BookGroup = styled.div`
   border-radius: 8px;
   background: #ffffff;
   border: 1px solid #ececec;
-  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 `;
 const Recommended = styled.div`
@@ -256,7 +256,7 @@ const Feature = styled.div`
   flex-direction: column;
   gap: 18px;
   width: 480px;
-  line-height:1.2
+  line-height: 1.2;
 `;
 const FeatureImg = styled.div`
   max-width: 500px;
