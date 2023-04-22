@@ -15,7 +15,7 @@ export default function Footer() {
 }
 const Container = styled.div`
   z-index: 2;
-  ${'' /* margin-top: auto; */}
+  margin-top: auto;
   position:absolute;
   bottom: 0;
   font-size: 14px;
@@ -30,7 +30,7 @@ const Container = styled.div`
 const ContactIcon = styled.div`
   display: flex;
   margin-left: auto;
-  gap: 10px;
+  gap: 15px;
 `;
 const ContactImg = styled.div`
   height: 35px;
@@ -38,3 +38,4 @@ const ContactImg = styled.div`
   background-image: url(${(props) => props.contact});
   background-size: cover;
 `;
+

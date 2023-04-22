@@ -1,7 +1,7 @@
 import styled from 'styled-components/macro';
-function DecoBg() {
+function DecoBg({ height = 600 }) {
   return (
-    <Decos>
+    <Decos height={height}>
       <Deco />
       <Deco2 />
       <Deco3 />
@@ -9,11 +9,12 @@ function DecoBg() {
     </Decos>
   );
 }
+
 const Decos = styled.div`
   position: absolute;
   display: flex;
   width: 100%;
-  height: 600px;
+  height: ${({ height }) => `${height}px`};
   align-items: center;
   justify-content: space-between;
   z-index: -1;

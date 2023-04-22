@@ -113,11 +113,11 @@ function Create() {
   return (
     <Wrapper>
       <DecoBg />
-      <FromContainer>
-        <FromTitle>創建讀書會</FromTitle>
-        <From>
+      <FormContainer>
+        <FormTitle>創建讀書會</FormTitle>
+        <Form>
           <InputContainer>
-            <FromInputs>
+            <FormInputs>
               <div>書籍名稱</div>
               <TextInput
                 type="text"
@@ -125,8 +125,8 @@ function Create() {
                 value={createForm.name}
                 onChange={handleInputChange}
               />
-            </FromInputs>
-            <FromInputs>
+            </FormInputs>
+            <FormInputs>
               <label>作者</label>
               <TextInput
                 type="text"
@@ -134,8 +134,8 @@ function Create() {
                 value={createForm.author}
                 onChange={handleInputChange}
               />
-            </FromInputs>
-            <FromInputs>
+            </FormInputs>
+            <FormInputs>
               <div>章節</div>
               <TextInput
                 type="text"
@@ -143,8 +143,8 @@ function Create() {
                 value={createForm.chapter}
                 onChange={handleInputChange}
               />
-            </FromInputs>
-            <FromInputs>
+            </FormInputs>
+            <FormInputs>
               <div>舉辦時間</div>
               <SelectInput
                 type="datetime-local"
@@ -152,8 +152,8 @@ function Create() {
                 value={createForm.hold}
                 onChange={handleInputChange}
               />
-            </FromInputs>
-            <FromInputs>
+            </FormInputs>
+            <FormInputs>
               <div>類別</div>
               <CategoryInput
                 name="category"
@@ -174,15 +174,15 @@ function Create() {
                 <option>漫畫</option>
                 <option>科技</option>
               </CategoryInput>
-            </FromInputs>
-            <FromInputs>
+            </FormInputs>
+            <FormInputs>
               <p>讀書會公告</p>
               <Post
                 name="post"
                 value={createForm.post}
                 onChange={handleInputChange}
               />
-            </FromInputs>
+            </FormInputs>
           </InputContainer>
           <ImgContainer previewUrl={previewUrl}>
             <BiImageAdd previewUrl={previewUrl} />
@@ -193,14 +193,14 @@ function Create() {
               onChange={handleInputChange}
             />
           </ImgContainer>
-        </From>
+        </Form>
         <SubmitInput type="button" value="創建讀書會" onClick={handleSubmit} />
-      </FromContainer>
+      </FormContainer>
     </Wrapper>
   );
 }
 const Wrapper = styled.div``;
-const FromContainer = styled.form`
+const FormContainer = styled.form`
   margin: 0 auto;
   max-width: 1125px;
   padding: 40px 60px;
@@ -210,7 +210,7 @@ const FromContainer = styled.form`
   box-shadow: 0px 4px 17px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
 `;
-const FromTitle = styled.div`
+const FormTitle = styled.div`
   color: #5b5b5b;
   font-weight: 600;
   font-size: 32px;
@@ -218,7 +218,7 @@ const FromTitle = styled.div`
   margin-bottom: 50px;
   letter-spacing: 2;
 `;
-const From = styled.div`
+const Form = styled.div`
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -231,7 +231,7 @@ const InputContainer = styled.div`
   width: 100%;
   color: #5b5b5b;
 `;
-const FromInputs = styled.div`
+const FormInputs = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;

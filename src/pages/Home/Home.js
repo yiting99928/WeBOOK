@@ -195,7 +195,7 @@ const Creator = styled.div`
 const RecommendedTitle = styled.div`
   text-align: center;
   color: #df524d;
-  font-size: 40px;
+  font-size: 36px;
   font-weight: 600;
   margin-bottom: 10px;
 `;
@@ -254,15 +254,16 @@ const FeatureWrap = styled.div`
 const Feature = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 18px;
   width: 480px;
+  line-height:1.2
 `;
 const FeatureImg = styled.div`
   max-width: 500px;
 `;
 const FeatureTitle = styled.div`
   color: #df524d;
-  font-size: 40px;
+  font-size: 36px;
   font-weight: 600;
   margin-bottom: 10px;
 `;
