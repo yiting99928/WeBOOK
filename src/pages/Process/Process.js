@@ -360,6 +360,7 @@ const Buttons = styled.div`
   gap: 20px;
   svg {
     transform: scale(1.3);
+    cursor: pointer;
   }
 `;
 const Title = styled.div`
