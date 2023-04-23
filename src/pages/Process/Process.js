@@ -8,6 +8,9 @@ import Lecture from './Lecture';
 import StickyNote from './StickyNote';
 import Vote from './Vote';
 import QA from './QA';
+import move from './move.png';
+import { GrAddCircle } from 'react-icons/gr';
+import { BiTrash, BiCopy } from 'react-icons/bi';
 
 function reducer(processData, { type, payload = {} }) {
   const { lecture, processIndex, templates, e, data, process } = payload;
@@ -205,28 +208,33 @@ function Process() {
       <Container>
         <SideMenu isOpen={true} />
         <Content isOpen={true}>
-          <h2>書名：{studyGroup.name}</h2>
-          <p>
-            作者：{studyGroup.author}
-            <span>舉辦時間：{studyGroup.hold}</span>
-          </p>
-          <div>
+          <GroupTitle>
+            <GroupBook>{studyGroup.name}</GroupBook>
+            <GroupDetail>
+              作者：{studyGroup.author}
+              <br />
+              導讀章節:{studyGroup.chapter}
+              <br />
+              舉辦時間:{studyGroup.hold}
+            </GroupDetail>
+          </GroupTitle>
+          <ProcessContainer>
             {processData !== undefined &&
               processData.map((item, processIndex) => {
                 return (
                   <ProcessCard
                     key={processIndex}
-                    editable={editable === processIndex}
                     onClick={() => setEditable(processIndex)}>
-                    <div
+                    <EditBlock editable={editable === processIndex}></EditBlock>
+                    <Drag
                       draggable="true"
                       onDragStart={(e) => handleDragStart(e, processIndex)}
                       onDragOver={(e) => handleDragOver(e)}
                       onDrop={(e) => handleDrop(e, processIndex)}>
-                      MOVE
-                    </div>
+                      <img src={move} alt="move" />
+                    </Drag>
                     <Title>
-                      <div
+                      <Description
                         dangerouslySetInnerHTML={{ __html: item.description }}
                         contentEditable={editable === processIndex}
                         onBlur={(e) => handleOptionBlur(processIndex, e)}
@@ -254,19 +262,18 @@ function Process() {
 
                     {renderCardContent(item, processIndex)}
                     <Buttons editable={editable === processIndex}>
-                      <input
-                        type="button"
-                        value="新增"
+                      <GrAddCircle
                         onClick={() => {
                           const lecture = templates.find(
                             (item) => item.type === 'lecture'
                           );
-                          dispatch({ type: 'ADD_CARD', payload: { lecture } });
+                          dispatch({
+                            type: 'ADD_CARD',
+                            payload: { lecture },
+                          });
                         }}
                       />
-                      <input
-                        type="button"
-                        value="複製"
+                      <BiCopy
                         onClick={() => {
                           dispatch({
                             type: 'COPY_CARD',
@@ -274,9 +281,7 @@ function Process() {
                           });
                         }}
                       />
-                      <input
-                        type="button"
-                        value="刪除"
+                      <BiTrash
                         onClick={() => {
                           dispatch({
                             type: 'DEL_CARD',
@@ -288,45 +293,122 @@ function Process() {
                   </ProcessCard>
                 );
               })}
-          </div>
-          <input
-            type="button"
-            value="儲存"
-            onClick={() => handelSave(processData)}
-          />
+          </ProcessContainer>
+          <SubmitInput onClick={() => handelSave(processData)}>
+            儲存
+          </SubmitInput>
         </Content>
       </Container>
     </>
   );
 }
+
+const SubmitInput = styled.div`
+  background: #df524d;
+  border-radius: 6px;
+  padding: 10px 80px;
+  text-align: center;
+  color: #fff;
+  margin-top: 20px;
+  font-size: 18px;
+  letter-spacing: 1.5;
+  align-self: center;
+`;
+const Description = styled.div`
+  font-size: 20px;
+`;
+
+const Drag = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  img {
+    width: 28px;
+  }
+`;
+
+const GroupDetail = styled.div`
+  width: 300px;
+`;
+const GroupTitle = styled.div`
+  display: flex;
+  align-items: flex-start;
+  color: #5b5b5b;
+  gap: 20px;
+  margin-bottom: 40px;
+  line-height: 1.2;
+`;
+const GroupBook = styled.h2`
+  font-weight: 600;
+  font-size: 40px;
+`;
+const ProcessContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
 const Buttons = styled.div`
-  display: ${({ editable }) => (editable ? 'block' : 'none')};
+  display: ${({ editable }) => (editable ? 'flex' : 'none')};
+  position: absolute;
+  right: -50px;
+  top: 0px;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ececec;
+  border-radius: 8px;
+  padding: 12px;
+  gap: 20px;
+  svg {
+    transform: scale(1.3);
+  }
 `;
 const Title = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  padding-bottom: 10px;
-  border-bottom: 1px solid black;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #5b5b5b;
+  margin-bottom: 10px;
 `;
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
+  background-color: rgba(236, 236, 236, 0.15);
 `;
 const Content = styled.div`
-  flex: 1;
   transition: all 0.3s ease;
-  padding: 20px;
-  width: ${({ isOpen }) => (isOpen ? 'calc(100% - 200px)' : '100%')};
-`;
-const ProcessCard = styled.div`
+  width: 960px;
+  margin: 0 auto;
+  margin-bottom: 160px;
+  margin-top: 80px;
+  padding-right: 50px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  border: ${({ editable }) => (editable ? '1px solid red' : '1px solid black')};
-  padding: 10px;
+`;
+const ProcessCard = styled.div`
+  box-shadow: 0px 4px 17px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 30px;
+`;
+const EditBlock = styled.div`
+  position: absolute;
+  background-color: #df524d;
+  left: 0px;
+  top: 0px;
+  width: 10px;
+  height: 100%;
+  opacity: ${({ editable }) => (editable ? 1 : 0)};
+  border-radius: 6px 0px 0px 6px;
 `;
 const TemplateType = styled.select`
-  height: 25px;
+  padding: 0 8px;
+  width: 150px;
+  height: 32px;
+  border: 1px solid #909090;
+  border-radius: 4px;
 `;
 export default Process;
