@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import data from '../../utils/data';
@@ -9,8 +9,8 @@ const Profile = () => {
   const { user } = useContext(AuthContext);
   const [groupData, setGroupData] = useState([]);
 
-  const { status } = useParams();
-  console.log(status);
+  // const { status } = useParams();
+  // console.log(status);
 
   useEffect(() => {
     if (user) {
@@ -21,34 +21,26 @@ const Profile = () => {
       getData();
     }
   }, [user]);
-  const renderCardContent = (item) => {
-    console.log(item);
-    switch (status) {
-      case undefined:
-        return (
-          <>
-            <Status>{item.status}</Status>
-            <Title>{item.name}</Title>
-            <p>作者:{item.author}</p>
-            <Creator>
-              導讀者:{item.createBy}
-              <br />
-              章節:{item.chapter}
-              <br />
-              舉辦時間:{item.hold}
-            </Creator>
-          </>
-        );
-      // case 'ongoing':
-      //   return <></>;
-      // case 'preparing':
-      //   return <></>;
-      // case 'finished':
-      //   return <></>;
-      default:
-        return <></>;
-    }
-  };
+
+  // const renderCardContent = (item) => {
+  //   console.log(item);
+  //   switch (status) {
+  //     case undefined:
+  //       return (
+  //         <>
+  //         </>
+  //       );
+  //     // case 'ongoing':
+  //     //   return <></>;
+  //     // case 'preparing':
+  //     //   return <></>;
+  //     // case 'finished':
+  //     //   return <></>;
+  //     default:
+  //       return <></>;
+  //   }
+  // };
+
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -58,7 +50,18 @@ const Profile = () => {
             <BookGroupImg>
               <img src={item.image} alt="feature" />
             </BookGroupImg>
-            <CardContent>{renderCardContent(item)}</CardContent>
+            <CardContent>
+              <Status>{item.status}</Status>
+              <Title>{item.name}</Title>
+              <p>作者:{item.author}</p>
+              <Creator>
+                導讀者:{item.createBy}
+                <br />
+                章節:{item.chapter}
+                <br />
+                舉辦時間:{item.hold}
+              </Creator>
+            </CardContent>
           </StudyGroupCard>
         ))}
       </Content>
@@ -101,11 +104,12 @@ const StudyGroupCard = styled.div`
   display: flex;
   align-items: center;
   gap: 50px;
-
   padding: 16px 20px;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  width: 960px;
+  max-width: 960px;
+  margin-left: 30px;
+  margin-right: 30px;
 `;
 const Creator = styled.div`
   margin-top: auto;

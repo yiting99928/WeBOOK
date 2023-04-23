@@ -35,9 +35,9 @@ function SideMenu() {
     <Sidebar isOpen={isOpen}>
       <ArrowIcon>
         {isOpen ? (
-          <MdKeyboardDoubleArrowRight onClick={toggleSidebar} />
-        ) : (
           <MdKeyboardDoubleArrowLeft onClick={toggleSidebar} />
+        ) : (
+          <MdKeyboardDoubleArrowRight onClick={toggleSidebar} />
         )}
       </ArrowIcon>
       {isOpen ? (

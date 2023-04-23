@@ -26,10 +26,10 @@ function App() {
         <Route path="/studyGroups" element={<StudyGroups />} />
         <Route path="/studyGroup/:id" element={<StudyGroup />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/profile/:status" element={<Profile />} />
-        {/* <Route path="/profile/ongoing" element={<Ongoing />} /> */}
-        {/* <Route path="/profile/preparing" element={<Preparing />} /> */}
-        {/* <Route path="/profile/finished" element={<Finished />} /> */}
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/ongoing" element={<Ongoing />} />
+        <Route path="/profile/preparing" element={<Preparing />} />
+        <Route path="/profile/finished" element={<Finished />} />
         <Route path="/study-group/:id/process" element={<Process />} />
         <Route path="/study-group/:id/live" element={<Live />} />
       </Routes>
@@ -40,7 +40,7 @@ function App() {
 const GlobalStyle = createGlobalStyle`
 * {
     box-sizing: border-box;
-    ${'' /* border:1px solid black !important */}
+    border:1px solid black !important
 }
 input{
   border-radius: 4px;
