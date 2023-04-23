@@ -14,11 +14,11 @@ function QA({ item }) {
   };
   const checkColor = (index) => {
     if (!submitted) return '';
+    if (!userAnswer[index]) return '';
     return userAnswer[index] === item.data[index].answer
       ? '#e6f4ea'
       : '#fce8e6';
   };
-  // console.log(item.data);
 
   const correctAnswer = () => {
     const correctAnswer = item.data
@@ -36,23 +36,29 @@ function QA({ item }) {
             type="checkbox"
             onChange={(e) => handleCheckboxChange(index, e)}
           />
-          <div>
-            {index + 1}
-            {item.option}
-          </div>
+          <ItemNum>{index + 1}.</ItemNum>
+          <div>{item.option}</div>
         </Option>
       ))}
       <CorrectOption submitted={submitted}>
         正確答案：{correctAnswer()}
       </CorrectOption>
-      <input
-        type="button"
-        value="送出看答案"
-        onClick={() => setSubmitted(true)}
-      />
+      <Button onClick={() => setSubmitted(true)}>送出看答案</Button>
     </Options>
   );
 }
+
+const Button = styled.button`
+  background-color: #ffac4c;
+  color: #fff;
+  padding: 8px 15px;
+  margin-top: 10px;
+  border-radius: 6px;
+`;
+
+const ItemNum = styled.div`
+  padding: 0 8px;
+`;
 const CorrectOption = styled.p`
   display: ${({ submitted }) => (submitted ? 'block' : 'none')};
 `;

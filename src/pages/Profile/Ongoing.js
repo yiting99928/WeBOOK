@@ -112,8 +112,6 @@ const StudyGroupCard = styled.div`
   padding: 16px 20px;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  ${'' /* margin-left: 30px; */}
-  ${'' /* margin-right: 30px; */}
 `;
 const Creator = styled.div`
   margin-top: auto;

@@ -74,7 +74,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
               onBlur={(e) => handleOptionBlur(index, e, 'name')}
               onInput={onContentEditableInput}
             />
-            
+
             <div>
               <AddInput value="+" type="button" onClick={handleAddOption} />
               <input
@@ -92,16 +92,19 @@ function StickyNote({ item, dispatch, processIndex, id }) {
 const AddInput = styled.input``;
 const NoteContainer = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  gap: 15px;
   width: 100%;
+  ${'' /* white-space: nowrap; */}
+  overflow-x: scroll;
 `;
 const Message = styled.div`
   padding: 5px 0;
+  overflow-wrap: break-word;
+  max-width: 160px;
 `;
 const Note = styled.div`
-  width: 200px;
-  height: 200px;
+  min-width: 200px;
+  min-height: 200px;
   background-color: #efefef;
   display: flex;
   flex-direction: column;
@@ -109,5 +112,7 @@ const Note = styled.div`
 `;
 const Name = styled.div`
   margin-top: auto;
+  overflow-wrap: break-word;
+  max-width: 100%;
 `;
 export default StickyNote;

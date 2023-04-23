@@ -95,19 +95,20 @@ const Content = styled.div`
   transition: all 0.3s ease;
   margin: 0 auto;
   margin-top: 54px;
+  margin-bottom: 120px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 960px;
 `;
 
 const StudyGroupCard = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 50px;
   padding: 16px 20px;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  max-width: 960px;
 `;
 const Creator = styled.div`
   margin-top: auto;
@@ -118,5 +119,6 @@ const CardContent = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+  max-width: 600px;
 `;
 export default Profile;

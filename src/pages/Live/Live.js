@@ -24,7 +24,8 @@ import Vote from './LiveVote';
 import QA from './LiveQA';
 // import Broadcast from './Broadcast';
 import { v4 as uuidv4 } from 'uuid';
-
+import { IoIosArrowForward } from 'react-icons/io';
+import { AiFillSound, AiTwotoneVideoCamera } from 'react-icons/ai';
 function reducer(processData, { type, payload = {} }) {
   const { processIndex, data, process } = payload;
   switch (type) {
@@ -455,193 +456,245 @@ function Live() {
   };
 
   return (
-    <>
-      <Container>
-        <SideMenu isOpen={true} />
-        <Content isOpen={true}>
-          <div>
-            <div>
-              <input type="button" value="open media" onClick={openUserMedia} />
-              <input type="button" value="靜音" onClick={toggleMute} />
-              <input type="button" value="關閉視訊" onClick={toggleVideo} />
-            </div>
-            <Screen>
-              <div>
-                <h4>Local</h4>
-                <Video
-                  autoPlay
-                  playsInline
-                  controls
-                  ref={localVideoRef}
-                  muted
-                />
-              </div>
-              <div>
-                <h4>Remote</h4>
-                <Video autoPlay playsInline controls ref={remoteVideoRef} />
-              </div>
-            </Screen>
-          </div>
-          <Menu>
-            <div>
-              <div>書名：{studyGroup.name}</div>
-              <div>章節：{studyGroup.chapter}</div>
-              <div>章節：{studyGroup.host}</div>
-            </div>
-            <HangupInput
-              type="button"
-              id="startButton"
-              value="Hangup"
-              onClick={handleStop}
-              isHost={studyGroup.createBy === user.email}
-            />
-          </Menu>
-          <LiveContainer>
-            <LiveScreen>
-              <LiveInputs isLive={isLive}>
-                <StartInput
-                  isHost={studyGroup.createBy === user.email}
-                  type="button"
-                  value="Start"
-                  onClick={handleStart}
-                />
-                <JoinInput
-                  isHost={studyGroup.createBy === user.email}
-                  type="button"
-                  value="Join"
-                  onClick={handleJoin}
-                />
-              </LiveInputs>
-              <Cards isLive={isLive}>
-                {!processData ? (
-                  <></>
-                ) : (
-                  processData.map((item, processIndex) => (
-                    <Card
-                      activeCard={processIndex === currentCard} // 卡片index & 目前 currentCard 相同則 block
-                      key={processIndex}>
-                      <Description>{item.description}</Description>
-                      <CardContent>
-                        {renderCardContent(item, processIndex)}
-                      </CardContent>
-                    </Card>
-                  ))
-                )}
-              </Cards>
+    <Container>
+      <SideMenu isOpen={true} />
+      <Content isOpen={true}>
+        <GroupTitle>
+          <GroupBook>{studyGroup.name}</GroupBook>
+          作者：{studyGroup.author}
+          <br />
+          導讀章節:{studyGroup.chapter}
+          <br />
+          舉辦時間:{studyGroup.hold}
+          <br />
+          導讀人：{studyGroup.host}
+        </GroupTitle>
+        <LiveContainer>
+          <LiveScreen>
+            <LiveIcon isLive={isLive}>Live</LiveIcon>
+            <LiveInputs isLive={isLive}>
+              <StartInput
+                isHost={studyGroup.createBy === user.email}
+                type="button"
+                value="開啟鏡頭"
+                onClick={openUserMedia}
+              />
+              <StartInput
+                isHost={studyGroup.createBy === user.email}
+                type="button"
+                value="開始直播"
+                onClick={handleStart}
+              />
+              <JoinInput
+                isHost={studyGroup.createBy === user.email}
+                type="button"
+                value="加入直播"
+                onClick={handleJoin}
+              />
+            </LiveInputs>
+            <Cards isLive={isLive}>
               {!processData ? (
                 <></>
               ) : (
-                <ProcessInputs isHost={studyGroup.createBy === user.email}>
-                  <ProcessInput
-                    type="button"
-                    value="前"
-                    onClick={() =>
-                      setCurrentCard((prev) => {
-                        const newCard = prev > 0 ? prev - 1 : prev;
-                        updateCurrentCardInFirebase(newCard);
-                        return newCard;
-                      })
-                    }
-                  />
-                  <ProcessInput
-                    type="button"
-                    value="後"
-                    onClick={() => {
-                      setCurrentCard((prev) => {
-                        const newCard =
-                          prev < processData.length - 1 ? prev + 1 : prev;
-                        updateCurrentCardInFirebase(newCard);
-                        return newCard;
-                      });
-                    }}
-                  />
-                </ProcessInputs>
+                processData.map((item, processIndex) => (
+                  <Card
+                    activeCard={processIndex === currentCard} // 卡片index & 目前 currentCard 相同則 block
+                    key={processIndex}>
+                    <Description>{item.description}</Description>
+                    <CardContent>
+                      {renderCardContent(item, processIndex)}
+                    </CardContent>
+                  </Card>
+                ))
               )}
-            </LiveScreen>
-            <ChatRoom>
-              <Message>
-                {messages.map((message, index) =>
-                  user.email === message.sender ? (
-                    <UserMessage key={index}>{message.message}</UserMessage>
-                  ) : (
-                    <GuestMessage key={index}>
-                      <span>{user.name}：</span>
-                      {message.message}
-                    </GuestMessage>
-                  )
-                )}
-                <div
-                  ref={(el) => {
-                    messagesEndRef.current = el;
+            </Cards>
+            {!processData || !isLive ? (
+              <></>
+            ) : (
+              <ProcessInputs isHost={studyGroup.createBy === user.email}>
+                <ProcessInput
+                  type="button"
+                  value="前一頁"
+                  onClick={() =>
+                    setCurrentCard((prev) => {
+                      const newCard = prev > 0 ? prev - 1 : prev;
+                      updateCurrentCardInFirebase(newCard);
+                      return newCard;
+                    })
+                  }
+                />
+                <ProcessInput
+                  type="button"
+                  value="前一頁"
+                  onClick={() => {
+                    setCurrentCard((prev) => {
+                      const newCard =
+                        prev < processData.length - 1 ? prev + 1 : prev;
+                      updateCurrentCardInFirebase(newCard);
+                      return newCard;
+                    });
                   }}
                 />
-              </Message>
-              <ChatInput>
-                <form onSubmit={sendMessage}>
-                  <input
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                <MediaProcessInput>
+                  <MediaIcon>
+                    <AiFillSound onClick={toggleMute} />
+                  </MediaIcon>
+                  <MediaIcon>
+                    <AiTwotoneVideoCamera onClick={toggleVideo} />
+                  </MediaIcon>
+                  <HangupInput
+                    type="button"
+                    id="startButton"
+                    value="結束"
+                    onClick={handleStop}
+                    isHost={studyGroup.createBy === user.email}
                   />
-                  <input type="submit" value="送出" />
-                </form>
-              </ChatInput>
-            </ChatRoom>
-          </LiveContainer>
-          <Note>
-            <EditContent onChange={setNote} value={note} />
-            <input type="button" value="儲存筆記" onClick={handleSaveNote} />
-          </Note>
-        </Content>
-      </Container>
-    </>
+                </MediaProcessInput>
+              </ProcessInputs>
+            )}
+            <Broadcast>
+              <LocalVideo
+                isHost={studyGroup.createBy === user.email}
+                autoPlay
+                playsInline
+                controls
+                ref={localVideoRef}
+                muted
+              />
+              <RemoteVideo
+                isHost={studyGroup.createBy === user.email}
+                autoPlay
+                playsInline
+                controls
+                ref={remoteVideoRef}
+              />
+            </Broadcast>
+          </LiveScreen>
+          <ChatRoom>
+            <ChatTitle>聊天室</ChatTitle>
+            <Message>
+              {messages.map((message, index) =>
+                user.email === message.sender ? (
+                  <UserMessage key={index}>{message.message}</UserMessage>
+                ) : (
+                  <GuestMessage key={index}>
+                    <span>{user.name}：</span>
+                    {message.message}
+                  </GuestMessage>
+                )
+              )}
+              <div
+                ref={(el) => {
+                  messagesEndRef.current = el;
+                }}
+              />
+            </Message>
+            <ChatInput>
+              <form onSubmit={sendMessage}>
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                />
+                <button type="submit">
+                  <IoIosArrowForward />
+                </button>
+              </form>
+            </ChatInput>
+          </ChatRoom>
+        </LiveContainer>
+        <Note>
+          <EditContent onChange={setNote} value={note} />
+          <Button onClick={handleSaveNote}>儲存講稿</Button>
+        </Note>
+      </Content>
+    </Container>
   );
 }
-const Video = styled.video`
-  width: 250px;
+
+const GroupButton = styled.input`
+  background-color: #ececec;
+  border-radius: 5px;
+  width: 86px;
+  height: 32px;
 `;
-const Screen = styled.div`
-  display: flex;
-  gap: 2px;
+const LocalVideo = styled.video`
+  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  width: 200px;
+  border-radius: 6px;
 `;
+const RemoteVideo = styled.video`
+  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
+  width: 200px;
+  border-radius: 6px;
+`;
+
 const LiveContainer = styled.div`
-  border: 1px solid black;
   display: flex;
   width: 100%;
   height: 500px;
-  ${'' /* overflow-x: auto; */}
-`;
-const Menu = styled.div`
-  display: flex;
   justify-content: space-between;
-  width: 100%;
+  gap: 5px;
+  margin-bottom: 20px;
+`;
+const Broadcast = styled.div`
+  position: absolute;
+  right: 10;
+  bottom: 10;
 `;
 //---直播---//
+const LiveIcon = styled.div`
+  background: #f0f0f0;
+  background: ${({ isLive }) => (isLive ? '#DF524D' : '#f0f0f0')};
+  color: ${({ isLive }) => (isLive ? '#fff' : '#5b5b5b')};
+  border-radius: 25px;
+  text-align: center;
+  padding: 5px 20px;
+  position: absolute;
+  top: 10;
+  right: 10;
+`;
 const LiveScreen = styled.div`
   display: flex;
   flex-direction: column;
-  position: relative;
   width: 75%;
   padding: 10px;
+  position: relative;
+  border-radius: 6px;
+  border: 1px solid #5b5b5b;
 `;
 const LiveInputs = styled.div`
   display: ${({ isLive }) => (isLive ? 'none' : 'flex')};
-  height: 25px;
-  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  gap: 10px;
 `;
 const StartInput = styled.input`
   display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  background-color: #ffac4c;
+  color: #fff;
+  padding: 8px 15px;
+  margin-top: 10px;
+  border-radius: 6px;
 `;
 const JoinInput = styled.input`
   display: ${({ isHost }) => (isHost ? 'none' : 'block')};
+  background-color: #ffac4c;
+  color: #fff;
+  padding: 8px 15px;
+  margin-top: 10px;
+  border-radius: 6px;
 `;
-const HangupInput = styled.input`
+const HangupInput = styled(GroupButton)`
   display: ${({ isHost }) => (isHost ? 'block' : 'none')};
-  height: 25px;
 `;
 //---卡片--//
 const Cards = styled.div`
   display: ${({ isLive }) => (isLive ? 'block' : 'none')};
   height: 100%;
+  padding: 20px;
+  line-height: 1.5;
 `;
 const Card = styled.div`
   display: ${({ activeCard }) => (activeCard ? 'block' : 'none')};
@@ -656,48 +709,107 @@ const CardContent = styled.div`
   justify-content: center;
   align-items: center;
   height: 100%;
+  ${'' /* overflow: scroll; */}
 `;
 const ProcessInputs = styled.div`
   display: ${({ isHost }) => (isHost ? 'flex' : 'none')};
-  border: 1px solid black;
-  justify-content: space-between;
   margin-top: auto;
+  max-width: 550px;
+  align-items: center;
+  gap: 10px;
+  svg {
+    transform: scale(1.5);
+    cursor: pointer;
+    color: #5b5b5b;
+  }
 `;
-const ProcessInput = styled.input``;
+const MediaIcon = styled.div`
+  background-color: #ececec;
+`;
+const ProcessInput = styled(GroupButton)``;
+const MediaProcessInput = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: absolute;
+  right: 220px;
+`;
+
 //---聊天室---//
 const ChatRoom = styled.div`
-  border: 1px solid black;
-  width: 25%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #5b5b5b;
 `;
-const GuestMessage = styled.div``;
-const UserMessage = styled.div`
+const GuestMessage = styled.div`
+  border-radius: 6px;
+  background-color: #f1f1f1;
+  padding: 0 10px;
+`;
+const UserMessage = styled(GuestMessage)`
   align-self: flex-end;
 `;
 const Message = styled.div`
   display: flex;
   flex-direction: column;
   line-height: 2;
-  height: 400px;
+  height: 500px;
   overflow: auto;
+  padding: 10px;
+  gap: 15px;
 `;
 const ChatInput = styled.div`
   margin-top: auto;
+  background-color: #f1f1f1;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  padding: 0 5px;
+  margin: 10px;
+`;
+const ChatTitle = styled.div`
+  border-bottom: 1px solid #5b5b5b;
+  padding: 8px 8px;
+  background-color: #f1f1f1;
 `;
 //---筆記---//
 const Note = styled.div`
-  height: 500px;
-  ${'' /* border: 1px solid black; */}
-  ${'' /* width: 100%; */}
+  height: 400px;
+`;
+const Button = styled.button`
+  background-color: #ffac4c;
+  color: #fff;
+  padding: 8px 15px;
+  margin-top: 10px;
+  border-radius: 6px;
 `;
 //---全局---//
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
 `;
+const GroupTitle = styled.div`
+  display: flex;
+  align-items: flex-start;
+  color: #5b5b5b;
+  gap: 20px;
+  margin-bottom: 40px;
+  line-height: 1.2;
+  justify-content: space-between;
+`;
+const GroupBook = styled.h2`
+  font-weight: 600;
+  font-size: 40px;
+`;
 const Content = styled.div`
-  flex: 1;
   transition: all 0.3s ease;
-  padding: 20px;
-  width: ${({ isOpen }) => (isOpen ? 'calc(100% - 200px)' : '100%')};
+  width: 1000px;
+  margin: 0 auto;
+  margin-bottom: 160px;
+  margin-top: 80px;
+  display: flex;
+  flex-direction: column;
 `;
 export default Live;
