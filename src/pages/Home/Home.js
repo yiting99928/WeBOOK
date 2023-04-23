@@ -1,6 +1,9 @@
 import styled from 'styled-components/macro';
 import bannerImg from './bannerImg.png';
 import featureImg from './featureImg.png';
+import editProcess from './editProcess.png';
+import live from './live.png';
+import note from './note.png';
 import bookImg from './bookImg.jpg';
 import DecoBg from '../../components/DecoBg';
 import { RiLiveLine } from 'react-icons/ri';
@@ -29,7 +32,7 @@ function Home() {
       <Features>
         <FeatureWrap>
           <FeatureImg>
-            <img src={featureImg} alt="feature" />
+            <img src={editProcess} alt="feature" />
           </FeatureImg>
           <Feature>
             <FeatureTitle>協助導讀的流程</FeatureTitle>
@@ -74,12 +77,12 @@ function Home() {
             </FeaturePoints>
           </Feature>
           <FeatureImg>
-            <img src={featureImg} alt="feature" />
+            <img src={live} alt="feature" />
           </FeatureImg>
         </FeatureWrap>
         <FeatureWrap>
           <FeatureImg>
-            <img src={featureImg} alt="feature" />
+            <img src={note} alt="feature" />
           </FeatureImg>
           <Feature>
             <FeatureTitle>讀書會的文字紀錄</FeatureTitle>
