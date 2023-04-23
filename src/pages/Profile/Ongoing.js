@@ -98,6 +98,7 @@ const Content = styled.div`
   transition: all 0.3s ease;
   margin: 0 auto;
   margin-top: 54px;
+  margin-bottom: 120px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -111,9 +112,8 @@ const StudyGroupCard = styled.div`
   padding: 16px 20px;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  ${'' /* max-width: 960px; */}
-  margin-left: 30px;
-  margin-right: 30px;
+  ${'' /* margin-left: 30px; */}
+  ${'' /* margin-right: 30px; */}
 `;
 const Creator = styled.div`
   margin-top: auto;
@@ -124,6 +124,6 @@ const CardContent = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: 100%;
+  max-width: 600px;
 `;
 export default Ongoing;
