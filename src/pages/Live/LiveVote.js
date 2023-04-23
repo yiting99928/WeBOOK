@@ -51,6 +51,7 @@ function Vote({ item, id, processIndex }) {
                 onChange={() => handleVote(index)}
                 disabled={hasVoted}
               />
+              <ItemNum>{index + 1}.</ItemNum>
               <Option>{voteItem.option}</Option>
             </ProgressBar>
             <Votes hasVoted={hasVoted}>{voteItem.number}票</Votes>
@@ -60,6 +61,9 @@ function Vote({ item, id, processIndex }) {
     </VoteItems>
   );
 }
+const ItemNum = styled.div`
+  padding: 0 8px;
+`;
 const Option = styled.div`
   white-space: nowrap;
 `;
@@ -72,18 +76,20 @@ const ProgressBar = styled.div`
   background-color: ${({ hasVoted }) =>
     hasVoted ? 'rgb(159, 223, 159)' : 'none'};
   transition: 0.3s ease-in-out;
+  border-radius: 6px;
 `;
 const Votes = styled.div`
   margin-left: auto;
+  width: 30px;
   display: ${({ hasVoted }) => (hasVoted ? 'block' : 'none')};
 `;
 const VoteItem = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-  height: 35px;
   background-color: #efefef;
-  padding: 5px;
+  padding: 8px;
+  border-radius: 6px;
 `;
 const VoteItems = styled.div`
   display: flex;

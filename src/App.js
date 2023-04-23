@@ -26,6 +26,7 @@ function App() {
         <Route path="/studyGroups" element={<StudyGroups />} />
         <Route path="/studyGroup/:id" element={<StudyGroup />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/profile/ongoing" element={<Ongoing />} />
         <Route path="/profile/preparing" element={<Preparing />} />
         <Route path="/profile/finished" element={<Finished />} />
@@ -41,8 +42,11 @@ const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
     ${'' /* border:1px solid black !important */}
 }
+input{
+  border-radius: 4px;
+}
 .ql-container{
-  height:400px
+  height:350px
 }
 #root{
   display:flex;

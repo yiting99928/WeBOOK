@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import styled from 'styled-components/macro';
 import {
   doc,
@@ -8,14 +8,37 @@ import {
   updateDoc,
   arrayUnion,
   deleteField,
-  getDoc,
 } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { v4 as uuidv4 } from 'uuid';
-function Broadcast({ id }) {
+import { AuthContext } from '../../context/authContext';
+
+function Broadcast({ id, studyGroup }) {
+  const { user } = useContext(AuthContext);
   const [localStream, setLocalStream] = useState(null);
+  const [peerConnections, setPeerConnections] = useState([]);
+
   const remoteVideoRef = useRef(null);
   const localVideoRef = useRef(null);
+
+  useEffect(() => {
+    const roomRef = doc(db, 'rooms', id);
+
+    const unsubscribe = onSnapshot(roomRef, (doc) => {
+      const data = doc.data();
+      if (data) {
+        const { viewers } = data;
+        if (viewers && viewers.length > peerConnections.length) {
+          const newUserUUID = viewers[viewers.length - 1];
+          createRoom(newUserUUID);
+        }
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [peerConnections]);
 
   async function openUserMedia() {
     const constraints = { video: true, audio: true };
@@ -30,18 +53,25 @@ function Broadcast({ id }) {
     }
   }
 
-  async function createMutedAudioStream() {
+  async function createMutedAudioAndEmptyVideoStream() {
     const audioContext = new AudioContext();
     const oscillator = audioContext.createOscillator();
     const dst = oscillator.connect(audioContext.createMediaStreamDestination());
     oscillator.start();
 
-    const stream = dst.stream;
-    const tracks = stream.getAudioTracks();
-    return new MediaStream(tracks);
+    const stream = new MediaStream();
+    stream.addTrack(dst.stream.getAudioTracks()[0]);
+
+    const videoTrack = (
+      await navigator.mediaDevices.getUserMedia({ video: true })
+    ).getVideoTracks()[0];
+    videoTrack.stop();
+    stream.addTrack(videoTrack);
+
+    return stream;
   }
 
-  async function createRoom() {
+  async function createRoom(userUUID) {
     const roomRef = doc(collection(db, 'rooms'), id);
 
     const configuration = {
@@ -49,6 +79,10 @@ function Broadcast({ id }) {
     };
 
     const peerConnection = new RTCPeerConnection(configuration);
+    setPeerConnections((prevConnections) => [
+      ...prevConnections,
+      peerConnection,
+    ]);
 
     localStream.getTracks().forEach((track) => {
       console.log(track);
@@ -110,11 +144,12 @@ function Broadcast({ id }) {
       await deleteOfferAndAnswer();
     });
 
-    const mutedAudioStream = await createMutedAudioStream();
-    setLocalStream(mutedAudioStream);
+    const mutedAudioAndEmptyVideoStream =
+      await createMutedAudioAndEmptyVideoStream();
+    setLocalStream(mutedAudioAndEmptyVideoStream);
 
-    mutedAudioStream.getTracks().forEach((track) => {
-      peerConnection.addTrack(track, mutedAudioStream);
+    mutedAudioAndEmptyVideoStream.getTracks().forEach((track) => {
+      peerConnection.addTrack(track, mutedAudioAndEmptyVideoStream);
     });
 
     onSnapshot(roomRef, async (doc) => {
@@ -149,6 +184,7 @@ function Broadcast({ id }) {
       });
     });
   }
+  
   async function deleteOfferAndAnswer() {
     const roomRef = doc(db, 'rooms', id);
     await updateDoc(roomRef, {
@@ -156,6 +192,7 @@ function Broadcast({ id }) {
       answer: deleteField(),
     });
   }
+
   return (
     <div>
       <div>
@@ -164,18 +201,26 @@ function Broadcast({ id }) {
         <input type="button" value="join room" onClick={joinRoom} />
       </div>
       <Screen>
-        <div>
+        <Host isHost={studyGroup.createBy === user.email}>
           <h4>Local</h4>
           <Video autoPlay playsInline controls ref={localVideoRef} muted />
-        </div>
-        <div>
+        </Host>
+        <Guest isHost={studyGroup.createBy === user.email}>
           <h4>Remote</h4>
           <Video autoPlay playsInline controls ref={remoteVideoRef} />
-        </div>
+        </Guest>
       </Screen>
     </div>
   );
 }
+const Host = styled.div`
+  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  transition: 0s;
+`;
+const Guest = styled.div`
+  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
+  transition: 0s;
+`;
 const Video = styled.video`
   width: 250px;
 `;

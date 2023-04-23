@@ -42,11 +42,18 @@ function Lecture({ item, processIndex = 0, editable = false, dispatch = {} }) {
           onChange={onContentChange}
           modules={quillModules}
         />
-        <button onClick={saveContent}>Save</button>
+        <Button onClick={saveContent}>儲存講稿</Button>
       </Edit>
     </div>
   );
 }
+const Button = styled.button`
+  background-color: #ffac4c;
+  color: #fff;
+  padding: 8px 15px;
+  margin-top: 10px;
+  border-radius: 6px;
+`;
 const PreviewContent = styled.div`
   display: ${({ editing }) => (editing ? 'none' : 'block')};
 `;

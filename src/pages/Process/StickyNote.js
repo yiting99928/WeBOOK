@@ -1,18 +1,6 @@
 import styled from 'styled-components/macro';
 
 function StickyNote({ item, dispatch, processIndex, editable }) {
-  const handleAddOption = () => {
-    const newItem = {
-      name: '請填寫名字',
-      message: `請填寫分享內容`,
-    };
-    const updatedData = [...item.data, newItem];
-    dispatch({
-      type: 'UPDATE_DATA',
-      payload: { processIndex, data: updatedData },
-    });
-  };
-
   const handleOptionBlur = (index, e, field) => {
     const updatedData = [...item.data];
     updatedData[index][field] = e.target.innerText;
@@ -25,61 +13,32 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
   const onContentEditableInput = (e) => {
     e.stopPropagation();
   };
-  const handleDelOption = (index) => {
-    const updatedData = [...item.data];
-    console.log([...item.data]);
-    updatedData.splice(index, 1);
-    dispatch({
-      type: 'UPDATE_DATA',
-      payload: { processIndex, data: updatedData },
-    });
-  };
+  
   return (
     <div>
-      <NoteContainer>
-        {item.data === undefined ? (
-          <></>
-        ) : (
-          item.data.map((item, index = 0) => (
-            <Note key={index}>
-              <Message
-                dangerouslySetInnerHTML={{ __html: item.message }}
-                contentEditable
-                onBlur={(e) => handleOptionBlur(index, e, 'message')}
-                onInput={onContentEditableInput}
-              />
-              <Name
-                dangerouslySetInnerHTML={{ __html: item.name }}
-                contentEditable
-                onBlur={(e) => handleOptionBlur(index, e, 'name')}
-                onInput={onContentEditableInput}
-              />
-              <input
-                value="x"
-                type="button"
-                onClick={() => handleDelOption(index)}
-              />
-            </Note>
-          ))
-        )}
-      </NoteContainer>
-      <AddInput
-        value="+"
-        type="button"
-        onClick={handleAddOption}
-        editing={editable === processIndex}
-      />
+      {item.data === undefined ? (
+        <></>
+      ) : (
+        item.data.map((item, index = 0) => (
+          <Note key={index}>
+            <Message
+              dangerouslySetInnerHTML={{ __html: item.message }}
+              contentEditable
+              onBlur={(e) => handleOptionBlur(index, e, 'message')}
+              onInput={onContentEditableInput}
+            />
+            <Name
+              dangerouslySetInnerHTML={{ __html: item.name }}
+              contentEditable
+              onBlur={(e) => handleOptionBlur(index, e, 'name')}
+              onInput={onContentEditableInput}
+            />
+          </Note>
+        ))
+      )}
     </div>
   );
 }
-const AddInput = styled.input`
-  display: ${({ editing }) => (editing ? 'block' : 'none')};
-`;
-const NoteContainer = styled.div`
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-`;
 const Message = styled.div`
   padding: 5px 0;
 `;
@@ -90,6 +49,7 @@ const Note = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
+  border-radius: 5px;
 `;
 const Name = styled.div`
   margin-top: auto;

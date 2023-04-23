@@ -20,6 +20,7 @@ import { AuthContext } from '../../context/authContext';
 const Preparing = () => {
   const [groupData, setGroupData] = useState([]);
   const { user } = useContext(AuthContext);
+  const [expanded, setExpanded] = useState([]);
 
   useEffect(() => {
     async function getData() {
@@ -108,6 +109,13 @@ const Preparing = () => {
       }
     }
   }
+  const toggleExpanded = (index) => {
+    setExpanded((prevExpanded) => {
+      const newExpanded = [...prevExpanded];
+      newExpanded[index] = !newExpanded[index];
+      return newExpanded;
+    });
+  };
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -117,49 +125,56 @@ const Preparing = () => {
         ) : (
           groupData.map((item, i) => (
             <StudyGroupCard key={i}>
-              <BookImg imageUrl={item.image} />
+              <BookGroupImg>
+                <img src={item.image} alt="feature" />
+              </BookGroupImg>
               <CardContent>
-                <p>
-                  書名:<span>{item.name}</span>
-                </p>
-                <p>
-                  作者:<span>{item.author}</span>
-                </p>
-                <p>
-                  導讀者:<span>{item.createBy}</span>
-                </p>
-                <p>
-                  章節:<span>{item.chapter}</span>
-                </p>
-                <p>
-                  舉辦時間:<span>{item.hold}</span>
-                </p>
-                <p>公告：{item.post}</p>
-                <UserEditInput
-                  type="button"
-                  value="退出讀書會"
-                  isHost={user.email === item.createBy}
-                  onClick={() => handleQuitGroup(item.id)}
-                />
-                <HostEditInput
-                  type="button"
-                  value="取消讀書會"
-                  isHost={user.email === item.createBy}
-                  onClick={() => handleDelGroup(item.id)}
-                />
-                <Link to={`/study-group/${item.id}/process`}>
+                <Title>{item.name}</Title>
+                <p>作者:{item.author}</p>
+                <Creator>
+                  導讀者:{item.createBy}
+                  <br />
+                  章節:{item.chapter}
+                  <br />
+                  舉辦時間:{item.hold}
+                </Creator>
+                <Post onClick={() => toggleExpanded(i)}>
+                  讀書會公告
+                  <br />
+                  {expanded[i]
+                    ? item.post
+                    : item.post.slice(0, 20) +
+                      (item.post.length > 20 ? '...' : '')}
+                </Post>
+                <Buttons>
+                  <UserEditInput
+                    type="button"
+                    value="退出讀書會"
+                    isHost={user.email === item.createBy}
+                    onClick={() => handleQuitGroup(item.id)}
+                  />
                   <HostEditInput
                     type="button"
-                    value="編輯流程"
+                    value="取消讀書會"
                     isHost={user.email === item.createBy}
+                    onClick={() => handleDelGroup(item.id)}
                   />
-                </Link>
-                <HostEditInput
-                  type="button"
-                  value="開始讀書會"
-                  isHost={user.email === item.createBy}
-                  onClick={() => handleChangeState(item)}
-                />
+                  <div>
+                    <Link to={`/study-group/${item.id}/process`}>
+                      <HostEditInput
+                        type="button"
+                        value="編輯流程"
+                        isHost={user.email === item.createBy}
+                      />
+                    </Link>
+                  </div>
+                  <HostEditInput
+                    type="button"
+                    value="開始讀書會"
+                    isHost={user.email === item.createBy}
+                    onClick={() => handleChangeState(item)}
+                  />
+                </Buttons>
               </CardContent>
             </StudyGroupCard>
           ))
@@ -168,12 +183,27 @@ const Preparing = () => {
     </Container>
   );
 };
-
-const UserEditInput = styled.input`
-  display: ${({ isHost }) => (isHost ? 'none' : 'inline-block')};
+const Buttons = styled.div`
+  display: flex;
+  gap: 5px;
 `;
-const HostEditInput = styled.input`
-  display: ${({ isHost }) => (isHost ? 'inline-block' : 'none')};
+const GroupButton = styled.input`
+  background-color: #ececec;
+  border-radius: 5px;
+  width: 86px;
+  height: 32px;
+`;
+const Post = styled.div`
+  line-height: 1.2;
+`;
+const Title = styled.div`
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: 0.05em;
+`;
+
+const BookGroupImg = styled.div`
+  max-width: 180px;
 `;
 const Container = styled.div`
   display: flex;
@@ -181,29 +211,41 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  flex: 1;
   transition: all 0.3s ease;
-  padding: 20px;
-  width: ${(props) => (props.isOpen ? 'calc(100% - 200px)' : '100%')};
+  margin: 0 auto;
+  margin-top: 54px;
+  margin-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 960px;
 `;
 
 const StudyGroupCard = styled.div`
   display: flex;
-  align-items: center;
-  border: 1px solid black;
-  line-height: 1.3;
-  padding: 10px;
+  align-items: flex-start;
+  gap: 50px;
+  padding: 16px 20px;
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
 `;
-const BookImg = styled.div`
-  background-image: url(${(props) => props.imageUrl});
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 250px;
-  height: 200px;
-  margin-right: 30px;
-  background-position: center;
+const Creator = styled.div`
+  margin-top: auto;
+  line-height: 1.5;
 `;
 const CardContent = styled.div`
-  width: 800px;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 600px;
 `;
+
+const UserEditInput = styled(GroupButton)`
+  display: ${({ isHost }) => (isHost ? 'none' : 'inline-block')};
+`;
+const HostEditInput = styled(GroupButton)`
+  display: ${({ isHost }) => (isHost ? 'inline-block' : 'none')};
+`;
+
 export default Preparing;

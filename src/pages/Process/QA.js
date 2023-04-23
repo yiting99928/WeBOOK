@@ -51,6 +51,7 @@ function QA({ item, processIndex = 0, editable = false, dispatch = {} }) {
             onChange={(e) => handleCheckboxChange(index, e)}
             checked={item.answer ? true : false}
           />
+          <ItemNum>{index + 1}.</ItemNum>
           <div
             dangerouslySetInnerHTML={{ __html: item.option }}
             contentEditable={editable === processIndex}
@@ -64,25 +65,35 @@ function QA({ item, processIndex = 0, editable = false, dispatch = {} }) {
           </DelOption>
         </Option>
       ))}
-      <AddInput
-        value="+"
-        type="button"
-        onClick={handleAddOption}
-        editing={editable === processIndex}
-      />
+      <Button onClick={handleAddOption} editing={editable === processIndex}>
+        增加選項
+      </Button>
     </div>
   );
 }
+const ItemNum = styled.div`
+  padding: 0 8px;
+`;
+
+const Button = styled.button`
+  display: ${({ editing }) => (editing ? 'block' : 'none')};
+  background-color: #ffac4c;
+  color: #fff;
+  padding: 8px 15px;
+  margin-top: 10px;
+  border-radius: 6px;
+`;
+
 const DelOption = styled.span`
   display: ${({ editing }) => (editing ? 'block' : 'none')};
-  margin-left: 10px;
+  margin-left: auto;
+  font-size: 18px;
+  color: #5b5b5b;
+  cursor: pointer;
 `;
 
 const Option = styled.div`
   display: flex;
-  line-height: 1.5;
-`;
-const AddInput = styled.input`
-  display: ${({ editing }) => (editing ? 'block' : 'none')};
+  line-height: 2;
 `;
 export default QA;
