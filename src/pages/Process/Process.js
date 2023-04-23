@@ -328,7 +328,7 @@ const Drag = styled.div`
 `;
 
 const GroupDetail = styled.div`
-  width: 300px;
+  ${'' /* width: 300px; */}
 `;
 const GroupTitle = styled.div`
   display: flex;
@@ -337,6 +337,7 @@ const GroupTitle = styled.div`
   gap: 20px;
   margin-bottom: 40px;
   line-height: 1.2;
+  justify-content: space-between;
 `;
 const GroupBook = styled.h2`
   font-weight: 600;

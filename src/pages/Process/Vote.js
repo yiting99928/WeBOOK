@@ -37,12 +37,8 @@ function Vote({ item, processIndex = 0, editable = false, dispatch = {} }) {
     <div>
       {item.data.map((voteItem, index) => (
         <VoteItem key={index}>
-          <input
-            type="radio"
-            name="option"
-            
-          />
-          <p>{index+1}</p>
+          <input type="radio" name="option" />
+          <ItemNum>{index + 1}.</ItemNum>
           <div
             dangerouslySetInnerHTML={{ __html: voteItem.option }}
             contentEditable={editable === processIndex}
@@ -56,23 +52,32 @@ function Vote({ item, processIndex = 0, editable = false, dispatch = {} }) {
           </DelOption>
         </VoteItem>
       ))}
-      <AddOption
-        type="button"
-        value="+"
-        editing={editable === processIndex}
-        onClick={handleAddOption}
-      />
+      <Button editing={editable === processIndex} onClick={handleAddOption}>
+        新增選項
+      </Button>
     </div>
   );
 }
+const ItemNum = styled.div`
+  padding: 0 8px;
+`;
+const Button = styled.button`
+  display: ${({ editing }) => (editing ? 'block' : 'none')};
+  background-color: #ffac4c;
+  color: #fff;
+  padding: 8px 15px;
+  margin-top: 10px;
+  border-radius: 6px;
+`;
 const VoteItem = styled.div`
   display: flex;
-  gap: 5px;
+  line-height: 2;
 `;
 const DelOption = styled.span`
   display: ${({ editing }) => (editing ? 'block' : 'none')};
-`;
-const AddOption = styled.input`
-  display: ${({ editing }) => (editing ? 'block' : 'none')};
+  margin-left: auto;
+  font-size: 18px;
+  color: #5b5b5b;
+  cursor: pointer;
 `;
 export default Vote;
