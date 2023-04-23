@@ -307,7 +307,7 @@ const Banner = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 1300;
+  max-width: 1300px;
   margin: 0 auto;
   position: relative;
   justify-content: space-between;
