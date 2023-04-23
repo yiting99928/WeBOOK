@@ -660,7 +660,8 @@ const LiveScreen = styled.div`
   padding: 10px;
   position: relative;
   border-radius: 6px;
-  border: 1px solid #5b5b5b;
+  border: 1px solid #b5b5b5;
+  background-color: #fff;
 `;
 const LiveInputs = styled.div`
   display: ${({ isLive }) => (isLive ? 'none' : 'flex')};
@@ -741,7 +742,7 @@ const ChatRoom = styled.div`
   flex-direction: column;
   border-radius: 6px;
   overflow: hidden;
-  border: 1px solid #5b5b5b;
+  border: 1px solid #b5b5b5;
 `;
 const GuestMessage = styled.div`
   border-radius: 6px;
@@ -770,7 +771,7 @@ const ChatInput = styled.div`
   margin: 10px;
 `;
 const ChatTitle = styled.div`
-  border-bottom: 1px solid #5b5b5b;
+  border-bottom: 1px solid #b5b5b5;
   padding: 8px 8px;
   background-color: #f1f1f1;
 `;
@@ -789,6 +790,7 @@ const Button = styled.button`
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
+  background-color: rgba(236, 236, 236, 0.15);
 `;
 const GroupTitle = styled.div`
   display: flex;
