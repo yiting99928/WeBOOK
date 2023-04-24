@@ -342,6 +342,7 @@ function Live() {
       message: input,
       timestamp: new Date(),
       sender: user.email,
+      senderName: user.name,
     });
     setInput('');
   };
@@ -578,7 +579,7 @@ function Live() {
                   <UserMessage key={index}>{message.message}</UserMessage>
                 ) : (
                   <GuestMessage key={index}>
-                    <span>{user.name}：</span>
+                    <span>{message.senderName}：</span>
                     {message.message}
                   </GuestMessage>
                 )
@@ -618,12 +619,14 @@ const GroupButton = styled.input`
   height: 32px;
 `;
 const LocalVideo = styled.video`
-  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  ${'' /* display: ${({ isHost }) => (isHost ? 'block' : 'block')}; */}
+  ${'' /* opacity: ${({ isHost }) => (isHost ? 1 : 0)}; */}
   width: 200px;
   border-radius: 6px;
 `;
 const RemoteVideo = styled.video`
-  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
+  ${'' /* display: ${({ isHost }) => (isHost ? 'block' : 'block')}; */}
+  ${'' /* opacity: ${({ isHost }) => (isHost ? 0 : 1)}; */}
   width: 200px;
   border-radius: 6px;
 `;
