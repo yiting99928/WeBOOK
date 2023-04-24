@@ -74,7 +74,7 @@ const Logout = styled.div`
 `;
 const ArrowIcon = styled.div`
   position: absolute;
-  right: 12;
+  right: 12px;
   top: 15px;
   svg {
     transform: scale(1.3);

@@ -142,12 +142,10 @@ function Live() {
       peerConnection,
     ]);
 
-    if (localStream) {
-      localStream.getTracks().forEach((track) => {
-        console.log(track);
-        peerConnection.addTrack(track, localStream);
-      });
-    }
+    localStream.getTracks().forEach((track) => {
+      console.log(track);
+      peerConnection.addTrack(track, localStream);
+    });
 
     onSnapshot(doc(db, 'rooms', id), async (doc) => {
       const { offer } = doc.data();
@@ -254,7 +252,6 @@ function Live() {
       answer: deleteField(),
     });
   }
-
   useEffect(() => {
     const roomRef = doc(db, 'rooms', id);
 
@@ -272,7 +269,7 @@ function Live() {
     return () => {
       unsubscribe();
     };
-  }, [peerConnections]);
+  }, [peerConnections, id]);
 
   //--------------------//
   //-----直播區結束-----//
@@ -619,13 +616,13 @@ const GroupButton = styled.input`
   height: 32px;
 `;
 const LocalVideo = styled.video`
-  ${'' /* display: ${({ isHost }) => (isHost ? 'block' : 'block')}; */}
+  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
   ${'' /* opacity: ${({ isHost }) => (isHost ? 1 : 0)}; */}
   width: 200px;
   border-radius: 6px;
 `;
 const RemoteVideo = styled.video`
-  ${'' /* display: ${({ isHost }) => (isHost ? 'block' : 'block')}; */}
+  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
   ${'' /* opacity: ${({ isHost }) => (isHost ? 0 : 1)}; */}
   width: 200px;
   border-radius: 6px;
@@ -641,8 +638,8 @@ const LiveContainer = styled.div`
 `;
 const Broadcast = styled.div`
   position: absolute;
-  right: 10;
-  bottom: 10;
+  right: 10px;
+  bottom: 10px;
 `;
 //---直播---//
 const LiveIcon = styled.div`
@@ -653,8 +650,8 @@ const LiveIcon = styled.div`
   text-align: center;
   padding: 5px 20px;
   position: absolute;
-  top: 10;
-  right: 10;
+  top: 10px;
+  right: 10px;
 `;
 const LiveScreen = styled.div`
   display: flex;
