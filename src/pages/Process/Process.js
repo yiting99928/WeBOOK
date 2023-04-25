@@ -11,6 +11,7 @@ import QA from './QA';
 import move from './move.png';
 import { GrAddCircle } from 'react-icons/gr';
 import { BiTrash, BiCopy } from 'react-icons/bi';
+import moment from 'moment';
 
 function reducer(processData, { type, payload = {} }) {
   const { lecture, processIndex, templates, e, data, process } = payload;
@@ -214,7 +215,8 @@ function Process() {
             <br />
             導讀章節:{studyGroup.chapter}
             <br />
-            舉辦時間:{studyGroup.hold}
+            舉辦時間:
+            {moment.unix(studyGroup.hold.seconds).format('YYYY,MM,DD hh:mm A')}
           </GroupDetail>
         </GroupTitle>
 
