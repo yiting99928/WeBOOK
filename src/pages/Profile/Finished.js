@@ -55,7 +55,7 @@ const Finished = () => {
                   <br />
                   章節:{item.chapter}
                   <br />
-                  舉辦時間:{' '}
+                  舉辦時間:
                   {moment.unix(item.hold.seconds).format('YYYY,MM,DD hh:mm A')}
                 </Creator>
                 <Post onClick={() => toggleExpanded(i)}>
