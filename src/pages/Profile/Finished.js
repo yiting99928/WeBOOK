@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import data from '../../utils/data';
 import { AuthContext } from '../../context/authContext';
+import moment from 'moment';
 
 const Finished = () => {
   const [groupData, setGroupData] = useState([]);
@@ -54,7 +55,8 @@ const Finished = () => {
                   <br />
                   章節:{item.chapter}
                   <br />
-                  舉辦時間:{item.hold}
+                  舉辦時間:{' '}
+                  {moment.unix(item.hold.seconds).format('YYYY,MM,DD hh:mm A')}
                 </Creator>
                 <Post onClick={() => toggleExpanded(i)}>
                   筆記：

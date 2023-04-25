@@ -16,6 +16,7 @@ import {
 import { Link } from 'react-router-dom';
 import data from '../../utils/data';
 import { AuthContext } from '../../context/authContext';
+import moment from 'moment';
 
 const Preparing = () => {
   const [groupData, setGroupData] = useState([]);
@@ -136,7 +137,8 @@ const Preparing = () => {
                   <br />
                   章節:{item.chapter}
                   <br />
-                  舉辦時間:{item.hold}
+                  舉辦時間:
+                  {moment.unix(item.hold.seconds).format('YYYY,MM,DD hh:mm A')}
                 </Creator>
                 <Post onClick={() => toggleExpanded(i)}>
                   讀書會公告

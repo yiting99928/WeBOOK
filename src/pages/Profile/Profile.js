@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import data from '../../utils/data';
 import { AuthContext } from '../../context/authContext';
+import moment from 'moment';
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
@@ -41,6 +42,11 @@ const Profile = () => {
   //   }
   // };
 
+  const statusText = {
+    ongoing: '進行中',
+    preparing: '準備中',
+    finished: '已結束',
+  };
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -51,7 +57,6 @@ const Profile = () => {
               <img src={item.image} alt="feature" />
             </BookGroupImg>
             <CardContent>
-              <Status>{item.status}</Status>
               <Title>{item.name}</Title>
               <p>作者:{item.author}</p>
               <Creator>
@@ -59,9 +64,11 @@ const Profile = () => {
                 <br />
                 章節:{item.chapter}
                 <br />
-                舉辦時間:{item.hold}
+                舉辦時間:
+                {moment.unix(item.hold.seconds).format('YYYY,MM,DD hh:mm A')}
               </Creator>
             </CardContent>
+            <Status>{statusText[item.status]}</Status>
           </StudyGroupCard>
         ))}
       </Content>
@@ -74,13 +81,10 @@ const Title = styled.div`
   letter-spacing: 0.05em;
 `;
 const Status = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background-color: #df524d;
+  padding: 5px 16px;
+  margin-left: auto;
   color: #fff;
-  width: 130px;
-  height: 32px;
   border-radius: 6px;
 `;
 const BookGroupImg = styled.div`
