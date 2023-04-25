@@ -216,7 +216,11 @@ function Process() {
             導讀章節:{studyGroup.chapter}
             <br />
             舉辦時間:
-            {moment.unix(studyGroup.hold.seconds).format('YYYY,MM,DD hh:mm A')}
+            {studyGroup && studyGroup.hold ? (
+              moment.unix(studyGroup.hold.seconds).format('YYYY,MM,DD hh:mm A')
+            ) : (
+              <div>loading</div>
+            )}
           </GroupDetail>
         </GroupTitle>
 
