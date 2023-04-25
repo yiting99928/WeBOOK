@@ -16,6 +16,7 @@ import {
   deleteDoc,
   arrayUnion,
   deleteField,
+  getDoc,
 } from 'firebase/firestore';
 import EditContent from '../../components/EditContent';
 import Lecture from '../../pages/Process/Lecture';
@@ -71,8 +72,8 @@ function Live() {
   const [localStream, setLocalStream] = useState(null);
   const [peerConnections, setPeerConnections] = useState([]);
   const [videoState, setVideoState] = useState({
-    isMuted: false,
-    isVideoDisabled: false,
+    isMuted: true,
+    isVideoDisabled: true,
   });
   const remoteVideoRef = useRef(null);
   const localVideoRef = useRef(null);
@@ -114,6 +115,10 @@ function Live() {
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
+      setVideoState({
+        isMuted: false,
+        isVideoDisabled: false,
+      });
     } catch (error) {
       console.log('stream Error.', error);
     }
@@ -341,6 +346,27 @@ function Live() {
     };
   }, [id, navigate]);
 
+  const [isDisabled, setIsDisabled] = useState(true);
+
+  useEffect(() => {
+    const checkRoomExists = async () => {
+      if (id) {
+        const roomRef = doc(collection(db, 'rooms'), id);
+        const roomSnapshot = await getDoc(roomRef);
+
+        if (roomSnapshot.exists()) {
+          console.log('Room exists!');
+          setIsDisabled(false);
+        } else {
+          console.log('Room does not exist!');
+          setIsDisabled(true);
+        }
+      }
+    };
+
+    checkRoomExists();
+  }, [id]);
+
   const sendMessage = async (e) => {
     e.preventDefault();
     await addDoc(collection(db, 'rooms', id, 'messages'), {
@@ -460,7 +486,7 @@ function Live() {
       console.error(error);
     }
   };
-
+  // console.log(videoState);
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -477,7 +503,6 @@ function Live() {
           ) : (
             <div>loading</div>
           )}
-          {console.log(studyGroup.hold)}
           <br />
           導讀人：{studyGroup.host}
         </GroupTitle>
@@ -495,12 +520,14 @@ function Live() {
                 isHost={studyGroup.createBy === user.email}
                 type="button"
                 value="開始直播"
+                disabled={videoState.isMuted && videoState.isVideoDisabled}
                 onClick={handleStart}
               />
               <JoinInput
                 isHost={studyGroup.createBy === user.email}
                 type="button"
                 value="加入直播"
+                disabled={isDisabled}
                 onClick={handleJoin}
               />
             </LiveInputs>
@@ -656,7 +683,7 @@ const LiveScreen = styled.div`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 740px;
   padding: 10px;
   position: relative;
   border-radius: 6px;
@@ -672,7 +699,8 @@ const LiveInputs = styled.div`
 `;
 const StartInput = styled.input`
   display: ${({ isHost }) => (isHost ? 'block' : 'none')};
-  background-color: #ffac4c;
+  background-color: ${({ disabled }) => (disabled ? '#b5b5b5' : '#ffac4c')};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   color: #fff;
   padding: 8px 15px;
   margin-top: 10px;
@@ -680,7 +708,8 @@ const StartInput = styled.input`
 `;
 const JoinInput = styled.input`
   display: ${({ isHost }) => (isHost ? 'none' : 'block')};
-  background-color: #ffac4c;
+  background-color: ${({ disabled }) => (disabled ? '#b5b5b5' : '#ffac4c')};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   color: #fff;
   padding: 8px 15px;
   margin-top: 10px;
@@ -710,7 +739,7 @@ const CardContent = styled.div`
 const ProcessInputs = styled.div`
   display: ${({ isHost }) => (isHost ? 'flex' : 'none')};
   margin-top: auto;
-  max-width: 520px;
+  max-width: 510px;
   align-items: center;
   gap: 8px;
   svg {
@@ -744,7 +773,7 @@ const ChatRoom = styled.div`
   border-radius: 6px;
   overflow: hidden;
   background-color: #fff;
-  width: 300px;
+  width: 25%;
 `;
 const GuestMessage = styled.div`
   border-radius: 6px;

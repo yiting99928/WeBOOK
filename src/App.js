@@ -46,7 +46,7 @@ input{
   border-radius: 4px;
 }
 .ql-container{
-  height:350px
+  height:310px;
 }
 #root{
   display:flex;
