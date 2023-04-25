@@ -5,6 +5,8 @@ import {
   getDocs,
   query,
   where,
+  Timestamp,
+  orderBy,
 } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { useState, useEffect, useContext } from 'react';
@@ -15,44 +17,35 @@ import { GrSearch } from 'react-icons/gr';
 import moment from 'moment';
 
 function StudyGroups() {
-  const [allGroupsData, setAllGroupsData] = useState([]);
   const { user } = useContext(AuthContext);
+  const [allGroupsData, setAllGroupsData] = useState([]);
+  const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
+
+  async function getData() {
+    const StudyGroupsData = collection(db, 'studyGroups');
+    const q = query(StudyGroupsData, orderBy('hold'));
+    const groupsSnapshot = await getDocs(q);
+    const groups = groupsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setAllGroupsData(groups);
+    return groups;
+  }
   useEffect(() => {
-    async function getData() {
-      const StudyGroupsData = collection(db, 'studyGroups');
-      const groupsSnapshot = await getDocs(StudyGroupsData);
-      const groups = groupsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      console.log(groups);
-      setAllGroupsData(groups);
-    }
     getData();
   }, []);
+
   const handleJoinGroup = async (id) => {
     const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
     await setDoc(userGroupRef, { note: '' }).then(alert('已加入讀書會'));
   };
-
-  function toReadableDate(dateString) {
-    const dateObj = moment(dateString, 'YYYY年M月D日 ah:mm', 'zh-TW');
-    const formattedDate = dateObj.format('YYYY.MM.DD h:mmA');
-
-    return formattedDate;
-  }
-
   const searchByCategory = async (category) => {
+    console.log(category);
     if (category === '全部讀書會') {
-      const StudyGroupsData = collection(db, 'studyGroups');
-      const groupsSnapshot = await getDocs(StudyGroupsData);
-      const groups = groupsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      console.log(groups);
-      setAllGroupsData(groups);
+      const groups = await getData();
+      return groups;
     } else {
       const studyGroupsRef = collection(db, 'studyGroups');
       const q = query(studyGroupsRef, where('category', '==', category));
@@ -68,22 +61,101 @@ function StudyGroups() {
     const groups = await searchByCategory(event.target.value);
     setAllGroupsData(groups);
   };
+  const searchByText = async (e) => {
+    e.preventDefault();
+    const studyGroupRef = collection(db, 'studyGroups');
+    const q = query(
+      studyGroupRef,
+      where('name', '>=', searchText),
+      where('name', '<=', searchText + '\uf8ff')
+    );
+    const querySnapshot = await getDocs(q);
+    let groups = [];
+    querySnapshot.forEach((doc) => {
+      groups.push({ id: doc.id, ...doc.data() });
+    });
+    setAllGroupsData(groups);
+  };
+
+  function filterGroups(groups, filterOption) {
+    if (!['today', 'week', 'month', 'twoMonths'].includes(filterOption)) {
+      return groups;
+    }
+    // 當前的日期與時間
+    const now = new Date();
+    // 設置今天開始的時間
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+    // 計算一週
+    const oneWeekLater = new Date(todayStart);
+    oneWeekLater.setDate(todayStart.getDate() + 7);
+    // 計算一個月後的日期
+    const oneMonthLater = new Date(todayStart);
+    oneMonthLater.setMonth(todayStart.getMonth() + 1);
+    // 計算兩個月後的日期
+    const twoMonthsLater = new Date(todayStart);
+    twoMonthsLater.setMonth(todayStart.getMonth() + 2);
+
+    return groups.filter((group) => {
+      const groupHoldDate = Timestamp.fromMillis(
+        group.hold.seconds * 1000
+      ).toDate();
+      if (filterOption === 'today') {
+        const todayEnd = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate() + 1
+        );
+        return groupHoldDate >= todayStart && groupHoldDate < todayEnd;
+      } // 如果選項是 'week'，篩選一周內的組
+      else if (filterOption === 'week') {
+        return groupHoldDate >= todayStart && groupHoldDate < oneWeekLater;
+      }
+      // 如果選項是 'month'，篩選一個月內的組
+      else if (filterOption === 'month') {
+        return groupHoldDate >= todayStart && groupHoldDate < oneMonthLater;
+      }
+      // 如果選項是 'twoMonths'，篩選兩個月內的組
+      else if (filterOption === 'twoMonths') {
+        return groupHoldDate >= todayStart && groupHoldDate < twoMonthsLater;
+      }
+    });
+  }
+
+  function handleSelectChange(event) {
+    const filterOption = event.target.value;
+    getData().then((groups) => {
+      const filteredGroups = filterGroups(groups, filterOption);
+      console.log(filteredGroups);
+      setAllGroupsData(filteredGroups);
+    });
+  }
 
   return (
     <div>
       <Container>
         <SearchInputs>
           <SearchBar>
-            <SearchText>
-              <SearchInput type="text" placeholder="搜尋" onClick={() => {}} />
-              <GrSearch />
+            <SearchText onSubmit={searchByText}>
+              <SearchInput
+                type="text"
+                placeholder="搜尋書籍名稱"
+                value={searchText}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                }}
+              />
+              <GrSearch onClick={searchByText} />
             </SearchText>
-            <SelectInput>
-              <option>搜尋舉辦時間</option>
-              <option>今天</option>
-              <option>一週內</option>
-              <option>一個月內</option>
-              <option>兩個月內</option>
+            <SelectInput onChange={handleSelectChange}>
+              <option value="all">搜尋舉辦時間</option>
+              <option value="today">今天</option>
+              <option value="week">一週內</option>
+              <option value="month">一個月內</option>
+              <option value="twoMonths">兩個月內</option>
             </SelectInput>
           </SearchBar>
           <SearchBar>
@@ -178,7 +250,10 @@ function StudyGroups() {
                     <BookTitle>{card.name}</BookTitle>
                     <BookAuthor>{card.author}</BookAuthor>
                     <Creator>
-                      舉辦時間：{toReadableDate(card.hold)}
+                      舉辦時間：
+                      {moment
+                        .unix(card.hold.seconds)
+                        .format('YYYY,MM,DD hh:mm A')}
                       <br />
                       導讀者：{card.host}
                     </Creator>
@@ -222,11 +297,13 @@ const BookGroup = styled.div`
   flex-direction: column;
   justify-content: space-between;
   width: 280px;
+  gap: 5px;
   border-radius: 8px;
   background: #ffffff;
   border: 1px solid #ececec;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  height: 570px;
 `;
 const GroupButton = styled.div`
   display: flex;
@@ -267,7 +344,7 @@ const SearchInputs = styled.div`
   gap: 20px;
   margin: 0 auto;
 `;
-const SearchText = styled.div`
+const SearchText = styled.form`
   position: relative;
   width: 100%;
   border: 1px solid #909090;
