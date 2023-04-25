@@ -8,6 +8,7 @@ import {
   doc,
   setDoc,
   serverTimestamp,
+  Timestamp,
 } from 'firebase/firestore';
 import DecoBg from '../../components/DecoBg';
 import { BiImageAdd } from 'react-icons/bi';
@@ -27,7 +28,7 @@ function Create() {
     category: '',
     post: '',
   });
-  const [previewUrl, setPreviewUrl] = useState('');
+  const [previewurl, setPreviewUrl] = useState('');
 
   const handleInputChange = (e) => {
     if (e.target.name === 'image') {
@@ -68,13 +69,15 @@ function Create() {
       );
       await uploadBytes(storageRef, createForm.image);
       const imageURL = await getDownloadURL(storageRef);
+      const dateObj = new Date(createForm.hold);
+      const holdTimestamp = Timestamp.fromDate(dateObj);
       const docRef = await addDoc(collection(db, 'studyGroups'), {
         ...createForm,
         name: createForm.name,
         image: imageURL,
         author: createForm.author,
         chapter: createForm.chapter,
-        hold: createForm.hold,
+        hold: holdTimestamp,
         category: createForm.category,
         post: createForm.post,
         createTime: serverTimestamp(),
@@ -184,8 +187,8 @@ function Create() {
               />
             </FormInputs>
           </InputContainer>
-          <ImgContainer previewUrl={previewUrl}>
-            <BiImageAdd previewUrl={previewUrl} />
+          <ImgContainer previewurl={previewurl}>
+            <BiImageAdd previewurl={previewurl} />
             <ImgInput
               type="file"
               accept="image/png, image/jpeg"
@@ -242,11 +245,11 @@ const ImgContainer = styled.div`
   border-radius: 6px;
   background-color: #f9f9f9;
   position: relative;
-  background-image: ${({ previewUrl }) => `url(${previewUrl})`};
+  background-image: ${({ previewurl }) => `url(${previewurl})`};
   background-size: cover;
 
   svg {
-    display:${({ previewUrl }) => (previewUrl ? 'none' : 'block')};
+    display: ${({ previewurl }) => (previewurl ? 'none' : 'block')};
     position: absolute;
     top: 50%;
     left: 50%;
