@@ -16,7 +16,6 @@ import {
   deleteDoc,
   arrayUnion,
   deleteField,
-  getDoc,
 } from 'firebase/firestore';
 import EditContent from '../../components/EditContent';
 import Lecture from '../../pages/Process/Lecture';
@@ -27,7 +26,13 @@ import QA from './LiveQA';
 import { v4 as uuidv4 } from 'uuid';
 import { IoIosArrowForward } from 'react-icons/io';
 import { AiFillSound, AiTwotoneVideoCamera } from 'react-icons/ai';
-import { MdCallEnd, MdFirstPage, MdLastPage } from 'react-icons/md';
+import {
+  MdCallEnd,
+  MdFirstPage,
+  MdLastPage,
+  MdFitScreen,
+  MdChat,
+} from 'react-icons/md';
 import moment from 'moment';
 
 function reducer(processData, { type, payload = {} }) {
@@ -77,6 +82,8 @@ function Live() {
   });
   const remoteVideoRef = useRef(null);
   const localVideoRef = useRef(null);
+  const [showLocalVideo, setShowLocalVideo] = useState(true);
+  const [showChatRoom, setShowChatRoom] = useState(true);
 
   //--------------------//
   //-----直播區開始-----//
@@ -349,11 +356,10 @@ function Live() {
   const [isDisabled, setIsDisabled] = useState(true);
 
   useEffect(() => {
-    const checkRoomExists = async () => {
-      if (id) {
-        const roomRef = doc(collection(db, 'rooms'), id);
-        const roomSnapshot = await getDoc(roomRef);
+    if (id) {
+      const roomRef = doc(collection(db, 'rooms'), id);
 
+      const unsubscribe = onSnapshot(roomRef, (roomSnapshot) => {
         if (roomSnapshot.exists()) {
           console.log('Room exists!');
           setIsDisabled(false);
@@ -361,10 +367,13 @@ function Live() {
           console.log('Room does not exist!');
           setIsDisabled(true);
         }
-      }
-    };
+      });
 
-    checkRoomExists();
+      // Clean up the listener when the component is unmounted
+      return () => {
+        unsubscribe();
+      };
+    }
   }, [id]);
 
   const sendMessage = async (e) => {
@@ -486,7 +495,13 @@ function Live() {
       console.error(error);
     }
   };
-  // console.log(videoState);
+
+  const handleVideoToggle = () => {
+    setShowLocalVideo(!showLocalVideo);
+  };
+  const handleChatRoom = () => {
+    setShowChatRoom(!showChatRoom);
+  };
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -507,7 +522,7 @@ function Live() {
           導讀人：{studyGroup.host}
         </GroupTitle>
         <LiveContainer>
-          <LiveScreen>
+          <LiveScreen showChatRoom={showChatRoom}>
             <LiveIcon isLive={isLive}>Live</LiveIcon>
             <LiveInputs isLive={isLive}>
               <StartInput
@@ -550,38 +565,46 @@ function Live() {
             {!processData || !isLive ? (
               <></>
             ) : (
-              <ProcessInputs isHost={studyGroup.createBy === user.email}>
+              <ProcessInputs>
+                <HostInput isHost={studyGroup.createBy === user.email}>
+                  <MediaIcon>
+                    <MdFirstPage
+                      onClick={() =>
+                        setCurrentCard((prev) => {
+                          const newCard = prev > 0 ? prev - 1 : prev;
+                          updateCurrentCardInFirebase(newCard);
+                          return newCard;
+                        })
+                      }
+                    />
+                  </MediaIcon>
+                  <MediaIcon>
+                    <MdLastPage
+                      onClick={() => {
+                        setCurrentCard((prev) => {
+                          const newCard =
+                            prev < processData.length - 1 ? prev + 1 : prev;
+                          updateCurrentCardInFirebase(newCard);
+                          return newCard;
+                        });
+                      }}
+                    />
+                  </MediaIcon>
+                  <MediaIcon isMuted={videoState.isMuted}>
+                    <AiFillSound onClick={toggleMute} />
+                  </MediaIcon>
+                  <MediaIcon isVideoDisabled={videoState.isVideoDisabled}>
+                    <AiTwotoneVideoCamera onClick={toggleVideo} />
+                  </MediaIcon>
+                  <MediaIcon>
+                    <MdCallEnd onClick={handleStop} />
+                  </MediaIcon>
+                </HostInput>
                 <MediaIcon>
-                  <MdFirstPage
-                    onClick={() =>
-                      setCurrentCard((prev) => {
-                        const newCard = prev > 0 ? prev - 1 : prev;
-                        updateCurrentCardInFirebase(newCard);
-                        return newCard;
-                      })
-                    }
-                  />
+                  <MdFitScreen onClick={handleVideoToggle} />
                 </MediaIcon>
                 <MediaIcon>
-                  <MdLastPage
-                    onClick={() => {
-                      setCurrentCard((prev) => {
-                        const newCard =
-                          prev < processData.length - 1 ? prev + 1 : prev;
-                        updateCurrentCardInFirebase(newCard);
-                        return newCard;
-                      });
-                    }}
-                  />
-                </MediaIcon>
-                <MediaIcon isMuted={videoState.isMuted}>
-                  <AiFillSound onClick={toggleMute} />
-                </MediaIcon>
-                <MediaIcon isVideoDisabled={videoState.isVideoDisabled}>
-                  <AiTwotoneVideoCamera onClick={toggleVideo} />
-                </MediaIcon>
-                <MediaIcon>
-                  <MdCallEnd onClick={handleStop} />
+                  <MdChat onClick={handleChatRoom} />
                 </MediaIcon>
               </ProcessInputs>
             )}
@@ -589,21 +612,19 @@ function Live() {
               <LocalVideo
                 isHost={studyGroup.createBy === user.email}
                 autoPlay
-                playsInline
-                controls
                 ref={localVideoRef}
                 muted
+                show={showLocalVideo}
               />
               <RemoteVideo
                 isHost={studyGroup.createBy === user.email}
                 autoPlay
-                playsInline
-                controls
                 ref={remoteVideoRef}
+                show={showLocalVideo}
               />
             </Broadcast>
           </LiveScreen>
-          <ChatRoom>
+          <ChatRoom showChatRoom={showChatRoom}>
             <ChatTitle>聊天室</ChatTitle>
             <Message>
               {messages.map((message, index) =>
@@ -643,13 +664,17 @@ function Live() {
     </Container>
   );
 }
+const HostInput = styled.div`
+  display: ${({ isHost }) => (isHost ? 'flex' : 'none')};
+  gap: 10px;
+`;
 const LocalVideo = styled.video`
-  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  display: ${({ isHost, show }) => (isHost && show ? 'block' : 'none')};
   width: 200px;
   border-radius: 6px;
 `;
 const RemoteVideo = styled.video`
-  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
+  display: ${({ isHost, show }) => (isHost || !show ? 'none' : 'block')};
   width: 200px;
   border-radius: 6px;
 `;
@@ -658,8 +683,8 @@ const LiveContainer = styled.div`
   display: flex;
   width: 100%;
   height: 500px;
+  gap: 15px;
   justify-content: space-between;
-  gap: 20px;
   margin-bottom: 20px;
 `;
 const Broadcast = styled.div`
@@ -683,7 +708,8 @@ const LiveScreen = styled.div`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  width: 740px;
+  ${'' /* width: 100%; */}
+  width: ${({ showChatRoom }) => (showChatRoom ? '740px' : '100%')};
   padding: 10px;
   position: relative;
   border-radius: 6px;
@@ -737,11 +763,11 @@ const CardContent = styled.div`
   height: 370px;
 `;
 const ProcessInputs = styled.div`
-  display: ${({ isHost }) => (isHost ? 'flex' : 'none')};
   margin-top: auto;
-  max-width: 510px;
   align-items: center;
   gap: 8px;
+  display: flex;
+  justify-content: center;
   svg {
     transform: scale(1.2);
     cursor: pointer;
@@ -753,7 +779,6 @@ const MediaIcon = styled.div`
   border-radius: 25px;
   background-color: #f1f1f1;
   :nth-child(3) {
-    margin-left: auto;
     background-color: ${({ isMuted }) => (isMuted ? '#b5b5b5' : '#f1f1f1')};
   }
   :nth-child(4) {
@@ -768,12 +793,12 @@ const MediaIcon = styled.div`
 //---聊天室---//
 const ChatRoom = styled.div`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-  display: flex;
+  display: ${({ showChatRoom }) => (showChatRoom ? 'flex' : 'none')};
   flex-direction: column;
   border-radius: 6px;
   overflow: hidden;
   background-color: #fff;
-  width: 25%;
+  width: 240px;
 `;
 const GuestMessage = styled.div`
   border-radius: 6px;
