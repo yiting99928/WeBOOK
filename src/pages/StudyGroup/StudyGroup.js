@@ -3,6 +3,7 @@ import { db } from '../../utils/firebase';
 import { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
+import moment from 'moment';
 
 import { useParams } from 'react-router-dom';
 function StudyGroup() {
@@ -24,23 +25,15 @@ function StudyGroup() {
 
     fetchStudyGroup();
   }, [id]);
-  // console.log(studyGroup);
-  function toReadableDate(dateString, locale = 'zh-TW') {
-    const dateObj = new Date(dateString);
-    const options = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    };
-
-    return new Intl.DateTimeFormat(locale, options).format(dateObj);
-  }
 
   const handleJoinGroup = async (id) => {
     const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
     await setDoc(userGroupRef, { note: '' }).then(alert('已加入讀書會'));
+  };
+  const statusText = {
+    ongoing: '進行中',
+    preparing: '準備中',
+    finished: '已結束',
   };
   return (
     <>
@@ -54,18 +47,21 @@ function StudyGroup() {
             </BookGroupImg>
             <GroupDetail>
               <Title>{studyGroup.name}</Title>
-              <Status>{studyGroup.status}</Status>
               <BookInfo>
                 作者： {studyGroup.author}
                 <br />
                 類別：{studyGroup.category}
               </BookInfo>
+              <Status>{statusText[studyGroup.status]}</Status>
               <Creator>
                 導讀者：{studyGroup.host}
                 <br />
                 導讀章節：{studyGroup.chapter}
                 <br />
-                舉辦時間：{toReadableDate(studyGroup.hold)}
+                舉辦時間：
+                {moment
+                  .unix(studyGroup.hold.seconds)
+                  .format('YYYY,MM,DD hh:mm A')}
               </Creator>
               <GroupButton
                 onClick={() => {
@@ -108,14 +104,15 @@ const GroupButton = styled.div`
   margin-top: 8px;
 `;
 const Status = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background-color: #df524d;
+  padding: 5px 16px;
+  margin-right: auto;
   color: #fff;
-  width: 130px;
-  height: 34px;
-  border-radius: 12px;
+  border-radius: 6px;
+  width: 95px;
+  text-align: center;
+  margin-top: auto;
+  margin-bottom: -10px;
 `;
 const Title = styled.div`
   color: #5b5b5b;
@@ -124,7 +121,7 @@ const Title = styled.div`
 `;
 const BookInfo = styled.div``;
 const Creator = styled.div`
-  margin-top: auto;
+  ${'' /* margin-top: auto; */}
 `;
 const GroupDetail = styled.div`
   display: flex;
