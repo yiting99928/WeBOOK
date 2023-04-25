@@ -2,8 +2,11 @@ import styled from 'styled-components/macro';
 import { db } from '../../utils/firebase';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { useEffect } from 'react';
+import { BiMessageAdd, BiTrash } from 'react-icons/bi';
+import { useState } from 'react';
 
 function StickyNote({ item, dispatch, processIndex, id }) {
+  // const [noteColors, setNoteColors] = useState(['#FFE4E1', '#FFF5EE', '#FFE4B5', '#F0FFF0', '#E0FFFF']);
   useEffect(() => {
     handleUpdateNote();
   }, [item.data]);
@@ -55,13 +58,29 @@ function StickyNote({ item, dispatch, processIndex, id }) {
       process: updatedProcess,
     });
   };
+
+  const noteColor = ['#FFE4E1', '#FFF5EE', '#FFE4B5', '#F0FFF0', '#E0FFFF'];
+
+  // function getRandomColor() {
+  //   const noteColor = ['#FFE4E1', '#FFF5EE', '#FFE4B5', '#F0FFF0', '#E0FFFF'];
+  //   const randomIndex = Math.floor(Math.random() * noteColor.length);
+  //   return noteColor[randomIndex];
+  // }
+  // const updateNoteColors = () => {
+  //   const newNoteColors = item.data.map(() => getRandomColor());
+  //   setNoteColors(newNoteColors);
+  // };
   return (
     <NoteContainer>
       {item.data === undefined ? (
         <></>
       ) : (
         item.data.map((item, index = 0) => (
-          <Note key={index}>
+          <Note key={index} noteColor={noteColor[index % noteColor.length]}>
+            <Icons>
+              <BiMessageAdd onClick={handleAddOption} />
+              <BiTrash onClick={() => handleDelOption(index)} />
+            </Icons>
             <Message
               dangerouslySetInnerHTML={{ __html: item.message }}
               contentEditable
@@ -74,28 +93,32 @@ function StickyNote({ item, dispatch, processIndex, id }) {
               onBlur={(e) => handleOptionBlur(index, e, 'name')}
               onInput={onContentEditableInput}
             />
-
-            <div>
-              <AddInput value="+" type="button" onClick={handleAddOption} />
-              <input
-                value="x"
-                type="button"
-                onClick={() => handleDelOption(index)}
-              />
-            </div>
           </Note>
         ))
       )}
     </NoteContainer>
   );
 }
-const AddInput = styled.input``;
+const Icons = styled.div`
+  padding: 3px;
+  border-radius: 6px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: flex;
+  gap: 2px;
+  svg {
+    cursor: pointer;
+    color: #5b5b5b;
+  }
+`;
 const NoteContainer = styled.div`
   display: flex;
   gap: 15px;
   width: 100%;
-  ${'' /* white-space: nowrap; */}
+  height: 70%;
   overflow-x: scroll;
+  align-items: center;
 `;
 const Message = styled.div`
   padding: 5px 0;
@@ -103,12 +126,13 @@ const Message = styled.div`
   max-width: 160px;
 `;
 const Note = styled.div`
+  position: relative;
   min-width: 200px;
-  min-height: 200px;
-  background-color: #efefef;
+  height: 200px;
+  background-color: ${(props) => props.noteColor || '#efefef'};
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 15px;
 `;
 const Name = styled.div`
   margin-top: auto;
