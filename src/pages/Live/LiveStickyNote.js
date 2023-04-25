@@ -61,15 +61,6 @@ function StickyNote({ item, dispatch, processIndex, id }) {
 
   const noteColor = ['#FFE4E1', '#FFF5EE', '#FFE4B5', '#F0FFF0', '#E0FFFF'];
 
-  // function getRandomColor() {
-  //   const noteColor = ['#FFE4E1', '#FFF5EE', '#FFE4B5', '#F0FFF0', '#E0FFFF'];
-  //   const randomIndex = Math.floor(Math.random() * noteColor.length);
-  //   return noteColor[randomIndex];
-  // }
-  // const updateNoteColors = () => {
-  //   const newNoteColors = item.data.map(() => getRandomColor());
-  //   setNoteColors(newNoteColors);
-  // };
   return (
     <NoteContainer>
       {item.data === undefined ? (
@@ -79,7 +70,11 @@ function StickyNote({ item, dispatch, processIndex, id }) {
           <Note key={index} noteColor={noteColor[index % noteColor.length]}>
             <Icons>
               <BiMessageAdd onClick={handleAddOption} />
-              <BiTrash onClick={() => handleDelOption(index)} />
+              {index === 0 ? (
+                <div></div>
+              ) : (
+                <BiTrash onClick={() => handleDelOption(index)} />
+              )}
             </Icons>
             <Message
               dangerouslySetInnerHTML={{ __html: item.message }}
