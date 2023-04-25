@@ -23,36 +23,17 @@ const Preparing = () => {
   const { user } = useContext(AuthContext);
   const [expanded, setExpanded] = useState([]);
 
-  useEffect(() => {
-    async function getData() {
-      const groupData = await data.loadGroupData(user.email);
-      const preparingData = groupData.filter(
-        (item) => item.status === 'preparing'
-      );
-      setGroupData(preparingData);
-    }
+  async function getData() {
+    const groupData = await data.loadGroupData(user.email);
+    const preparingData = groupData.filter(
+      (item) => item.status === 'preparing'
+    );
+    setGroupData(preparingData);
+  }
 
+  useEffect(() => {
     getData();
   }, [user]);
-
-  useEffect(() => {
-    const unsubscribes = groupData.map((item) => {
-      const studyGroupRef = doc(db, 'studyGroups', item.id);
-      return onSnapshot(studyGroupRef, async (doc) => {
-        if (doc.data().status === 'ongoing') {
-          const groupData = await data.loadGroupData(user.email);
-          const preparingData = groupData.filter(
-            (item) => item.status === 'preparing'
-          );
-          setGroupData(preparingData);
-        }
-      });
-    });
-
-    return () => {
-      unsubscribes.forEach((unsubscribe) => unsubscribe());
-    };
-  }, [groupData, user]);
 
   async function handleChangeState(item) {
     const groupRef = doc(db, 'studyGroups', item.id);
@@ -65,6 +46,7 @@ const Preparing = () => {
         alert('請新增至少一個流程!');
       } else {
         updateDoc(groupRef, { status: 'ongoing' });
+        getData();
       }
     } catch (error) {
       console.error('Error fetching group data: ', error);
@@ -77,6 +59,7 @@ const Preparing = () => {
     const userStudyGroupsRef = collection(usersDocRef, 'userStudyGroups');
     const groupRef = doc(userStudyGroupsRef, id);
     await deleteDoc(groupRef).then(alert('已退出讀書會'));
+    getData();
   }
 
   async function handleDelGroup(id) {
@@ -86,10 +69,12 @@ const Preparing = () => {
         deleteDoc(doc(db, 'studyGroups', id)),
       ]);
       alert('取消讀書會');
+      getData();
     } catch (error) {
       console.error(error);
     }
   }
+
   async function deleteAllDocs(id) {
     const usersQuerySnapshot = await getDocs(collection(db, 'users'));
 
@@ -110,6 +95,7 @@ const Preparing = () => {
       }
     }
   }
+
   const toggleExpanded = (index) => {
     setExpanded((prevExpanded) => {
       const newExpanded = [...prevExpanded];
