@@ -26,6 +26,9 @@ import QA from './LiveQA';
 import { v4 as uuidv4 } from 'uuid';
 import { IoIosArrowForward } from 'react-icons/io';
 import { AiFillSound, AiTwotoneVideoCamera } from 'react-icons/ai';
+import { MdCallEnd, MdFirstPage, MdLastPage } from 'react-icons/md';
+import moment from 'moment';
+
 function reducer(processData, { type, payload = {} }) {
   const { processIndex, data, process } = payload;
   switch (type) {
@@ -71,7 +74,6 @@ function Live() {
     isMuted: false,
     isVideoDisabled: false,
   });
-
   const remoteVideoRef = useRef(null);
   const localVideoRef = useRef(null);
 
@@ -85,7 +87,10 @@ function Live() {
     }
 
     audioTracks[0].enabled = !audioTracks[0].enabled;
-    setVideoState(!videoState.isMuted);
+    setVideoState((prev) => ({
+      ...prev,
+      isMuted: !videoState.isMuted,
+    }));
   }
 
   function toggleVideo() {
@@ -95,7 +100,10 @@ function Live() {
     }
 
     videoTracks[0].enabled = !videoTracks[0].enabled;
-    setVideoState(!videoState.isVideoDisabled);
+    setVideoState((prev) => ({
+      ...prev,
+      isVideoDisabled: !videoState.isVideoDisabled,
+    }));
   }
 
   async function openUserMedia() {
@@ -463,7 +471,13 @@ function Live() {
           <br />
           導讀章節:{studyGroup.chapter}
           <br />
-          舉辦時間:{studyGroup.hold}
+          舉辦時間:
+          {studyGroup && studyGroup.hold ? (
+            moment.unix(studyGroup.hold.seconds).format('YYYY,MM,DD hh:mm A')
+          ) : (
+            <div>loading</div>
+          )}
+          {console.log(studyGroup.hold)}
           <br />
           導讀人：{studyGroup.host}
         </GroupTitle>
@@ -510,44 +524,38 @@ function Live() {
               <></>
             ) : (
               <ProcessInputs isHost={studyGroup.createBy === user.email}>
-                <ProcessInput
-                  type="button"
-                  value="前一頁"
-                  onClick={() =>
-                    setCurrentCard((prev) => {
-                      const newCard = prev > 0 ? prev - 1 : prev;
-                      updateCurrentCardInFirebase(newCard);
-                      return newCard;
-                    })
-                  }
-                />
-                <ProcessInput
-                  type="button"
-                  value="前一頁"
-                  onClick={() => {
-                    setCurrentCard((prev) => {
-                      const newCard =
-                        prev < processData.length - 1 ? prev + 1 : prev;
-                      updateCurrentCardInFirebase(newCard);
-                      return newCard;
-                    });
-                  }}
-                />
-                <MediaProcessInput>
-                  <MediaIcon>
-                    <AiFillSound onClick={toggleMute} />
-                  </MediaIcon>
-                  <MediaIcon>
-                    <AiTwotoneVideoCamera onClick={toggleVideo} />
-                  </MediaIcon>
-                  <HangupInput
-                    type="button"
-                    id="startButton"
-                    value="結束"
-                    onClick={handleStop}
-                    isHost={studyGroup.createBy === user.email}
+                <MediaIcon>
+                  <MdFirstPage
+                    onClick={() =>
+                      setCurrentCard((prev) => {
+                        const newCard = prev > 0 ? prev - 1 : prev;
+                        updateCurrentCardInFirebase(newCard);
+                        return newCard;
+                      })
+                    }
                   />
-                </MediaProcessInput>
+                </MediaIcon>
+                <MediaIcon>
+                  <MdLastPage
+                    onClick={() => {
+                      setCurrentCard((prev) => {
+                        const newCard =
+                          prev < processData.length - 1 ? prev + 1 : prev;
+                        updateCurrentCardInFirebase(newCard);
+                        return newCard;
+                      });
+                    }}
+                  />
+                </MediaIcon>
+                <MediaIcon isMuted={videoState.isMuted}>
+                  <AiFillSound onClick={toggleMute} />
+                </MediaIcon>
+                <MediaIcon isVideoDisabled={videoState.isVideoDisabled}>
+                  <AiTwotoneVideoCamera onClick={toggleVideo} />
+                </MediaIcon>
+                <MediaIcon>
+                  <MdCallEnd onClick={handleStop} />
+                </MediaIcon>
               </ProcessInputs>
             )}
             <Broadcast>
@@ -602,28 +610,19 @@ function Live() {
         </LiveContainer>
         <Note>
           <EditContent onChange={setNote} value={note} />
-          <Button onClick={handleSaveNote}>儲存講稿</Button>
+          <Button onClick={handleSaveNote}>儲存筆記</Button>
         </Note>
       </Content>
     </Container>
   );
 }
-
-const GroupButton = styled.input`
-  background-color: #ececec;
-  border-radius: 5px;
-  width: 86px;
-  height: 32px;
-`;
 const LocalVideo = styled.video`
   display: ${({ isHost }) => (isHost ? 'block' : 'none')};
-  ${'' /* opacity: ${({ isHost }) => (isHost ? 1 : 0)}; */}
   width: 200px;
   border-radius: 6px;
 `;
 const RemoteVideo = styled.video`
   display: ${({ isHost }) => (isHost ? 'none' : 'block')};
-  ${'' /* opacity: ${({ isHost }) => (isHost ? 0 : 1)}; */}
   width: 200px;
   border-radius: 6px;
 `;
@@ -633,7 +632,7 @@ const LiveContainer = styled.div`
   width: 100%;
   height: 500px;
   justify-content: space-between;
-  gap: 5px;
+  gap: 20px;
   margin-bottom: 20px;
 `;
 const Broadcast = styled.div`
@@ -654,13 +653,13 @@ const LiveIcon = styled.div`
   right: 10px;
 `;
 const LiveScreen = styled.div`
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  width: 75%;
+  width: 100%;
   padding: 10px;
   position: relative;
   border-radius: 6px;
-  border: 1px solid #b5b5b5;
   background-color: #fff;
 `;
 const LiveInputs = styled.div`
@@ -687,9 +686,7 @@ const JoinInput = styled.input`
   margin-top: 10px;
   border-radius: 6px;
 `;
-const HangupInput = styled(GroupButton)`
-  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
-`;
+
 //---卡片--//
 const Cards = styled.div`
   display: ${({ isLive }) => (isLive ? 'block' : 'none')};
@@ -708,41 +705,46 @@ const CardContent = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  height: 100%;
-  ${'' /* overflow: scroll; */}
+  height: 370px;
 `;
 const ProcessInputs = styled.div`
   display: ${({ isHost }) => (isHost ? 'flex' : 'none')};
   margin-top: auto;
-  max-width: 550px;
+  max-width: 520px;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   svg {
-    transform: scale(1.5);
+    transform: scale(1.2);
     cursor: pointer;
     color: #5b5b5b;
   }
 `;
 const MediaIcon = styled.div`
-  background-color: #ececec;
-`;
-const ProcessInput = styled(GroupButton)``;
-const MediaProcessInput = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  position: absolute;
-  right: 220px;
+  padding: 10px;
+  border-radius: 25px;
+  background-color: #f1f1f1;
+  :nth-child(3) {
+    margin-left: auto;
+    background-color: ${({ isMuted }) => (isMuted ? '#b5b5b5' : '#f1f1f1')};
+  }
+  :nth-child(4) {
+    background-color: ${({ isVideoDisabled }) =>
+      isVideoDisabled ? '#b5b5b5' : '#f1f1f1'};
+  }
+  :hover {
+    background-color: rgb(254, 224, 212);
+  }
 `;
 
 //---聊天室---//
 const ChatRoom = styled.div`
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   border-radius: 6px;
   overflow: hidden;
-  border: 1px solid #b5b5b5;
+  background-color: #fff;
+  width: 300px;
 `;
 const GuestMessage = styled.div`
   border-radius: 6px;
@@ -765,19 +767,29 @@ const ChatInput = styled.div`
   margin-top: auto;
   background-color: #f1f1f1;
   height: 30px;
-  display: flex;
-  align-items: center;
   padding: 0 5px;
   margin: 10px;
+  border-radius: 25px;
+  form {
+    display: flex;
+    align-items: center;
+  }
+  button {
+    margin-top: 5px;
+  }
 `;
 const ChatTitle = styled.div`
-  border-bottom: 1px solid #b5b5b5;
+  margin: 5px;
   padding: 8px 8px;
   background-color: #f1f1f1;
+  border-radius: 25px;
+  text-align: center;
+  letter-spacing: 1.2;
 `;
 //---筆記---//
 const Note = styled.div`
-  height: 400px;
+  height: 350px;
+  background-color: #fff;
 `;
 const Button = styled.button`
   background-color: #ffac4c;
