@@ -111,6 +111,7 @@ function Create() {
       host: user.name,
       status: 'preparing',
     });
+    setPreviewUrl('');
   };
   // console.log(createForm);
   return (
