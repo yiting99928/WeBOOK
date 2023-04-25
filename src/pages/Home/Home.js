@@ -1,18 +1,40 @@
 import styled from 'styled-components/macro';
 import bannerImg from './bannerImg.png';
-import featureImg from './featureImg.png';
 import editProcess from './editProcess.png';
 import live from './live.png';
 import note from './note.png';
-import bookImg from './bookImg.jpg';
 import DecoBg from '../../components/DecoBg';
 import { RiLiveLine } from 'react-icons/ri';
 import { AiOutlineEdit, AiOutlineQuestionCircle } from 'react-icons/ai';
 import { BsBook, BsSticky, BsChatLeftDots } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import { VscSave } from 'react-icons/vsc';
+import React, { useState, useEffect } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../utils/firebase';
+import moment from 'moment';
 
 function Home() {
+  const [allGroupsData, setAllGroupsData] = useState([]);
+  useEffect(() => {
+    async function getData() {
+      const StudyGroupsData = collection(db, 'studyGroups');
+      const groupsSnapshot = await getDocs(StudyGroupsData);
+      const groups = groupsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      const sortedGroups = groups.sort(
+        (a, b) => b.createTime.seconds - a.createTime.seconds
+      );
+      const latestFourGroups = sortedGroups.slice(0, 4);
+      console.log(latestFourGroups);
+      setAllGroupsData(latestFourGroups);
+      return latestFourGroups;
+    }
+    getData();
+  }, []);
+  // console.log('allGroupsData', allGroupsData);
   return (
     <div>
       <Banner>
@@ -32,6 +54,7 @@ function Home() {
       <Features>
         <FeatureWrap>
           <FeatureImg>
+            <FeatureDeco />
             <img src={editProcess} alt="feature" />
           </FeatureImg>
           <Feature>
@@ -77,11 +100,13 @@ function Home() {
             </FeaturePoints>
           </Feature>
           <FeatureImg>
+            <FeatureDeco />
             <img src={live} alt="feature" />
           </FeatureImg>
         </FeatureWrap>
         <FeatureWrap>
           <FeatureImg>
+            <FeatureDeco />
             <img src={note} alt="feature" />
           </FeatureImg>
           <Feature>
@@ -105,62 +130,28 @@ function Home() {
       <Recommended>
         <RecommendedTitle>最新成立的讀書會</RecommendedTitle>
         <BookGroupWrap>
-          <BookGroup>
-            <BookGroupImg>
-              <img src={bookImg} alt="feature" />
-            </BookGroupImg>
-            <BookGroupInfo>
-              <BookTitle>如何成為不完美主義者</BookTitle>
-              <BookAuthor>史帝芬 蓋斯</BookAuthor>
-              <Creator>
-                舉辦時間：2023.05.06 6:00AM <br />
-                導讀人：Yumy
-              </Creator>
-              <GroupButton>加入讀書會</GroupButton>
-            </BookGroupInfo>
-          </BookGroup>
-          <BookGroup>
-            <BookGroupImg>
-              <img src={bookImg} alt="feature" />
-            </BookGroupImg>
-            <BookGroupInfo>
-              <BookTitle>如何成為不完美主義者</BookTitle>
-              <BookAuthor>史帝芬 蓋斯</BookAuthor>
-              <Creator>
-                舉辦時間：2023.05.06 6:00AM <br />
-                導讀人：Yumy
-              </Creator>
-              <GroupButton>加入讀書會</GroupButton>
-            </BookGroupInfo>
-          </BookGroup>
-          <BookGroup>
-            <BookGroupImg>
-              <img src={bookImg} alt="feature" />
-            </BookGroupImg>
-            <BookGroupInfo>
-              <BookTitle>如何成為不完美主義者</BookTitle>
-              <BookAuthor>史帝芬 蓋斯</BookAuthor>
-              <Creator>
-                舉辦時間：2023.05.06 6:00AM <br />
-                導讀人：Yumy
-              </Creator>
-              <GroupButton>加入讀書會</GroupButton>
-            </BookGroupInfo>
-          </BookGroup>
-          <BookGroup>
-            <BookGroupImg>
-              <img src={bookImg} alt="feature" />
-            </BookGroupImg>
-            <BookGroupInfo>
-              <BookTitle>如何成為不完美主義者</BookTitle>
-              <BookAuthor>史帝芬 蓋斯</BookAuthor>
-              <Creator>
-                舉辦時間：2023.05.06 6:00AM <br />
-                導讀人：Yumy
-              </Creator>
-              <GroupButton>加入讀書會</GroupButton>
-            </BookGroupInfo>
-          </BookGroup>
+          {allGroupsData.length === 0 ? (
+            <></>
+          ) : (
+            allGroupsData.map((item) => (
+              <BookGroup>
+                <BookGroupImg>
+                  <img src={item.image} alt="feature" />
+                </BookGroupImg>
+                <BookGroupInfo>
+                  <BookTitle>{item.name}</BookTitle>
+                  <BookAuthor>{item.author}</BookAuthor>
+                  <Creator>
+                    舉辦時間： {moment
+                        .unix(item.hold.seconds)
+                        .format('YYYY,MM,DD hh:mm A')} <br />
+                    導讀人：{item.host}
+                  </Creator>
+                  <GroupButton>加入讀書會</GroupButton>
+                </BookGroupInfo>
+              </BookGroup>
+            ))
+          )}
         </BookGroupWrap>
       </Recommended>
       <FooterBottom />
@@ -246,6 +237,7 @@ const Features = styled.div`
   display: flex;
   flex-direction: column;
   gap: 50px;
+  margin-bottom: 150px;
 `;
 const FeatureWrap = styled.div`
   display: flex;
@@ -263,6 +255,16 @@ const Feature = styled.div`
 `;
 const FeatureImg = styled.div`
   max-width: 500px;
+  display: flex;
+  align-items: center;
+`;
+const FeatureDeco = styled.div`
+  width: 500px;
+  height: 450px;
+  background-color: rgba(239, 140, 138, 0.1);
+  position: absolute;
+  z-index: -1;
+  filter: blur(100px);
 `;
 const FeatureTitle = styled.div`
   color: #df524d;
