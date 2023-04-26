@@ -7,7 +7,7 @@ import {
 } from 'firebase/firestore';
 
 const data = {
-  async loadGroupData(email) {
+  async fetchUserGroup(email) {
     const userRef = doc(db, 'users', email);
     const userStudyGroupsRef = collection(userRef, 'userStudyGroups');
     const userStudyGroupsSnapshot = await getDocs(userStudyGroupsRef);
