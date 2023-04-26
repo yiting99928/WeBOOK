@@ -87,7 +87,6 @@ function Process() {
   const [editable, setEditable] = useState(0);
   const { id } = useParams();
 
-  // console.log(studyGroup)
   useEffect(() => {
     async function initData() {
       try {
@@ -195,15 +194,14 @@ function Process() {
       });
   }
 
-  const handleOptionBlur = (processIndex, e) => {
-    const updatedDescription = e.target.innerText;
+  const handleDescriptionChange = (processIndex, e) => {
+    const updatedDescription = e.target.value;
     dispatch({
       type: 'UPDATE_DESCRIPTION',
       payload: { processIndex, data: updatedDescription },
     });
   };
-
-  // console.log(processData);
+  console.log(processData);
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -241,10 +239,9 @@ function Process() {
                   </Drag>
                   <Title>
                     <Description
-                      dangerouslySetInnerHTML={{ __html: item.description }}
-                      contentEditable={editable === processIndex}
-                      onBlur={(e) => handleOptionBlur(processIndex, e)}
-                      onInput={(e) => e.stopPropagation()}
+                      readOnly={editable !== processIndex}
+                      onChange={(e) => handleDescriptionChange(processIndex, e)}
+                      value={item.description}
                     />
                     <TemplateType
                       name="templateType"
@@ -317,8 +314,9 @@ const SubmitInput = styled.div`
   letter-spacing: 1.5;
   align-self: center;
 `;
-const Description = styled.div`
+const Description = styled.input`
   font-size: 20px;
+  width: 80%;
 `;
 
 const Drag = styled.div`
@@ -374,6 +372,7 @@ const Title = styled.div`
   padding-bottom: 16px;
   border-bottom: 1px solid #5b5b5b;
   margin-bottom: 10px;
+  gap: 10px;
 `;
 const Container = styled.div`
   display: flex;

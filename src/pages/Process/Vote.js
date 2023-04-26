@@ -22,16 +22,13 @@ function Vote({ item, processIndex = 0, editable = false, dispatch = {} }) {
       payload: { processIndex, data: updatedData },
     });
   };
-  const handleOptionBlur = (index, e) => {
+  const handleOptionChange = (index, e) => {
     const updatedData = [...item.data];
-    updatedData[index].option = e.target.innerText;
+    updatedData[index].option = e.target.value;
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
-  };
-  const onContentEditableInput = (e) => {
-    e.stopPropagation();
   };
   return (
     <div>
@@ -39,11 +36,11 @@ function Vote({ item, processIndex = 0, editable = false, dispatch = {} }) {
         <VoteItem key={index}>
           <input type="radio" name="option" />
           <ItemNum>{index + 1}.</ItemNum>
-          <div
-            dangerouslySetInnerHTML={{ __html: voteItem.option }}
-            contentEditable={editable === processIndex}
-            onBlur={(e) => handleOptionBlur(index, e)}
-            onInput={onContentEditableInput}
+          <OptionInput
+            type="text"
+            value={voteItem.option}
+            readOnly={editable !== processIndex}
+            onChange={(e) => handleOptionChange(index, e)}
           />
           <DelOption
             editing={editable === processIndex}
@@ -58,8 +55,12 @@ function Vote({ item, processIndex = 0, editable = false, dispatch = {} }) {
     </div>
   );
 }
+const OptionInput = styled.input`
+  width: 80%;
+`;
 const ItemNum = styled.div`
   padding: 0 8px;
+  margin-top: 3px;
 `;
 const Button = styled.button`
   display: ${({ editing }) => (editing ? 'block' : 'none')};

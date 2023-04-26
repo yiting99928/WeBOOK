@@ -1,19 +1,15 @@
 import styled from 'styled-components/macro';
 
-function StickyNote({ item, dispatch, processIndex, editable }) {
-  const handleOptionBlur = (index, e, field) => {
+function StickyNote({ item, dispatch, processIndex }) {
+  const handleOptionChange = (index, e, field) => {
     const updatedData = [...item.data];
-    updatedData[index][field] = e.target.innerText;
-    console.log(updatedData);
+    updatedData[index][field] = e.target.value;
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
-  const onContentEditableInput = (e) => {
-    e.stopPropagation();
-  };
-  
+
   return (
     <div>
       {item.data === undefined ? (
@@ -22,16 +18,14 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
         item.data.map((item, index = 0) => (
           <Note key={index}>
             <Message
-              dangerouslySetInnerHTML={{ __html: item.message }}
-              contentEditable
-              onBlur={(e) => handleOptionBlur(index, e, 'message')}
-              onInput={onContentEditableInput}
+              type="text"
+              value={item.message}
+              onChange={(e) => handleOptionChange(index, e, 'message')}
             />
             <Name
-              dangerouslySetInnerHTML={{ __html: item.name }}
-              contentEditable
-              onBlur={(e) => handleOptionBlur(index, e, 'name')}
-              onInput={onContentEditableInput}
+              type="text"
+              value={item.name}
+              onChange={(e) => handleOptionChange(index, e, 'name')}
             />
           </Note>
         ))
@@ -39,8 +33,10 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
     </div>
   );
 }
-const Message = styled.div`
+const Message = styled.textarea`
   padding: 5px 0;
+  height: 100%;
+  width: 100%;
 `;
 const Note = styled.div`
   width: 200px;
@@ -51,7 +47,7 @@ const Note = styled.div`
   padding: 20px;
   border-radius: 5px;
 `;
-const Name = styled.div`
+const Name = styled.input`
   margin-top: auto;
 `;
 export default StickyNote;

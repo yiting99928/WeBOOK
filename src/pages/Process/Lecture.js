@@ -1,20 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/macro';
-import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-const quillModules = {
-  toolbar: [
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-    [{ color: [] }],
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ list: 'ordered' }, { list: 'bullet' }],
-    ['link', 'image'],
-    ['clean'],
-  ],
-  clipboard: {
-    matchVisual: false,
-  },
-};
+import EditContent from '../../components/EditContent';
 
 function Lecture({ item, processIndex = 0, editable = false, dispatch = {} }) {
   const [content, setContent] = useState(item.data);
@@ -30,6 +17,7 @@ function Lecture({ item, processIndex = 0, editable = false, dispatch = {} }) {
       payload: { processIndex, data: content },
     });
   };
+
   return (
     <div>
       <PreviewContent
@@ -37,25 +25,19 @@ function Lecture({ item, processIndex = 0, editable = false, dispatch = {} }) {
         editing={editable === processIndex}
       />
       <Edit editing={editable === processIndex}>
-        <ReactQuill
+        <EditContent
           value={content}
           onChange={onContentChange}
-          modules={quillModules}
+          onBlur={saveContent}
         />
-        <Button onClick={saveContent}>儲存講稿</Button>
       </Edit>
     </div>
   );
 }
-const Button = styled.button`
-  background-color: #ffac4c;
-  color: #fff;
-  padding: 8px 15px;
-  margin-top: 10px;
-  border-radius: 6px;
-`;
+
 const PreviewContent = styled.div`
   display: ${({ editing }) => (editing ? 'none' : 'block')};
+  line-height: 1.2;
 `;
 const Edit = styled.div`
   display: ${({ editing }) => (editing ? 'block' : 'none')};
