@@ -11,6 +11,7 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../../utils/firebase';
 import loginImg from './loginImg.png';
 import DecoBg from '../../components/DecoBg';
+import modal from '../../utils/modal';
 
 function Login() {
   const { user } = useContext(AuthContext);
@@ -71,8 +72,16 @@ function Login() {
         console.log(userCredential);
       })
       .catch((error) => {
-        alert('電子信箱已使用');
-        console.log(error.message);
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            modal.fail('電子信箱已使用');
+            break;
+          case 'auth/weak-password':
+            modal.fail('密碼應至少為6個字符');
+            break;
+          default:
+            modal.fail('註冊失敗，請重試');
+        }
       });
   };
 
