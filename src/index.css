@@ -185,3 +185,28 @@ button {
     border: 0;
     background: none;
 }
+
+textarea {
+    background: none;
+    border: none;
+}
+
+textarea::-webkit-resizer {
+    display: none;
+}
+
+textarea::-moz-resizer {
+    display: none;
+}
+
+textarea::-o-resizer {
+    display: none;
+}
+
+textarea::-ms-resizer {
+    display: none;
+}
+
+textarea::resizer {
+    display: none;
+}

@@ -14,16 +14,16 @@ const quillModules = {
     matchVisual: false,
   },
 };
-function EditContent({ onChange, value }) {
-
+function EditContent({ onChange, value, onBlur }) {
   return (
-      <ReactQuill
-        className='quill-editor'
-        theme="snow"
-        value={value}
-        onChange={onChange}
-        modules={quillModules}
-      />
+    <ReactQuill
+      className="quill-editor"
+      theme="snow"
+      value={value}
+      onChange={onChange}
+      modules={quillModules}
+      onBlur={onBlur}
+    />
   );
 }
 export default EditContent;
