@@ -30,7 +30,6 @@ const data = {
     allGroupsData.sort((a, b) => {
       return a.hold.seconds - b.hold.seconds;
     });
-    console.log(allGroupsData);
     return allGroupsData;
   },
 };
