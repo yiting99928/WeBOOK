@@ -14,8 +14,8 @@ import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import { GrSearch } from 'react-icons/gr';
-import moment from 'moment';
 import modal from '../../utils/modal';
+import StudyGroupCard from '../../components/StudyGroupCard';
 
 function StudyGroups() {
   const { user } = useContext(AuthContext);
@@ -39,8 +39,9 @@ function StudyGroups() {
 
   const handleJoinGroup = async (id) => {
     const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
-    await setDoc(userGroupRef, { note: '' }).then(modal.success('加入讀書會'));
+    await setDoc(userGroupRef, { note: '' }).then(modal.success('已加入讀書會!'));
   };
+
   const searchByCategory = async (category) => {
     console.log(category);
     if (category === '全部讀書會') {
@@ -238,33 +239,13 @@ function StudyGroups() {
           {allGroupsData.length === 0 ? (
             <>目前此類別讀書會</>
           ) : (
-            allGroupsData.map((card, index) => (
-              <div
+            allGroupsData.map((item, index) => (
+              <StudyGroupCard
+                item={item}
                 key={index}
-                onClick={() => navigate(`/studyGroup/${card.id}`)}>
-                <BookGroup key={index}>
-                  <BookGroupImg src={card.image} alt="bookImg" />
-                  <BookGroupInfo>
-                    <BookTitle>{card.name}</BookTitle>
-                    <BookAuthor>{card.author}</BookAuthor>
-                    <Creator>
-                      時間：
-                      {moment
-                        .unix(card.hold.seconds)
-                        .format('YYYY,MM,DD hh:mm A')}
-                      <br />
-                      導讀者：{card.host}
-                    </Creator>
-                    <GroupButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleJoinGroup(card.id);
-                      }}>
-                      加入讀書會
-                    </GroupButton>
-                  </BookGroupInfo>
-                </BookGroup>
-              </div>
+                onClick={() => navigate(`/studyGroup/${item.id}`)}
+                onJoinGroup={handleJoinGroup}
+              />
             ))
           )}
         </BookGroupWrap>
@@ -279,59 +260,6 @@ const BookGroupWrap = styled.div`
   gap: 23px;
   margin-top: 40px;
   margin-bottom: 120px;
-`;
-const BookGroupImg = styled.img`
-  max-height: 320px;
-  object-fit: cover;
-`;
-const BookGroupInfo = styled.div`
-  height: 180px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 10px 15px;
-`;
-const BookGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 230px;
-  border-radius: 8px;
-  background: #ffffff;
-  border: 1px solid #ececec;
-  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  height: 510px;
-`;
-const GroupButton = styled.div`
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 36px;
-  background: #ffac4c;
-  border-radius: 10px;
-  color: white;
-  font-weight: 600;
-  letter-spacing: 1.2;
-  font-size: 16px;
-  margin-top: 8px;
-`;
-
-const BookTitle = styled.div`
-  padding-bottom: 4px;
-  font-weight: 600;
-  font-size: 18px;
-`;
-const BookAuthor = styled.div`
-  color: #5b5b5b;
-  padding-top: 6px;
-  font-size: 12px;
-`;
-const Creator = styled.div`
-  font-size: 14px;
-  margin-top: auto;
-  line-height: 1.3;
 `;
 const SearchBar = styled.div`
   display: flex;
