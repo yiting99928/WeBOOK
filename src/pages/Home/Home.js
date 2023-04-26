@@ -34,7 +34,9 @@ function Home() {
     }
     getData();
   }, []);
+
   // console.log('allGroupsData', allGroupsData);
+
   return (
     <div>
       <Banner>
@@ -135,16 +137,16 @@ function Home() {
           ) : (
             allGroupsData.map((item) => (
               <BookGroup>
-                <BookGroupImg>
-                  <img src={item.image} alt="feature" />
-                </BookGroupImg>
+                <BookGroupImg src={item.image} alt="feature" />
                 <BookGroupInfo>
                   <BookTitle>{item.name}</BookTitle>
                   <BookAuthor>{item.author}</BookAuthor>
                   <Creator>
-                    舉辦時間： {moment
-                        .unix(item.hold.seconds)
-                        .format('YYYY,MM,DD hh:mm A')} <br />
+                    時間：
+                    {moment
+                      .unix(item.hold.seconds)
+                      .format('YYYY,MM,DD hh:mm A')}{' '}
+                    <br />
                     導讀人：{item.host}
                   </Creator>
                   <GroupButton>加入讀書會</GroupButton>
@@ -158,6 +160,41 @@ function Home() {
     </div>
   );
 }
+const RecommendedTitle = styled.div`
+  text-align: center;
+  color: #df524d;
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 10px;
+`;
+const BookGroupWrap = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 65px;
+`;
+const BookGroupImg = styled.img`
+  max-height: 320px;
+  object-fit: cover;
+`;
+const BookGroupInfo = styled.div`
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 15px;
+`;
+const BookGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 230px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #ececec;
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  height: 510px;
+`;
 const GroupButton = styled.div`
   display: flex;
   justify-content: center;
@@ -171,56 +208,24 @@ const GroupButton = styled.div`
   font-size: 18px;
   margin-top: 8px;
 `;
+
 const BookTitle = styled.div`
   padding-bottom: 4px;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 18px;
 `;
 const BookAuthor = styled.div`
   color: #5b5b5b;
   padding-top: 6px;
-  font-size: 14px;
+  font-size: 12px;
 `;
 const Creator = styled.div`
-  font-size: 16px;
+  font-size: 14px;
   margin-top: auto;
   line-height: 1.3;
 `;
-const RecommendedTitle = styled.div`
-  text-align: center;
-  color: #df524d;
-  font-size: 36px;
-  font-weight: 600;
-  margin-bottom: 10px;
-`;
-const BookGroupWrap = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 65px;
-`;
-const BookGroupImg = styled.div`
-  width: 280px;
-`;
-const BookGroupInfo = styled.div`
-  height: 200px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 10px 15px;
-`;
-const BookGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 280px;
-  border-radius: 8px;
-  background: #ffffff;
-  border: 1px solid #ececec;
-  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-`;
 const Recommended = styled.div`
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   margin-bottom: 110px;
   overflow: hidden;
@@ -231,7 +236,7 @@ const FooterBottom = styled.div`
 
 //-----Feature-----//
 const Features = styled.div`
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 80px auto;
   letter-spacing: 0.05em;
   display: flex;
@@ -257,14 +262,15 @@ const FeatureImg = styled.div`
   max-width: 500px;
   display: flex;
   align-items: center;
+  justify-content: center;
 `;
 const FeatureDeco = styled.div`
-  width: 500px;
-  height: 450px;
+  width: 300px;
+  height: 300px;
   background-color: rgba(239, 140, 138, 0.1);
   position: absolute;
   z-index: -1;
-  filter: blur(100px);
+  filter: blur(60px);
 `;
 const FeatureTitle = styled.div`
   color: #df524d;
@@ -309,13 +315,13 @@ const Banner = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 1300px;
+  max-width: 1200px;
   margin: 0 auto;
   position: relative;
   justify-content: space-between;
-  padding-left: 30px;
 `;
 const BannerInfo = styled.div`
+  padding-left: 20px;
   z-index: 1;
 `;
 export default Home;
