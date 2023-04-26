@@ -237,6 +237,7 @@ const SubmitInput = styled.button`
   font-size: 18px;
   font-weight: 600;
   margin-top: auto;
+  cursor: pointer;
 `;
 const Title = styled.div`
   letter-spacing: 2;
@@ -294,6 +295,7 @@ const FlipButton = styled.input`
   background-color: #fff;
   border: none;
   color: #df524d;
+  cursor: pointer;
 `;
 const LoginImg = styled.div`
   max-width: 550px;
