@@ -15,13 +15,15 @@ import { AuthContext } from '../../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import { GrSearch } from 'react-icons/gr';
 import moment from 'moment';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import webookJump from './webookJump.gif';
 
 function StudyGroups() {
   const { user } = useContext(AuthContext);
   const [allGroupsData, setAllGroupsData] = useState([]);
   const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
-
   async function getData() {
     const StudyGroupsData = collection(db, 'studyGroups');
     const q = query(StudyGroupsData, orderBy('hold'));
@@ -38,8 +40,19 @@ function StudyGroups() {
   }, []);
 
   const handleJoinGroup = async (id) => {
+    const MySwal = withReactContent(Swal);
     const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
-    await setDoc(userGroupRef, { note: '' }).then(alert('已加入讀書會'));
+    await setDoc(userGroupRef, { note: '' })
+      // .then(alert('已加入讀書會'));
+      .then(
+        MySwal.fire({
+          title: '加入讀書會!',
+          // text: '加入讀書會!',
+          imageUrl: `${webookJump}`,
+          imageWidth: 100,
+          imageAlt: 'join study group',
+        })
+      );
   };
   const searchByCategory = async (category) => {
     console.log(category);
@@ -243,14 +256,12 @@ function StudyGroups() {
                 key={index}
                 onClick={() => navigate(`/studyGroup/${card.id}`)}>
                 <BookGroup key={index}>
-                  <BookGroupImg>
-                    <img src={card.image} alt="feature" />
-                  </BookGroupImg>
+                  <BookGroupImg src={card.image} alt="bookImg" />
                   <BookGroupInfo>
                     <BookTitle>{card.name}</BookTitle>
                     <BookAuthor>{card.author}</BookAuthor>
                     <Creator>
-                      舉辦時間：
+                      時間：
                       {moment
                         .unix(card.hold.seconds)
                         .format('YYYY,MM,DD hh:mm A')}
@@ -277,13 +288,14 @@ function StudyGroups() {
 const BookGroupWrap = styled.div`
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, 280px);
-  gap: 25px;
-  margin-top: 80px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 23px;
+  margin-top: 40px;
   margin-bottom: 120px;
 `;
-const BookGroupImg = styled.div`
-  width: 280px;
+const BookGroupImg = styled.img`
+  max-height: 320px;
+  object-fit: cover;
 `;
 const BookGroupInfo = styled.div`
   height: 180px;
@@ -296,14 +308,13 @@ const BookGroup = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 280px;
-  gap: 5px;
+  width: 230px;
   border-radius: 8px;
   background: #ffffff;
   border: 1px solid #ececec;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  height: 570px;
+  height: 510px;
 `;
 const GroupButton = styled.div`
   display: flex;
@@ -322,15 +333,15 @@ const GroupButton = styled.div`
 const BookTitle = styled.div`
   padding-bottom: 4px;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 18px;
 `;
 const BookAuthor = styled.div`
   color: #5b5b5b;
   padding-top: 6px;
-  font-size: 14px;
+  font-size: 12px;
 `;
 const Creator = styled.div`
-  font-size: 16px;
+  font-size: 14px;
   margin-top: auto;
   line-height: 1.3;
 `;
@@ -366,28 +377,26 @@ const SelectInput = styled.select`
   border-radius: 4px;
 `;
 const SearchInput = styled.input`
-  height: 32px;
   padding: 8px 12px;
-  width: 100%;
 `;
 const SearchBtns = styled.div`
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  max-width: 1000px;
 `;
 const SearchBtn = styled.input`
-  width: 86px;
-  height: 32px;
+  padding: 5px 10px;
   border: 2px solid #ffac4c;
   border-radius: 5px;
   background-color: white;
   color: #ffac4c;
 `;
-const SearchBtnTitle = styled.div``;
+const SearchBtnTitle = styled.div`
+  width: 50px;
+`;
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   margin-top: 60px;
   margin-bottom: 200px;
