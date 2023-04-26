@@ -66,7 +66,7 @@ function Login() {
           password: register.password,
           email: register.email,
         }).then(() => {
-          console.log('註冊成功');
+          modal.success('註冊成功');
           navigate('/profile');
         });
         console.log(userCredential);
