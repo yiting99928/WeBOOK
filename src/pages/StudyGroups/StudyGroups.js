@@ -15,9 +15,7 @@ import { AuthContext } from '../../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import { GrSearch } from 'react-icons/gr';
 import moment from 'moment';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import webookJump from './webookJump.gif';
+import modal from '../../utils/modal';
 
 function StudyGroups() {
   const { user } = useContext(AuthContext);
@@ -40,19 +38,8 @@ function StudyGroups() {
   }, []);
 
   const handleJoinGroup = async (id) => {
-    const MySwal = withReactContent(Swal);
     const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
-    await setDoc(userGroupRef, { note: '' })
-      // .then(alert('已加入讀書會'));
-      .then(
-        MySwal.fire({
-          title: '加入讀書會!',
-          // text: '加入讀書會!',
-          imageUrl: `${webookJump}`,
-          imageWidth: 100,
-          imageAlt: 'join study group',
-        })
-      );
+    await setDoc(userGroupRef, { note: '' }).then(modal.success('加入讀書會'));
   };
   const searchByCategory = async (category) => {
     console.log(category);
@@ -317,6 +304,7 @@ const BookGroup = styled.div`
   height: 510px;
 `;
 const GroupButton = styled.div`
+  cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -326,7 +314,7 @@ const GroupButton = styled.div`
   color: white;
   font-weight: 600;
   letter-spacing: 1.2;
-  font-size: 18px;
+  font-size: 16px;
   margin-top: 8px;
 `;
 

@@ -4,6 +4,7 @@ import { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
+import modal from '../../utils/modal';
 
 import { useParams } from 'react-router-dom';
 function StudyGroup() {
@@ -28,8 +29,9 @@ function StudyGroup() {
 
   const handleJoinGroup = async (id) => {
     const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
-    await setDoc(userGroupRef, { note: '' }).then(alert('已加入讀書會'));
+    await setDoc(userGroupRef, { note: '' }).then(modal.success('加入讀書會'));
   };
+
   const statusText = {
     ongoing: '進行中',
     preparing: '準備中',

@@ -13,6 +13,7 @@ import {
 import DecoBg from '../../components/DecoBg';
 import { BiImageAdd } from 'react-icons/bi';
 import { AuthContext } from '../../context/authContext';
+import modal from '../../utils/modal';
 
 function Create() {
   const { user } = useContext(AuthContext);
@@ -54,7 +55,7 @@ function Create() {
     e.preventDefault();
     for (let key in createForm) {
       if (!createForm[key]) {
-        alert('請填寫完整');
+        modal.fail('請填寫完整');
         return;
       }
     }
@@ -93,7 +94,7 @@ function Create() {
         note: '',
       });
       console.log(`User Study Group Doc: ${docRef.id}`);
-      alert('已創建讀書會!');
+      modal.success('創建讀書會');
     } catch (error) {
       console.error('Error: ', error);
     }
