@@ -55,6 +55,17 @@ input{
   font-family:'Poppins', sans-serif;
   position:relative;
 }
+.swal2-popup{
+  width:20em
+}
+.swal2-styled.swal2-confirm{
+  background-color:#E95F5C;
+}
+.swal2-title{
+  font-size:20px;
+  letter-spacing:1.2
+}
+
 `;
 
 export default App;
