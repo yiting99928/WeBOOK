@@ -22,18 +22,16 @@ function StickyNote({ item, dispatch, processIndex, id }) {
       payload: { processIndex, data: updatedData },
     });
   };
-  const handleOptionBlur = (index, e, field) => {
+
+  const handleOptionChange = (index, e, field) => {
     const updatedData = [...item.data];
-    updatedData[index][field] = e.target.innerText;
-    console.log(updatedData);
+    updatedData[index][field] = e.target.value;
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
-  const onContentEditableInput = (e) => {
-    e.stopPropagation();
-  };
+  
   const handleDelOption = async (index) => {
     const updatedData = [...item.data];
     console.log([...item.data]);
@@ -77,16 +75,14 @@ function StickyNote({ item, dispatch, processIndex, id }) {
               )}
             </Icons>
             <Message
-              dangerouslySetInnerHTML={{ __html: item.message }}
-              contentEditable
-              onBlur={(e) => handleOptionBlur(index, e, 'message')}
-              onInput={onContentEditableInput}
+              type="text"
+              value={item.message}
+              onChange={(e) => handleOptionChange(index, e, 'message')}
             />
-            <Name
-              dangerouslySetInnerHTML={{ __html: item.name }}
-              contentEditable
-              onBlur={(e) => handleOptionBlur(index, e, 'name')}
-              onInput={onContentEditableInput}
+           <Name
+              type="text"
+              value={item.name}
+              onChange={(e) => handleOptionChange(index, e, 'name')}
             />
           </Note>
         ))

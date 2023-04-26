@@ -22,7 +22,6 @@ import Lecture from '../../pages/Process/Lecture';
 import StickyNote from './LiveStickyNote';
 import Vote from './LiveVote';
 import QA from './LiveQA';
-// import Broadcast from './Broadcast';
 import { v4 as uuidv4 } from 'uuid';
 import { IoIosArrowForward } from 'react-icons/io';
 import { AiFillSound, AiTwotoneVideoCamera } from 'react-icons/ai';
