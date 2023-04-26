@@ -201,7 +201,7 @@ function Process() {
       payload: { processIndex, data: updatedDescription },
     });
   };
-  console.log(processData);
+  // console.log(processData);
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -221,7 +221,6 @@ function Process() {
             )}
           </GroupDetail>
         </GroupTitle>
-
         <ProcessContainer>
           {processData !== undefined &&
             processData.map((item, processIndex) => {
@@ -323,13 +322,15 @@ const Drag = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+  cursor: grab;
   img {
     width: 28px;
   }
+  :active {s
+    cursor: grabbing;
+  }
 `;
-
 const GroupDetail = styled.div`
-  ${'' /* width: 300px; */}
 `;
 const GroupTitle = styled.div`
   display: flex;
