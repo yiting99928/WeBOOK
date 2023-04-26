@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
 import { Link } from 'react-router-dom';
-import data from '../../utils/data';
+import data from '../../utils/api';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
 
@@ -13,7 +13,7 @@ const Ongoing = () => {
 
   useEffect(() => {
     async function getData() {
-      const groupData = await data.loadGroupData(user.email);
+      const groupData = await data.fetchUserGroup(user.email);
       const finishedData = groupData.filter(
         (item) => item.status === 'ongoing'
       );

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 // import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import SideMenu from '../../components/SideMenu';
-import data from '../../utils/data';
+import data from '../../utils/api';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
 
@@ -16,7 +16,7 @@ const Profile = () => {
   useEffect(() => {
     if (user) {
       async function getData() {
-        const groupData = await data.loadGroupData(user.email);
+        const groupData = await data.fetchUserGroup(user.email);
         setGroupData(groupData);
       }
       getData();

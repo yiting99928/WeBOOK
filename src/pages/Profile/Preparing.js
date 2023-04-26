@@ -14,7 +14,7 @@ import {
   getDoc,
 } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-import data from '../../utils/data';
+import data from '../../utils/api';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
 
@@ -24,7 +24,7 @@ const Preparing = () => {
   const [expanded, setExpanded] = useState([]);
 
   async function getData() {
-    const groupData = await data.loadGroupData(user.email);
+    const groupData = await data.fetchUserGroup(user.email);
     const preparingData = groupData.filter(
       (item) => item.status === 'preparing'
     );
