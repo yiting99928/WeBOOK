@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext';
 // import { db } from '../../utils/firebase';
@@ -33,27 +33,29 @@ function SideMenu() {
   }
   return (
     <Sidebar isOpen={isOpen}>
-      <ArrowIcon>
-        {isOpen ? (
-          <MdKeyboardDoubleArrowLeft onClick={toggleSidebar} />
-        ) : (
-          <MdKeyboardDoubleArrowRight onClick={toggleSidebar} />
-        )}
-      </ArrowIcon>
       {isOpen ? (
-        <SidebarLinks>
-          <User>Hi! {user.name}</User>
-          <br />
-          <br />
-          <Link to={`/profile`}>所有讀書會</Link>
-          <Link to={`/profile/ongoing`}>進行中</Link>
-          <Link to={`/profile/preparing`}>準備中</Link>
-          <Link to={`/profile/finished`}>已結束</Link>
-          <br />
-          <Logout onClick={logOut}>登出</Logout>
-        </SidebarLinks>
+        <SidebarContainer isOpen={isOpen}>
+          <ArrowIcon>
+            <MdKeyboardDoubleArrowLeft onClick={toggleSidebar} />
+          </ArrowIcon>
+          <SidebarLinks>
+            <User>Hi! {user.name}</User>
+            <br />
+            <br />
+            <Link to={`/profile`}>所有讀書會</Link>
+            <Link to={`/profile/ongoing`}>進行中</Link>
+            <Link to={`/profile/preparing`}>準備中</Link>
+            <Link to={`/profile/finished`}>已結束</Link>
+            <br />
+            <Logout onClick={logOut}>登出</Logout>
+          </SidebarLinks>
+        </SidebarContainer>
       ) : (
-        <></>
+        <SidebarContainer>
+          <ArrowIcon>
+            <MdKeyboardDoubleArrowRight onClick={toggleSidebar} />
+          </ArrowIcon>
+        </SidebarContainer>
       )}
     </Sidebar>
   );
@@ -62,8 +64,12 @@ const Sidebar = styled.div`
   width: ${({ isOpen }) => (isOpen ? '200px' : '40px')};
   background-color: #eaeaea;
   transition: all 0.3s ease;
-  position: relative;
   background-color: #fee0d4;
+  position: relative;
+`;
+const SidebarContainer = styled.div`
+  position: fixed;
+  width: ${({ isOpen }) => (isOpen ? '200px' : '40px')};
 `;
 const User = styled.div`
   font-weight: 600;
@@ -73,12 +79,12 @@ const Logout = styled.div`
   border-top: 1px solid #5b5b5b;
 `;
 const ArrowIcon = styled.div`
+  cursor: pointer;
   position: absolute;
-  right: 12px;
-  top: 15px;
+  right: 10px;
+  top: 10px;
   svg {
     transform: scale(1.3);
-    ${'' /* color: #fff; */}
   }
 `;
 const SidebarLinks = styled.div`
