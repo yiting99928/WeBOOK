@@ -1,22 +1,31 @@
 import styled from 'styled-components/macro';
 import moment from 'moment';
 import { MainBtn } from '../Buttons/Buttons';
+import { useNavigate } from 'react-router-dom';
 
 function StudyGroupCard({ item, onClick, onJoinGroup }) {
+  const navigate = useNavigate();
   return (
     <BookGroup onClick={onClick}>
-      <BookGroupImg src={item.image} alt="feature" />
+      <BookGroupImg
+        src={item.image}
+        alt="feature"
+        onClick={() => navigate(`/studyGroup/${item.id}`)}
+      />
       <BookGroupInfo>
-        <BookTitle>{item.name}</BookTitle>
+        <BookTitle>{item.groupName}</BookTitle>
+        <BookAuthor>{item.name}</BookAuthor>
         <BookAuthor>{item.author}</BookAuthor>
         <Creator>
           時間：
-          {moment.unix(item.startTime.seconds).format('YYYY-MM-DD hh:mm A')} <br />
+          {moment
+            .unix(item.startTime.seconds)
+            .format('YYYY-MM-DD hh:mm A')}{' '}
+          <br />
           導讀人：{item.host}
         </Creator>
         <MainBtn
           onClick={(e) => {
-            e.stopPropagation();
             onJoinGroup(item.id);
           }}>
           加入讀書會
@@ -43,6 +52,7 @@ const Creator = styled.div`
 const BookGroupImg = styled.img`
   max-height: 320px;
   object-fit: cover;
+  cursor: pointer;
 `;
 const BookGroupInfo = styled.div`
   height: 180px;
