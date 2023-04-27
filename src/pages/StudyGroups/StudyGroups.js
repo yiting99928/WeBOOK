@@ -12,16 +12,15 @@ import { db } from '../../utils/firebase';
 import { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
-import { useNavigate } from 'react-router-dom';
 import { GrSearch } from 'react-icons/gr';
 import modal from '../../utils/modal';
 import StudyGroupCard from '../../components/StudyGroupCard';
+import { OutlineBtn } from '../../components/Buttons/Buttons';
 
 function StudyGroups() {
   const { user } = useContext(AuthContext);
   const [allGroupsData, setAllGroupsData] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const navigate = useNavigate();
 
   async function getData() {
     const StudyGroupsData = collection(db, 'studyGroups');
@@ -46,14 +45,17 @@ function StudyGroups() {
   }, []);
 
   const handleJoinGroup = async (id) => {
-    const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
-    await setDoc(userGroupRef, { note: '' }).then(
-      modal.success('已加入讀書會!')
-    );
+    if (user) {
+      const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
+      await setDoc(userGroupRef, { note: '' }).then(
+        modal.success('已加入讀書會!')
+      );
+    } else {
+      modal.noUser('請先登入再創辦讀書會唷!');
+    }
   };
 
   const searchByCategory = async (category) => {
-    console.log(category);
     if (category === '全部讀書會') {
       const groups = await getData();
       return groups;
@@ -144,7 +146,22 @@ function StudyGroups() {
       setAllGroupsData(filteredGroups);
     });
   }
-
+  const categories = [
+    '全部讀書會',
+    '文學小說',
+    '商業理財',
+    '藝術設計',
+    '醫療保健',
+    '言情小說',
+    '社會科學',
+    '生活風格',
+    '勵志成長',
+    '自然科普',
+    '旅遊觀光',
+    '宗教',
+    '漫畫',
+    '科技',
+  ];
   return (
     <div>
       <Container>
@@ -172,76 +189,13 @@ function StudyGroups() {
           <SearchBar>
             <SearchBtnTitle>類別</SearchBtnTitle>
             <SearchBtns>
-              <SearchBtn
-                type="button"
-                value="全部讀書會"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="文學小說"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="商業理財"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="藝術設計"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="醫療保健"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="言情小說"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="社會科學"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="生活風格"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="勵志成長"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="自然科普"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="旅遊觀光"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="宗教"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="漫畫"
-                onClick={handleSearchByCategory}
-              />
-              <SearchBtn
-                type="button"
-                value="科技"
-                onClick={handleSearchByCategory}
-              />
+              {categories.map((category) => (
+                <OutlineBtn
+                  key={category}
+                  onClick={() => handleSearchByCategory(category)}>
+                  {category}
+                </OutlineBtn>
+              ))}
             </SearchBtns>
           </SearchBar>
         </SearchInputs>
@@ -253,7 +207,6 @@ function StudyGroups() {
               <StudyGroupCard
                 item={item}
                 key={index}
-                onClick={() => navigate(`/studyGroup/${item.id}`)}
                 onJoinGroup={handleJoinGroup}
               />
             ))
@@ -288,6 +241,7 @@ const SearchText = styled.form`
   display: flex;
   align-items: center;
   border-radius: 4px;
+  height: 32px;
   svg {
     position: absolute;
     right: 10px;
@@ -304,18 +258,27 @@ const SelectInput = styled.select`
 `;
 const SearchInput = styled.input`
   padding: 8px 12px;
+  width: 90%;
 `;
 const SearchBtns = styled.div`
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  margin-top: -3px;
 `;
 const SearchBtn = styled.input`
-  padding: 5px 10px;
+  padding: 3px 8px;
   border: 2px solid #ffac4c;
   border-radius: 5px;
   background-color: white;
   color: #ffac4c;
+  cursor: pointer;
+  letter-spacing: 1.2;
+  font-size: 14px;
+  :hover {
+    background-color: #ffac4c;
+    color: #fff;
+  }
 `;
 const SearchBtnTitle = styled.div`
   width: 50px;
