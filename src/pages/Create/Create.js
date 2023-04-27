@@ -14,17 +14,20 @@ import DecoBg from '../../components/DecoBg';
 import { BiImageAdd } from 'react-icons/bi';
 import { AuthContext } from '../../context/authContext';
 import modal from '../../utils/modal';
+import { MainBtn } from '../../components/Buttons/Buttons';
 
 function Create() {
   const { user } = useContext(AuthContext);
   const [createForm, setCreateForm] = useState({
+    groupName: '',
     name: '',
     image: '',
     author: '',
     chapter: '',
     createBy: user.email,
     host: user.name,
-    hold: '',
+    startTime: '',
+    endTime: '',
     status: 'preparing',
     category: '',
     post: '',
@@ -70,18 +73,25 @@ function Create() {
       );
       await uploadBytes(storageRef, createForm.image);
       const imageURL = await getDownloadURL(storageRef);
-      const dateObj = new Date(createForm.hold);
-      const holdTimestamp = Timestamp.fromDate(dateObj);
+
+      const dateObj = new Date(createForm.startTime);
+      const startTimestamp = Timestamp.fromDate(dateObj);
+
+      const dateObj2 = new Date(createForm.endTime);
+      const endTimestamp = Timestamp.fromDate(dateObj2);
+
       const docRef = await addDoc(collection(db, 'studyGroups'), {
         ...createForm,
+        groupName: createForm.groupName,
         name: createForm.name,
         image: imageURL,
         author: createForm.author,
         chapter: createForm.chapter,
-        hold: holdTimestamp,
+        startTime: startTimestamp,
         category: createForm.category,
         post: createForm.post,
         createTime: serverTimestamp(),
+        endTime: endTimestamp,
       });
       const userStudyGroupsRef = doc(
         db,
@@ -93,19 +103,21 @@ function Create() {
       await setDoc(userStudyGroupsRef, {
         note: '',
       });
-      console.log(`User Study Group Doc: ${docRef.id}`);
-      modal.success('創建讀書會');
+      modal.create('成功創建讀書會!', docRef.id);
     } catch (error) {
+      modal.fail('讀書會創建失敗!');
       console.error('Error: ', error);
     }
   };
   const resetForm = () => {
     setCreateForm({
+      groupName: '',
       name: '',
       image: '',
       author: '',
       chapter: '',
-      hold: '',
+      startTime: '',
+      endTime: '',
       category: '',
       post: '',
       createBy: user.email,
@@ -122,6 +134,15 @@ function Create() {
         <FormTitle>創建讀書會</FormTitle>
         <Form>
           <InputContainer>
+            <FormInputs>
+              <div>讀書會名稱</div>
+              <TextInput
+                type="text"
+                name="groupName"
+                value={createForm.groupName}
+                onChange={handleInputChange}
+              />
+            </FormInputs>
             <FormInputs>
               <div>書籍名稱</div>
               <TextInput
@@ -153,8 +174,17 @@ function Create() {
               <div>舉辦時間</div>
               <SelectInput
                 type="datetime-local"
-                name="hold"
-                value={createForm.hold}
+                name="startTime"
+                value={createForm.startTime}
+                onChange={handleInputChange}
+              />
+            </FormInputs>
+            <FormInputs>
+              <div>結束時間</div>
+              <SelectInput
+                type="datetime-local"
+                name="endTime"
+                value={createForm.endTime}
                 onChange={handleInputChange}
               />
             </FormInputs>
@@ -189,21 +219,36 @@ function Create() {
               />
             </FormInputs>
           </InputContainer>
-          <ImgContainer previewurl={previewurl}>
-            <BiImageAdd previewurl={previewurl} />
-            <ImgInput
-              type="file"
-              accept="image/png, image/jpeg"
-              name="image"
-              onChange={handleInputChange}
-            />
-          </ImgContainer>
+          <div>
+            <ImgContainer previewurl={previewurl}>
+              <BiImageAdd previewurl={previewurl} />
+              <ImgInput
+                type="file"
+                accept="image/png, image/jpeg"
+                name="image"
+                onChange={handleInputChange}
+              />
+            </ImgContainer>
+            <Advice>
+              建議圖片使用書籍封面2:3或3:4
+              <br /> 檔案須小於 5 MB
+            </Advice>
+          </div>
         </Form>
-        <SubmitInput type="button" value="創建讀書會" onClick={handleSubmit} />
+        <MainBtn onClick={handleSubmit} height={'44px'}>
+          創建讀書會
+        </MainBtn>
       </FormContainer>
     </Wrapper>
   );
 }
+const Advice = styled.div`
+  margin-top: 30px;
+  background-color: rgb(254, 224, 212);
+  padding: 15px 10px;
+  border-radius: 6px;
+  line-height: 1.5;
+`;
 const Wrapper = styled.div``;
 const FormContainer = styled.form`
   margin: 0 auto;
@@ -228,6 +273,7 @@ const Form = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 45px;
+  margin-bottom: 20px;
 `;
 const InputContainer = styled.div`
   display: flex;
@@ -249,6 +295,8 @@ const ImgContainer = styled.div`
   position: relative;
   background-image: ${({ previewurl }) => `url(${previewurl})`};
   background-size: cover;
+  background-position: center center;
+  box-shadow: 0px 4px 17px rgba(0, 0, 0, 0.05);
 
   svg {
     display: ${({ previewurl }) => (previewurl ? 'none' : 'block')};
@@ -273,7 +321,7 @@ const SelectInput = styled.input`
   width: 200px;
   height: 32px;
   border: 1px solid #909090;
-  padding: 0 8px;
+  padding: 0 4px;
 `;
 const CategoryInput = styled.select`
   padding: 0 8px;
@@ -287,17 +335,6 @@ const Post = styled.textarea`
   border-radius: 4px;
   width: 100%;
   height: 200px;
-`;
-const SubmitInput = styled.input`
-  width: 100%;
-  margin-top: 20px;
-  background: #ffac4c;
-  border-radius: 4px;
-  padding: 6px 12px;
-  color: #fff;
-  letter-spacing: 1;
-  border: 0;
-  height: 44px;
-  font-size: 18px;
+  padding: 8px;
 `;
 export default Create;
