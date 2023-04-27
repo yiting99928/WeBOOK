@@ -48,9 +48,10 @@ function StudyGroup() {
               <img src={studyGroup.image} alt="feature" />
             </BookGroupImg>
             <GroupDetail>
-              <Title>{studyGroup.name}</Title>
+              <Title>{studyGroup.groupName}</Title>
+              <p>{studyGroup.name}</p>
               <BookInfo>
-                作者： {studyGroup.author}
+                作者：{studyGroup.author}
                 <br />
                 類別：{studyGroup.category}
               </BookInfo>
@@ -123,7 +124,6 @@ const Title = styled.div`
 `;
 const BookInfo = styled.div``;
 const Creator = styled.div`
-  ${'' /* margin-top: auto; */}
 `;
 const GroupDetail = styled.div`
   display: flex;
