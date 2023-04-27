@@ -77,6 +77,7 @@ const User = styled.div`
 const Logout = styled.div`
   padding-top: 20px;
   border-top: 1px solid #5b5b5b;
+  cursor: pointer;
 `;
 const ArrowIcon = styled.div`
   cursor: pointer;
