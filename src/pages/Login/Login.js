@@ -43,13 +43,10 @@ function Login() {
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
-        // alert('登入成功');
         modal.success('登入成功');
         navigate('/profile');
       }
     } catch (error) {
-      // console.log(error.message);
-      // alert('錯誤的帳號或密碼');
       modal.fail('錯誤的帳號或密碼');
     }
   };
@@ -69,7 +66,7 @@ function Login() {
           email: register.email,
         }).then(() => {
           modal.success('註冊成功');
-          navigate('/profile');
+          navigate('./');
         });
         console.log(userCredential);
       })
