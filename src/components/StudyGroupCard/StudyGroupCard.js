@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import moment from 'moment';
-import { JoinBtn } from '../Buttons/Buttons';
+import { MainBtn } from '../Buttons/Buttons';
 
 function StudyGroupCard({ item, onClick, onJoinGroup }) {
   return (
@@ -11,16 +11,16 @@ function StudyGroupCard({ item, onClick, onJoinGroup }) {
         <BookAuthor>{item.author}</BookAuthor>
         <Creator>
           時間：
-          {moment.unix(item.hold.seconds).format('YYYY-MM-DD hh:mm A')} <br />
+          {moment.unix(item.startTime.seconds).format('YYYY-MM-DD hh:mm A')} <br />
           導讀人：{item.host}
         </Creator>
-        <JoinBtn
+        <MainBtn
           onClick={(e) => {
             e.stopPropagation();
             onJoinGroup(item.id);
           }}>
           加入讀書會
-        </JoinBtn>
+        </MainBtn>
       </BookGroupInfo>
     </BookGroup>
   );
@@ -62,19 +62,5 @@ const BookGroup = styled.div`
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   height: 510px;
-`;
-const GroupButton = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 36px;
-  background: #ffac4c;
-  border-radius: 10px;
-  color: white;
-  font-weight: 600;
-  letter-spacing: 1.2;
-  font-size: 18px;
-  margin-top: 8px;
-  cursor: pointer;
 `;
 export default StudyGroupCard;
