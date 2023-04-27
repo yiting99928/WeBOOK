@@ -24,14 +24,14 @@ import Vote from './LiveVote';
 import QA from './LiveQA';
 import { v4 as uuidv4 } from 'uuid';
 import { IoIosArrowForward } from 'react-icons/io';
-import { AiFillSound, AiTwotoneVideoCamera } from 'react-icons/ai';
 import {
-  MdCallEnd,
-  MdFirstPage,
-  MdLastPage,
-  MdFitScreen,
-  MdChat,
-} from 'react-icons/md';
+  BsChatDotsFill,
+  BsCameraVideoFill,
+  BsCameraVideoOffFill,
+} from 'react-icons/bs';
+import { MdFirstPage, MdLastPage, MdFitScreen } from 'react-icons/md';
+import { FaPhoneSlash, FaMicrophoneSlash, FaMicrophone } from 'react-icons/fa';
+
 import moment from 'moment';
 
 function reducer(processData, { type, payload = {} }) {
@@ -161,10 +161,12 @@ function Live() {
       peerConnection,
     ]);
 
+    // if (localStream) {
     localStream.getTracks().forEach((track) => {
       console.log(track);
       peerConnection.addTrack(track, localStream);
     });
+    // }
 
     onSnapshot(doc(db, 'rooms', id), async (doc) => {
       const { offer } = doc.data();
@@ -506,14 +508,20 @@ function Live() {
       <SideMenu isOpen={true} />
       <Content isOpen={true}>
         <GroupTitle>
-          <GroupBook>{studyGroup.name}</GroupBook>
+          <GroupBook>
+            {studyGroup.groupName}
+            <br />
+            <p>{studyGroup.name}</p>
+          </GroupBook>
           作者：{studyGroup.author}
           <br />
           導讀章節:{studyGroup.chapter}
           <br />
           舉辦時間:
           {studyGroup && studyGroup.startTime ? (
-            moment.unix(studyGroup.startTime.seconds).format('YYYY-MM-DD hh:mm A')
+            moment
+              .unix(studyGroup.startTime.seconds)
+              .format('YYYY-MM-DD hh:mm A')
           ) : (
             <div>loading</div>
           )}
@@ -589,22 +597,30 @@ function Live() {
                       }}
                     />
                   </MediaIcon>
-                  <MediaIcon isMuted={videoState.isMuted}>
-                    <AiFillSound onClick={toggleMute} />
-                  </MediaIcon>
-                  <MediaIcon isVideoDisabled={videoState.isVideoDisabled}>
-                    <AiTwotoneVideoCamera onClick={toggleVideo} />
-                  </MediaIcon>
-                  <MediaIcon>
-                    <MdCallEnd onClick={handleStop} />
-                  </MediaIcon>
+                  <MutedIcon isMuted={videoState.isMuted}>
+                    {videoState.isMuted ? (
+                      <FaMicrophoneSlash onClick={toggleMute} />
+                    ) : (
+                      <FaMicrophone onClick={toggleMute} />
+                    )}
+                  </MutedIcon>
+                  <VideoDisabled isVideoDisabled={videoState.isVideoDisabled}>
+                    {videoState.isVideoDisabled ? (
+                      <BsCameraVideoOffFill onClick={toggleVideo} />
+                    ) : (
+                      <BsCameraVideoFill onClick={toggleVideo} />
+                    )}
+                  </VideoDisabled>
                 </HostInput>
-                <MediaIcon>
+                {/* <MediaIcon>
                   <MdFitScreen onClick={handleVideoToggle} />
-                </MediaIcon>
+                </MediaIcon> */}
                 <MediaIcon>
-                  <MdChat onClick={handleChatRoom} />
+                  <BsChatDotsFill onClick={handleChatRoom} />
                 </MediaIcon>
+                <Hangup isHost={studyGroup.createBy === user.email}>
+                  <FaPhoneSlash onClick={handleStop} />
+                </Hangup>
               </ProcessInputs>
             )}
             <Broadcast>
@@ -777,15 +793,26 @@ const MediaIcon = styled.div`
   padding: 10px;
   border-radius: 25px;
   background-color: #f1f1f1;
-  :nth-child(3) {
-    background-color: ${({ isMuted }) => (isMuted ? '#b5b5b5' : '#f1f1f1')};
+`;
+const MutedIcon = styled(MediaIcon)`
+  background-color: ${({ isMuted }) => (isMuted ? '#e95f5c' : '#f1f1f1')};
+  svg {
+    color: ${({ isMuted }) => (isMuted ? '#fff' : '#5b5b5b')};
   }
-  :nth-child(4) {
-    background-color: ${({ isVideoDisabled }) =>
-      isVideoDisabled ? '#b5b5b5' : '#f1f1f1'};
+`;
+const VideoDisabled = styled(MediaIcon)`
+  background-color: ${({ isVideoDisabled }) =>
+    isVideoDisabled ? '#e95f5c' : '#f1f1f1'};
+  svg {
+    color: ${({ isVideoDisabled }) => (isVideoDisabled ? '#fff' : '#5b5b5b')};
   }
-  :hover {
-    background-color: rgb(254, 224, 212);
+`;
+
+const Hangup = styled(MediaIcon)`
+  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  background-color: #e95f5c;
+  svg {
+    color: #fff;
   }
 `;
 
@@ -868,7 +895,13 @@ const GroupTitle = styled.div`
 `;
 const GroupBook = styled.h2`
   font-weight: 600;
-  font-size: 40px;
+  font-size: 32px;
+  p {
+    font-size: 28px;
+    font-weight: 500;
+    padding-top: 5px;
+    letter-spacing: 1.5;
+  }
 `;
 const Content = styled.div`
   transition: all 0.3s ease;
