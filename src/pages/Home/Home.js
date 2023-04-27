@@ -42,7 +42,7 @@ function Home() {
       // 找到時間超過的讀書會更新為 finished 其餘的放到 unfinishedGroups
       const unfinishedGroups = [];
       for (const group of groups) {
-        if (group.endTime.toDate() <= now && group.status !== 'finished') {
+        if (group.endTime.toDate() <= now && group.status !== 'ongoing') {
           await updateDoc(doc(db, 'studyGroups', group.id), {
             status: 'finished',
           });
@@ -64,10 +64,14 @@ function Home() {
   }, []);
 
   const handleJoinGroup = async (id) => {
-    const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
-    await setDoc(userGroupRef, { note: '' }).then(
-      modal.success('已加入讀書會!')
-    );
+    if (user) {
+      const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
+      await setDoc(userGroupRef, { note: '' }).then(
+        modal.success('已加入讀書會!')
+      );
+    } else {
+      modal.noUser('請先登入再創辦讀書會唷!');
+    }
   };
 
   return (
@@ -172,7 +176,6 @@ function Home() {
               <StudyGroupCard
                 item={item}
                 key={index}
-                onClick={() => navigate(`/studyGroup/${item.id}`)}
                 onJoinGroup={handleJoinGroup}
               />
             ))
@@ -191,9 +194,12 @@ const RecommendedTitle = styled.div`
   margin-bottom: 10px;
 `;
 const BookGroupWrap = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 65px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 23px;
+  margin-top: 40px;
+  margin-bottom: 50px;
 `;
 const Recommended = styled.div`
   max-width: 1000px;
