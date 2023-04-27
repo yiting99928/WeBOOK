@@ -62,8 +62,8 @@ function StudyGroup() {
                 <br />
                 舉辦時間：
                 {moment
-                  .unix(studyGroup.hold.seconds)
-                  .format('YYYY,MM,DD hh:mm A')}
+                  .unix(studyGroup.startTime.seconds)
+                  .format('YYYY-MM-DD hh:mm A')}
               </Creator>
               <GroupButton
                 onClick={() => {
