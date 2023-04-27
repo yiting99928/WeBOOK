@@ -10,14 +10,18 @@ import { BsBook, BsSticky, BsChatLeftDots } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import { VscSave } from 'react-icons/vsc';
 import React, { useState, useEffect, useContext } from 'react';
-import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  doc,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { db } from '../../utils/firebase';
-// import moment from 'moment';
 import StudyGroupCard from '../../components/StudyGroupCard';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext';
 import modal from '../../utils/modal';
-
 
 function Home() {
   const [allGroupsData, setAllGroupsData] = useState([]);
@@ -32,17 +36,33 @@ function Home() {
         id: doc.id,
         ...doc.data(),
       }));
-      const sortedGroups = groups.sort(
+
+      const now = new Date();
+
+      // 找到時間超過的讀書會更新為 finished 其餘的放到 unfinishedGroups
+      const unfinishedGroups = [];
+      for (const group of groups) {
+        if (group.endTime.toDate() <= now && group.status !== 'finished') {
+          await updateDoc(doc(db, 'studyGroups', group.id), {
+            status: 'finished',
+          });
+        } else if (group.status !== 'finished') {
+          unfinishedGroups.push(group);
+        }
+      }
+
+      // 依照 createTime 排序找到新的
+      const sortedGroups = unfinishedGroups.sort(
         (a, b) => b.createTime.seconds - a.createTime.seconds
       );
       const latestFourGroups = sortedGroups.slice(0, 4);
+
       setAllGroupsData(latestFourGroups);
       return latestFourGroups;
     }
     getData();
   }, []);
 
-  // console.log('allGroupsData', allGroupsData);
   const handleJoinGroup = async (id) => {
     const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
     await setDoc(userGroupRef, { note: '' }).then(
