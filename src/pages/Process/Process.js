@@ -12,6 +12,7 @@ import move from './move.png';
 import { GrAddCircle } from 'react-icons/gr';
 import { BiTrash, BiCopy } from 'react-icons/bi';
 import moment from 'moment';
+import modal from '../../utils/modal';
 
 function reducer(processData, { type, payload = {} }) {
   const { lecture, processIndex, templates, e, data, process } = payload;
@@ -165,8 +166,24 @@ function Process() {
         );
     }
   };
+
   const handleDragStart = (e, processIndex) => {
+    if (editable !== processIndex) {
+      e.stopPropagation();
+      e.preventDefault();
+      return;
+    }
     e.dataTransfer.setData('text/plain', processIndex);
+
+    // const currentCard = document.getElementById(`card-${processIndex}`);
+    // const inputs = currentCard.querySelectorAll('input,div');
+    // inputs.forEach((input) => {
+    //   input.readOnly = true;
+    // });
+    // const qlEditors = currentCard.querySelectorAll('.ql-editor');
+    // qlEditors.forEach((editor) => {
+    //   editor.contentEditable = 'false';
+    // });
   };
 
   const handleDragOver = (e) => {
@@ -181,16 +198,30 @@ function Process() {
       payload: { fromIndex, toIndex: processIndex },
     });
     setEditable(processIndex);
+
+    // if (fromIndex !== processIndex) {
+    //   const currentCard = document.getElementById(`card-${processIndex}`);
+    //   const inputs = currentCard.querySelectorAll('input');
+    //   inputs.forEach((input) => {
+    //     input.readOnly = false;
+    //   });
+
+    //   const qlEditors = currentCard.querySelectorAll('.ql-editor');
+    //   qlEditors.forEach((editor) => {
+    //     editor.contentEditable = 'true';
+    //   });
+    // }
   };
 
   function handelSave(processData) {
     setDoc(doc(db, 'studyGroups', id), { ...studyGroup, process: processData })
       .then(() => {
-        console.log('Process data saved successfully.');
-        alert('已儲存讀書會流程');
+        // console.log('Process data saved successfully.');
+        modal.success('已儲存讀書會流程!');
       })
       .catch((error) => {
-        console.error('Error while saving process data: ', error);
+        modal.fail('讀書會流程儲存失敗!');
+        // console.error('Error while saving process data: ', error);
       });
   }
 
@@ -201,7 +232,6 @@ function Process() {
       payload: { processIndex, data: updatedDescription },
     });
   };
-  // console.log(processData);
   return (
     <Container>
       <SideMenu isOpen={true} />
@@ -214,8 +244,8 @@ function Process() {
             導讀章節:{studyGroup.chapter}
             <br />
             舉辦時間:
-            {studyGroup && studyGroup.hold ? (
-              moment.unix(studyGroup.hold.seconds).format('YYYY,MM,DD hh:mm A')
+            {studyGroup && studyGroup.startTime ? (
+              moment.unix(studyGroup.startTime.seconds).format('YYYY-MM-DD hh:mm A')
             ) : (
               <div>loading</div>
             )}
@@ -227,6 +257,7 @@ function Process() {
               return (
                 <ProcessCard
                   key={processIndex}
+                  id={`card-${processIndex}`} // 添加此行
                   onClick={() => setEditable(processIndex)}>
                   <EditBlock editable={editable === processIndex}></EditBlock>
                   <Drag
@@ -312,6 +343,7 @@ const SubmitInput = styled.div`
   font-size: 18px;
   letter-spacing: 1.5;
   align-self: center;
+  cursor: pointer;
 `;
 const Description = styled.input`
   font-size: 20px;
@@ -330,8 +362,7 @@ const Drag = styled.div`
     cursor: grabbing;
   }
 `;
-const GroupDetail = styled.div`
-`;
+const GroupDetail = styled.div``;
 const GroupTitle = styled.div`
   display: flex;
   align-items: flex-start;

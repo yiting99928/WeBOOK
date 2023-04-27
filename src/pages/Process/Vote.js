@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-function Vote({ item, processIndex = 0, editable = false, dispatch = {} }) {
+function Vote({ item, processIndex, editable, dispatch }) {
   // console.log(item);
 
   const handleAddOption = () => {

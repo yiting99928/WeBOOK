@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 
-function StickyNote({ item, dispatch, processIndex }) {
+function StickyNote({ item, dispatch, processIndex, editable }) {
   const handleOptionChange = (index, e, field) => {
     const updatedData = [...item.data];
     updatedData[index][field] = e.target.value;
@@ -18,11 +18,13 @@ function StickyNote({ item, dispatch, processIndex }) {
         item.data.map((item, index = 0) => (
           <Note key={index}>
             <Message
+              readOnly={editable !== processIndex}
               type="text"
               value={item.message}
               onChange={(e) => handleOptionChange(index, e, 'message')}
             />
             <Name
+              readOnly={editable !== processIndex}
               type="text"
               value={item.name}
               onChange={(e) => handleOptionChange(index, e, 'name')}

@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 
-function QA({ item, processIndex = 0, editable = false, dispatch = {} }) {
+function QA({ item, processIndex, editable, dispatch }) {
   const handleAddOption = () => {
     const newItem = {
       option: '請填寫選項並點選正確的選項',
