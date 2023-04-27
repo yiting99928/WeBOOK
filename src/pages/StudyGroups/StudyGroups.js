@@ -22,14 +22,22 @@ function StudyGroups() {
   const [allGroupsData, setAllGroupsData] = useState([]);
   const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
+
   async function getData() {
     const StudyGroupsData = collection(db, 'studyGroups');
-    const q = query(StudyGroupsData, orderBy('hold'));
+    const q = query(
+      StudyGroupsData,
+      where('status', '!=', 'finished'),
+      orderBy('status'),
+      orderBy('startTime')
+    );
+
     const groupsSnapshot = await getDocs(q);
     const groups = groupsSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
+
     setAllGroupsData(groups);
     return groups;
   }
@@ -39,7 +47,9 @@ function StudyGroups() {
 
   const handleJoinGroup = async (id) => {
     const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
-    await setDoc(userGroupRef, { note: '' }).then(modal.success('已加入讀書會!'));
+    await setDoc(userGroupRef, { note: '' }).then(
+      modal.success('已加入讀書會!')
+    );
   };
 
   const searchByCategory = async (category) => {
@@ -102,7 +112,7 @@ function StudyGroups() {
 
     return groups.filter((group) => {
       const groupHoldDate = Timestamp.fromMillis(
-        group.hold.seconds * 1000
+        group.startTime.seconds * 1000
       ).toDate();
       if (filterOption === 'today') {
         const todayEnd = new Date(
