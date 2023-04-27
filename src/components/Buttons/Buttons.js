@@ -1,23 +1,19 @@
-// Buttons.js
 import styled from 'styled-components/macro';
 
-function Buttons() {
+const MainBtn = ({ children, onClick, height = '36px' }) => {
   return (
-    <>
-      <JoinBtn>加入讀書會</JoinBtn>
-    </>
+    <MainBtnStyled onClick={onClick} height={height}>
+      {children}
+    </MainBtnStyled>
   );
-}
-const JoinBtn = ({ children, onClick }) => {
-  return <JoinBtnStyled onClick={onClick}>{children}</JoinBtnStyled>;
 };
 
-const JoinBtnStyled = styled.div`
+const MainBtnStyled = styled.div`
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 36px;
+  height: ${({ height }) => height};
   background: #ffac4c;
   border-radius: 10px;
   color: white;
@@ -27,5 +23,5 @@ const JoinBtnStyled = styled.div`
   margin-top: 8px;
 `;
 
-export default Buttons;
-export { JoinBtn };
+// export default Buttons;
+export { MainBtn };
