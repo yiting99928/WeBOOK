@@ -28,7 +28,7 @@ const data = {
     const allGroupsData = await Promise.all(groupPromises);
 
     allGroupsData.sort((a, b) => {
-      return a.hold.seconds - b.hold.seconds;
+      return a.startTime.seconds - b.startTime.seconds;
     });
     return allGroupsData;
   },
