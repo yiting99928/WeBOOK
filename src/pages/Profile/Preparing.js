@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
-import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
 import {
   doc,
   updateDoc,
-  onSnapshot,
   deleteDoc,
   collection,
   getDocs,
@@ -13,15 +11,21 @@ import {
   where,
   getDoc,
 } from 'firebase/firestore';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import data from '../../utils/api';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
+import modal from '../../utils/modal';
+import ProfileStudyGroup from '../../components/ProfileStudyGroup/ProfileStudyGroup';
+import {
+  HostEditInput,
+  GuestEditInput,
+} from '../../components/Buttons/Buttons';
 
 const Preparing = () => {
   const [groupData, setGroupData] = useState([]);
   const { user } = useContext(AuthContext);
-  const [expanded, setExpanded] = useState([]);
+  const navigate = useNavigate();
 
   async function getData() {
     const groupData = await data.fetchUserGroup(user.email);
@@ -35,16 +39,18 @@ const Preparing = () => {
     getData();
   }, [user]);
 
-  async function handleChangeState(item) {
-    const groupRef = doc(db, 'studyGroups', item.id);
+  async function handleChangeState(id) {
+    const groupRef = doc(db, 'studyGroups', id);
 
     try {
       const groupSnapshot = await getDoc(groupRef);
       const groupData = groupSnapshot.data();
+      console.log(groupData);
 
-      if (groupData.process && groupData.process.length === 0) {
-        alert('請新增至少一個流程!');
+      if (groupData.process === undefined || groupData.process.length === 0) {
+        modal.fail('請新增至少一個流程!');
       } else {
+        console.log('有流程');
         updateDoc(groupRef, { status: 'ongoing' });
         getData();
       }
@@ -58,7 +64,7 @@ const Preparing = () => {
     const usersDocRef = doc(db, 'users', user.email);
     const userStudyGroupsRef = collection(usersDocRef, 'userStudyGroups');
     const groupRef = doc(userStudyGroupsRef, id);
-    await deleteDoc(groupRef).then(alert('已退出讀書會'));
+    await deleteDoc(groupRef).then(modal.quit('已退出這場讀書會!'));
     getData();
   }
 
@@ -68,7 +74,7 @@ const Preparing = () => {
         deleteAllDocs(id),
         deleteDoc(doc(db, 'studyGroups', id)),
       ]);
-      alert('取消讀書會');
+      modal.quit('已取消這場讀書會!');
       getData();
     } catch (error) {
       console.error(error);
@@ -96,119 +102,73 @@ const Preparing = () => {
     }
   }
 
-  const toggleExpanded = (index) => {
-    setExpanded((prevExpanded) => {
-      const newExpanded = [...prevExpanded];
-      newExpanded[index] = !newExpanded[index];
-      return newExpanded;
-    });
-  };
   return (
-    <Container>
-      <SideMenu isOpen={true} />
-      <Content isOpen={true}>
-        {groupData.length === 0 ? (
-          <p>目前沒有參加的讀書會</p>
-        ) : (
-          groupData.map((item, i) => (
-            <StudyGroupCard key={i}>
-              <BookGroupImg>
-                <img src={item.image} alt="feature" />
-              </BookGroupImg>
-              <CardContent>
-                <Title>{item.name}</Title>
-                <p>作者:{item.author}</p>
-                <Creator>
-                  導讀者:{item.createBy}
-                  <br />
-                  章節:{item.chapter}
-                  <br />
-                  舉辦時間:
-                  {moment.unix(item.hold.seconds).format('YYYY,MM,DD hh:mm A')}
-                </Creator>
-                <Post onClick={() => toggleExpanded(i)}>
-                  讀書會公告
-                  <br />
-                  {expanded[i]
-                    ? item.post
-                    : item.post.slice(0, 20) +
-                      (item.post.length > 20 ? '...' : '')}
-                </Post>
-                <Buttons>
-                  <UserEditInput
-                    type="button"
-                    value="退出讀書會"
-                    isHost={user.email === item.createBy}
-                    onClick={() => handleQuitGroup(item.id)}
-                  />
-                  <HostEditInput
-                    type="button"
-                    value="取消讀書會"
-                    isHost={user.email === item.createBy}
-                    onClick={() => handleDelGroup(item.id)}
-                  />
-                  <div>
-                    <Link to={`/study-group/${item.id}/process`}>
-                      <HostEditInput
-                        type="button"
-                        value="編輯流程"
-                        isHost={user.email === item.createBy}
-                      />
-                    </Link>
-                  </div>
-                  <HostEditInput
-                    type="button"
-                    value="開始讀書會"
-                    isHost={user.email === item.createBy}
-                    onClick={() => handleChangeState(item)}
-                  />
-                </Buttons>
-              </CardContent>
-            </StudyGroupCard>
-          ))
-        )}
-      </Content>
-    </Container>
+    <ProfileStudyGroup>
+      {/* <Already>
+        3 <span> 天內舉辦</span>
+      </Already> */}
+      {groupData.length === 0 ? (
+        <p>目前沒有參加的讀書會</p>
+      ) : (
+        groupData.map((item, i) => (
+          <StudyGroupCard key={i}>
+            <BookGroupImg
+              src={item.image}
+              alt="feature"
+              onClick={() => navigate(`/studyGroup/${item.id}`)}
+            />
+            <CardContent>
+              <Title>{item.groupName}</Title>
+              <p>書籍：{item.name}</p>
+              <Creator>
+                導讀者：{item.createBy}
+                <br />
+                章節：{item.chapter}
+                <br />
+                {moment
+                  .unix(item.startTime.seconds)
+                  .format('MM-DD hh:mm A')} —{' '}
+                {moment.unix(item.endTime.seconds).format('MM-DD hh:mm A')}
+              </Creator>
+              <Buttons>
+                <GuestEditInput
+                  isHost={user.email === item.createBy}
+                  onClick={() => handleQuitGroup(item.id)}>
+                  退出讀書會
+                </GuestEditInput>
+                <HostEditInput
+                  isHost={user.email === item.createBy}
+                  onClick={() => handleDelGroup(item.id)}>
+                  取消讀書會
+                </HostEditInput>
+                <HostEditInput
+                  isHost={user.email === item.createBy}
+                  onClick={() => navigate(`/study-group/${item.id}/process`)}>
+                  編輯流程
+                </HostEditInput>
+                <HostEditInput
+                  isHost={user.email === item.createBy}
+                  onClick={() => handleChangeState(item.id)}>
+                  開始讀書會
+                </HostEditInput>
+              </Buttons>
+            </CardContent>
+          </StudyGroupCard>
+        ))
+      )}
+    </ProfileStudyGroup>
   );
 };
-const Buttons = styled.div`
-  display: flex;
-  gap: 5px;
-`;
-const GroupButton = styled.input`
-  background-color: #ececec;
-  border-radius: 5px;
-  width: 86px;
-  height: 32px;
-`;
-const Post = styled.div`
-  line-height: 1.2;
-`;
 const Title = styled.div`
   font-weight: 600;
-  font-size: 32px;
+  font-size: 28px;
   letter-spacing: 0.05em;
 `;
-
-const BookGroupImg = styled.div`
-  max-width: 180px;
+const BookGroupImg = styled.img`
+  max-width: 150px;
+  object-fit: cover;
+  cursor: pointer;
 `;
-const Container = styled.div`
-  display: flex;
-  min-height: 100vh;
-`;
-
-const Content = styled.div`
-  transition: all 0.3s ease;
-  margin: 0 auto;
-  margin-top: 54px;
-  margin-bottom: 120px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 960px;
-`;
-
 const StudyGroupCard = styled.div`
   display: flex;
   align-items: flex-start;
@@ -229,11 +189,9 @@ const CardContent = styled.div`
   max-width: 600px;
 `;
 
-const UserEditInput = styled(GroupButton)`
-  display: ${({ isHost }) => (isHost ? 'none' : 'inline-block')};
-`;
-const HostEditInput = styled(GroupButton)`
-  display: ${({ isHost }) => (isHost ? 'inline-block' : 'none')};
+const Buttons = styled.div`
+  display: flex;
+  gap: 5px;
 `;
 
 export default Preparing;

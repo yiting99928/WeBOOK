@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 // import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import SideMenu from '../../components/SideMenu';
 import data from '../../utils/api';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
+import ProfileStudyGroup from '../../components/ProfileStudyGroup/ProfileStudyGroup';
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
   const [groupData, setGroupData] = useState([]);
-
-  // const { status } = useParams();
-  // console.log(status);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -23,61 +22,43 @@ const Profile = () => {
     }
   }, [user]);
 
-  // const renderCardContent = (item) => {
-  //   console.log(item);
-  //   switch (status) {
-  //     case undefined:
-  //       return (
-  //         <>
-  //         </>
-  //       );
-  //     // case 'ongoing':
-  //     //   return <></>;
-  //     // case 'preparing':
-  //     //   return <></>;
-  //     // case 'finished':
-  //     //   return <></>;
-  //     default:
-  //       return <></>;
-  //   }
-  // };
-
   const statusText = {
     ongoing: '進行中',
     preparing: '準備中',
     finished: '已結束',
   };
   return (
-    <Container>
-      <SideMenu isOpen={true} />
-      <Content isOpen={true}>
-        {groupData.map((item, i) => (
-          <StudyGroupCard key={i}>
-            <BookGroupImg>
-              <img src={item.image} alt="feature" />
-            </BookGroupImg>
-            <CardContent>
-              <Title>{item.name}</Title>
-              <p>作者:{item.author}</p>
-              <Creator>
-                導讀者:{item.createBy}
-                <br />
-                章節:{item.chapter}
-                <br />
-                舉辦時間:
-                {moment.unix(item.hold.seconds).format('YYYY,MM,DD hh:mm A')}
-              </Creator>
-            </CardContent>
-            <Status>{statusText[item.status]}</Status>
-          </StudyGroupCard>
-        ))}
-      </Content>
-    </Container>
+    <ProfileStudyGroup>
+      {groupData.map((item, i) => (
+        <StudyGroupCard key={i}>
+          <BookGroupImg
+            src={item.image}
+            alt="feature"
+            onClick={() => navigate(`/studyGroup/${item.id}`)}
+          />
+          <CardContent>
+            <Title>{item.groupName}</Title>
+            <p>書籍：{item.name}</p>
+            <Creator>
+              導讀者：{item.host}
+              <br />
+              章節：{item.chapter}
+              <br />
+              {moment
+                .unix(item.startTime.seconds)
+                .format('MM-DD hh:mm A')} —{' '}
+              {moment.unix(item.endTime.seconds).format('MM-DD hh:mm A')}
+            </Creator>
+          </CardContent>
+          <Status>{statusText[item.status]}</Status>
+        </StudyGroupCard>
+      ))}
+    </ProfileStudyGroup>
   );
 };
 const Title = styled.div`
   font-weight: 600;
-  font-size: 32px;
+  font-size: 28px;
   letter-spacing: 0.05em;
 `;
 const Status = styled.div`
@@ -87,25 +68,11 @@ const Status = styled.div`
   color: #fff;
   border-radius: 6px;
 `;
-const BookGroupImg = styled.div`
-  max-width: 180px;
+const BookGroupImg = styled.img`
+  cursor: pointer;
+  max-width: 150px;
+  object-fit: cover;
 `;
-const Container = styled.div`
-  display: flex;
-  min-height: 100vh;
-`;
-
-const Content = styled.div`
-  transition: all 0.3s ease;
-  margin: 0 auto;
-  margin-top: 54px;
-  margin-bottom: 120px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 960px;
-`;
-
 const StudyGroupCard = styled.div`
   display: flex;
   align-items: flex-start;

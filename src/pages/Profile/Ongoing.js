@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
-import SideMenu from '../../components/SideMenu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import data from '../../utils/api';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
+import ProfileStudyGroup from '../../components/ProfileStudyGroup/ProfileStudyGroup';
+// import { OutlineBtn } from '../../components/Buttons/Buttons';
 
 const Ongoing = () => {
   const [groupData, setGroupData] = useState([]);
   const { user } = useContext(AuthContext);
-  const [expanded, setExpanded] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function getData() {
@@ -22,91 +23,54 @@ const Ongoing = () => {
     getData();
   }, [user]);
 
-  const toggleExpanded = (index) => {
-    setExpanded((prevExpanded) => {
-      const newExpanded = [...prevExpanded];
-      newExpanded[index] = !newExpanded[index];
-      return newExpanded;
-    });
-  };
   return (
-    <Container>
-      <SideMenu isOpen={true} />
-      <Content isOpen={true}>
-        {groupData.length === 0 ? (
-          <p>目前沒有進行中的讀書會</p>
-        ) : (
-          groupData.map((item, i) => (
-            <StudyGroupCard key={i}>
-              <BookGroupImg>
-                <img src={item.image} alt="feature" />
-              </BookGroupImg>
-              <CardContent>
-                <Title>{item.name}</Title>
-                <p>作者:{item.author}</p>
-                <Creator>
-                  導讀者:{item.createBy}
-                  <br />
-                  章節:{item.chapter}
-                  <br />
-                  舉辦時間: 舉辦時間：{' '}
-                  {moment.unix(item.hold.seconds).format('YYYY,MM,DD hh:mm A')}
-                </Creator>
-                <Post onClick={() => toggleExpanded(i)}>
-                  讀書會公告
-                  <br />
-                  {expanded[i]
-                    ? item.post
-                    : item.post.slice(0, 20) +
-                      (item.post.length > 20 ? '...' : '')}
-                </Post>
-                <div>
-                  <Link to={`/study-group/${item.id}/live`}>
-                    <GroupButton type="button" value="進入直播間" />
-                  </Link>
-                </div>
-              </CardContent>
-            </StudyGroupCard>
-          ))
-        )}
-      </Content>
-    </Container>
+    <ProfileStudyGroup>
+      {groupData.length === 0 ? (
+        <p>目前沒有進行中的讀書會</p>
+      ) : (
+        groupData.map((item, i) => (
+          <StudyGroupCard key={i}>
+            <BookGroupImg
+              src={item.image}
+              alt="feature"
+              onClick={() => navigate(`/studyGroup/${item.id}`)}
+            />
+            <CardContent>
+              <Title>{item.groupName}</Title>
+              <p>書籍：{item.name}</p>
+              <Creator>
+                導讀者：{item.createBy}
+                <br />
+                章節：{item.chapter}
+                <br />
+                {moment
+                  .unix(item.startTime.seconds)
+                  .format('MM-DD hh:mm A')} —{' '}
+                {moment.unix(item.endTime.seconds).format('MM-DD hh:mm A')}
+              </Creator>
+              <div>
+                <Link to={`/study-group/${item.id}/live`}>
+                  <GroupButton type="button" value="進入直播間" />
+                </Link>
+              </div>
+            </CardContent>
+          </StudyGroupCard>
+        ))
+      )}
+    </ProfileStudyGroup>
   );
 };
-const GroupButton = styled.input`
-  background-color: #ececec;
-  border-radius: 5px;
-  width: 86px;
-  height: 32px;
-`;
-const Post = styled.div`
-  line-height: 1.2;
-`;
+
 const Title = styled.div`
   font-weight: 600;
-  font-size: 32px;
+  font-size: 28px;
   letter-spacing: 0.05em;
 `;
-
-const BookGroupImg = styled.div`
-  max-width: 180px;
+const BookGroupImg = styled.img`
+  cursor: pointer;
+  max-width: 150px;
+  object-fit: cover;
 `;
-const Container = styled.div`
-  display: flex;
-  min-height: 100vh;
-`;
-
-const Content = styled.div`
-  transition: all 0.3s ease;
-  margin: 0 auto;
-  margin-top: 54px;
-  margin-bottom: 120px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 960px;
-`;
-
 const StudyGroupCard = styled.div`
   display: flex;
   align-items: flex-start;
@@ -126,4 +90,12 @@ const CardContent = styled.div`
   height: 100%;
   max-width: 600px;
 `;
+
+const GroupButton = styled.input`
+  background-color: #ececec;
+  border-radius: 5px;
+  width: 86px;
+  height: 32px;
+`;
+
 export default Ongoing;
