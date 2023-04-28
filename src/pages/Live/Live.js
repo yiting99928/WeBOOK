@@ -274,22 +274,24 @@ function Live() {
     });
   }
   useEffect(() => {
-    const roomRef = doc(db, 'rooms', id);
+    if (user.email === studyGroup.host) {
+      const roomRef = doc(db, 'rooms', id);
 
-    const unsubscribe = onSnapshot(roomRef, (doc) => {
-      const data = doc.data();
-      if (data) {
-        const { viewers } = data;
-        if (viewers && viewers.length > peerConnections.length) {
-          const newUserUUID = viewers[viewers.length - 1];
-          createRoom(newUserUUID);
+      const unsubscribe = onSnapshot(roomRef, (doc) => {
+        const data = doc.data();
+        if (data) {
+          const { viewers } = data;
+          if (viewers && viewers.length > peerConnections.length) {
+            const newUserUUID = viewers[viewers.length - 1];
+            createRoom(newUserUUID);
+          }
         }
-      }
-    });
+      });
 
-    return () => {
-      unsubscribe();
-    };
+      return () => {
+        unsubscribe();
+      };
+    }
   }, [peerConnections, id]);
 
   //--------------------//
