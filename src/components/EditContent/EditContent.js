@@ -1,5 +1,8 @@
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
+import * as Emoji from 'quill-emoji';
 import 'react-quill/dist/quill.snow.css';
+import 'quill-emoji/dist/quill-emoji.css';
+Quill.register('modules/emoji', Emoji);
 
 const quillModules = {
   toolbar: [
@@ -7,13 +10,17 @@ const quillModules = {
     [{ color: [] }],
     ['bold', 'italic', 'underline', 'strike'],
     [{ list: 'ordered' }, { list: 'bullet' }],
-    ['link', 'image'],
+    ['link', 'emoji'],
     ['clean'],
   ],
   clipboard: {
     matchVisual: false,
   },
+  'emoji-toolbar': true,
+  'emoji-textarea': false,
+  'emoji-shortname': true,
 };
+
 function EditContent({ onChange, value, onBlur }) {
   return (
     <ReactQuill
