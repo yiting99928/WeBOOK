@@ -29,7 +29,7 @@ import {
   BsCameraVideoFill,
   BsCameraVideoOffFill,
 } from 'react-icons/bs';
-import { MdFirstPage, MdLastPage, MdFitScreen } from 'react-icons/md';
+import { MdFirstPage, MdLastPage } from 'react-icons/md';
 import { FaPhoneSlash, FaMicrophoneSlash, FaMicrophone } from 'react-icons/fa';
 
 import moment from 'moment';
@@ -274,7 +274,7 @@ function Live() {
     });
   }
   useEffect(() => {
-    if (user.email === studyGroup.host) {
+    if (user.email === studyGroup.createBy) {
       const roomRef = doc(db, 'rooms', id);
 
       const unsubscribe = onSnapshot(roomRef, (doc) => {
