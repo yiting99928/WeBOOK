@@ -32,6 +32,7 @@ function Create() {
     category: '',
     post: '',
   });
+
   const [previewurl, setPreviewUrl] = useState('');
 
   const handleInputChange = (e) => {
@@ -61,6 +62,10 @@ function Create() {
         modal.fail('請填寫完整');
         return;
       }
+    }
+    if (new Date(createForm.endTime) <= new Date(createForm.startTime)) {
+      modal.fail('結束時間需超過舉辦時間!');
+      return;
     }
     formPost();
     resetForm();
@@ -127,6 +132,14 @@ function Create() {
     setPreviewUrl('');
   };
   // console.log(createForm);
+
+  const isStartTimeInvalid =
+    createForm.startTime && new Date(createForm.startTime) <= new Date();
+  const isEndTimeInvalid =
+    createForm.endTime &&
+    (new Date(createForm.endTime) <= new Date() ||
+      new Date(createForm.endTime) <= new Date(createForm.startTime));
+
   return (
     <Wrapper>
       <DecoBg />
@@ -172,21 +185,31 @@ function Create() {
             </FormInputs>
             <FormInputs>
               <div>舉辦時間</div>
-              <SelectInput
-                type="datetime-local"
-                name="startTime"
-                value={createForm.startTime}
-                onChange={handleInputChange}
-              />
+              <DateInput>
+                <SelectInput
+                  type="datetime-local"
+                  name="startTime"
+                  value={createForm.startTime}
+                  onChange={handleInputChange}
+                />
+                {isStartTimeInvalid && (
+                  <StartTimeWarn>請選擇未來時間!</StartTimeWarn>
+                )}
+              </DateInput>
             </FormInputs>
             <FormInputs>
               <div>結束時間</div>
-              <SelectInput
-                type="datetime-local"
-                name="endTime"
-                value={createForm.endTime}
-                onChange={handleInputChange}
-              />
+              <DateInput>
+                <SelectInput
+                  type="datetime-local"
+                  name="endTime"
+                  value={createForm.endTime}
+                  onChange={handleInputChange}
+                />
+                {isEndTimeInvalid && (
+                  <EndTimeWarn>結束時間需超過舉辦時間!</EndTimeWarn>
+                )}
+              </DateInput>
             </FormInputs>
             <FormInputs>
               <div>類別</div>
@@ -216,6 +239,7 @@ function Create() {
                 name="post"
                 value={createForm.post}
                 onChange={handleInputChange}
+                placeholder="請填寫你想告訴參與者的話 例：書籍的建議閱讀順序、導讀的風格、注意事項..."
               />
             </FormInputs>
           </InputContainer>
@@ -242,6 +266,18 @@ function Create() {
     </Wrapper>
   );
 }
+const DateInput = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const Warn = styled.div`
+  font-size: 14px;
+  color: #e95f5c;
+`;
+const StartTimeWarn = styled(Warn)``;
+const EndTimeWarn = styled(Warn)``;
 const Advice = styled.div`
   margin-top: 30px;
   background-color: rgb(254, 224, 212);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components/macro';
 import 'react-quill/dist/quill.snow.css';
 import EditContent from '../../components/EditContent';
+import parse, { domToReact } from 'html-react-parser';
 
 function Lecture({ item, processIndex = 0, editable = false, dispatch = {} }) {
   const [content, setContent] = useState(item.data);
@@ -18,12 +19,22 @@ function Lecture({ item, processIndex = 0, editable = false, dispatch = {} }) {
     });
   };
 
+  const replace = (node) => {
+    if (node.attribs && node.attribs.contenteditable) {
+      delete node.attribs.contenteditable;
+      return (
+        <node.name {...node.attribs}>
+          {domToReact(node.children, { replace })}
+        </node.name>
+      );
+    }
+  };
+
   return (
     <div>
-      <PreviewContent
-        dangerouslySetInnerHTML={{ __html: content }}
-        editing={editable === processIndex}
-      />
+      <PreviewContent editing={editable === processIndex}>
+        {parse(content, { replace })}
+      </PreviewContent>
       <Edit editing={editable === processIndex}>
         <EditContent
           value={content}

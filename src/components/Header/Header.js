@@ -18,15 +18,15 @@ function Header() {
             <Logo />
           </Link>
           <Menu>
-            <li>
+            <p>
               <Link to={user ? '/create' : '/login'}>創建讀書會</Link>
-            </li>
-            <li>
+            </p>
+            <p>
               <Link to={`/studyGroups`}>所有讀書會</Link>
-            </li>
-            <li>
+            </p>
+            <p>
               <Link to={user ? '/profile' : '/login'}>會員</Link>
-            </li>
+            </p>
           </Menu>
         </Wrapper>
       </Container>
@@ -38,15 +38,15 @@ function Header() {
       <MobileMenuBlack isOpen={isOpen} />
       <MobileWrap isOpen={isOpen}>
         <MobileMenu>
-          <li>
+          <p>
             <Link to={user ? '/create' : '/login'}>創建讀書會</Link>
-          </li>
-          <li>
+          </p>
+          <p>
             <Link to={`/studyGroups`}>所有讀書會</Link>
-          </li>
-          <li>
+          </p>
+          <p>
             <Link to={user ? '/profile' : '/login'}>會員</Link>
-          </li>
+          </p>
         </MobileMenu>
       </MobileWrap>
     </>
@@ -110,7 +110,7 @@ const MobileWrap = styled.div`
     z-index: 2;
   }
 `;
-const MobileMenu = styled.ul`
+const MobileMenu = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -154,7 +154,7 @@ const Logo = styled.div`
   background-image: url(${logoImg});
   background-size: cover;
 `;
-const Menu = styled.ul`
+const Menu = styled.div`
   display: flex;
   gap: 40px;
   @media screen and (max-width: 768px) {

@@ -19,13 +19,11 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import StudyGroupCard from '../../components/StudyGroupCard';
-import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext';
 import modal from '../../utils/modal';
 
 function Home() {
   const [allGroupsData, setAllGroupsData] = useState([]);
-  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
@@ -186,6 +184,7 @@ function Home() {
     </div>
   );
 }
+
 const RecommendedTitle = styled.div`
   text-align: center;
   color: #df524d;

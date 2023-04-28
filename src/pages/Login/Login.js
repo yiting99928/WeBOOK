@@ -44,7 +44,7 @@ function Login() {
 
       if (userDoc.exists()) {
         modal.success('登入成功');
-        navigate('/profile');
+        navigate('/studyGroups');
       }
     } catch (error) {
       modal.fail('錯誤的帳號或密碼');
@@ -66,7 +66,6 @@ function Login() {
           email: register.email,
         }).then(() => {
           modal.success('註冊成功');
-          navigate('./');
         });
         console.log(userCredential);
       })
