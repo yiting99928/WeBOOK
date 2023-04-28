@@ -49,8 +49,9 @@ function StudyGroup() {
             </BookGroupImg>
             <GroupDetail>
               <Title>{studyGroup.groupName}</Title>
-              <p>{studyGroup.name}</p>
               <BookInfo>
+                書名：{studyGroup.name}
+                <br />
                 作者：{studyGroup.author}
                 <br />
                 類別：{studyGroup.category}
@@ -123,8 +124,7 @@ const Title = styled.div`
   font-size: 40px;
 `;
 const BookInfo = styled.div``;
-const Creator = styled.div`
-`;
+const Creator = styled.div``;
 const GroupDetail = styled.div`
   display: flex;
   flex-direction: column;
@@ -147,5 +147,6 @@ const GroupInfo = styled.div`
   gap: 40px;
   padding-bottom: 55px;
   border-bottom: 1px solid #b5b5b5;
+  color: #5b5b5b;
 `;
 export default StudyGroup;
