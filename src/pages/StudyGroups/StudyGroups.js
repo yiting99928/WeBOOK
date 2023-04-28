@@ -70,8 +70,8 @@ function StudyGroups() {
       return groups;
     }
   };
-  const handleSearchByCategory = async (event) => {
-    const groups = await searchByCategory(event.target.value);
+  const handleSearchByCategory = async (category) => {
+    const groups = await searchByCategory(category);
     setAllGroupsData(groups);
   };
   const searchByText = async (e) => {
@@ -91,50 +91,31 @@ function StudyGroups() {
   };
 
   function filterGroups(groups, filterOption) {
-    if (!['today', 'week', 'month', 'twoMonths'].includes(filterOption)) {
-      return groups;
-    }
-    // 當前的日期與時間
     const now = new Date();
-    // 設置今天開始的時間
     const todayStart = new Date(
       now.getFullYear(),
       now.getMonth(),
       now.getDate()
     );
-    // 計算一週
-    const oneWeekLater = new Date(todayStart);
-    oneWeekLater.setDate(todayStart.getDate() + 7);
-    // 計算一個月後的日期
-    const oneMonthLater = new Date(todayStart);
-    oneMonthLater.setMonth(todayStart.getMonth() + 1);
-    // 計算兩個月後的日期
-    const twoMonthsLater = new Date(todayStart);
-    twoMonthsLater.setMonth(todayStart.getMonth() + 2);
+
+    const filterOptionMap = {
+      today: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1),
+      week: new Date(todayStart).setDate(todayStart.getDate() + 7),
+      month: new Date(todayStart).setMonth(todayStart.getMonth() + 1),
+      twoMonths: new Date(todayStart).setMonth(todayStart.getMonth() + 2),
+    };
+
+    if (!Object.keys(filterOptionMap).includes(filterOption)) {
+      return groups;
+    }
+
+    const endDate = filterOptionMap[filterOption];
 
     return groups.filter((group) => {
       const groupHoldDate = Timestamp.fromMillis(
         group.startTime.seconds * 1000
       ).toDate();
-      if (filterOption === 'today') {
-        const todayEnd = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate() + 1
-        );
-        return groupHoldDate >= todayStart && groupHoldDate < todayEnd;
-      } // 如果選項是 'week'，篩選一周內的組
-      else if (filterOption === 'week') {
-        return groupHoldDate >= todayStart && groupHoldDate < oneWeekLater;
-      }
-      // 如果選項是 'month'，篩選一個月內的組
-      else if (filterOption === 'month') {
-        return groupHoldDate >= todayStart && groupHoldDate < oneMonthLater;
-      }
-      // 如果選項是 'twoMonths'，篩選兩個月內的組
-      else if (filterOption === 'twoMonths') {
-        return groupHoldDate >= todayStart && groupHoldDate < twoMonthsLater;
-      }
+      return groupHoldDate >= todayStart && groupHoldDate < endDate;
     });
   }
 
@@ -142,7 +123,7 @@ function StudyGroups() {
     const filterOption = event.target.value;
     getData().then((groups) => {
       const filteredGroups = filterGroups(groups, filterOption);
-      console.log(filteredGroups);
+      // console.log(filteredGroups);
       setAllGroupsData(filteredGroups);
     });
   }
@@ -265,20 +246,6 @@ const SearchBtns = styled.div`
   gap: 10px;
   flex-wrap: wrap;
   margin-top: -3px;
-`;
-const SearchBtn = styled.input`
-  padding: 3px 8px;
-  border: 2px solid #ffac4c;
-  border-radius: 5px;
-  background-color: white;
-  color: #ffac4c;
-  cursor: pointer;
-  letter-spacing: 1.2;
-  font-size: 14px;
-  :hover {
-    background-color: #ffac4c;
-    color: #fff;
-  }
 `;
 const SearchBtnTitle = styled.div`
   width: 50px;
