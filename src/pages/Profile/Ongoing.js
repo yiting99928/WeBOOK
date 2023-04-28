@@ -5,7 +5,7 @@ import data from '../../utils/api';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
 import ProfileStudyGroup from '../../components/ProfileStudyGroup/ProfileStudyGroup';
-// import { OutlineBtn } from '../../components/Buttons/Buttons';
+import { OutlineBtn } from '../../components/Buttons/Buttons';
 
 const Ongoing = () => {
   const [groupData, setGroupData] = useState([]);
@@ -48,11 +48,11 @@ const Ongoing = () => {
                   .format('MM-DD hh:mm A')} —{' '}
                 {moment.unix(item.endTime.seconds).format('MM-DD hh:mm A')}
               </Creator>
-              <div>
+              <Buttons>
                 <Link to={`/study-group/${item.id}/live`}>
-                  <GroupButton type="button" value="進入直播間" />
+                  <OutlineBtn>進入直播間</OutlineBtn>
                 </Link>
-              </div>
+              </Buttons>
             </CardContent>
           </StudyGroupCard>
         ))
@@ -60,6 +60,10 @@ const Ongoing = () => {
     </ProfileStudyGroup>
   );
 };
+const Buttons = styled.div`
+  display: flex;
+  gap: 5px;
+`;
 
 const Title = styled.div`
   font-weight: 600;

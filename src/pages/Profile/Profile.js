@@ -6,6 +6,10 @@ import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import ProfileStudyGroup from '../../components/ProfileStudyGroup/ProfileStudyGroup';
+import {
+  HostEditInput,
+  GuestEditInput,
+} from '../../components/Buttons/Buttons';
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
@@ -27,6 +31,47 @@ const Profile = () => {
     preparing: '準備中',
     finished: '已結束',
   };
+
+  const ProfileGroupCard = ({ item }) => {
+    switch (item.status) {
+      case 'preparing':
+        return (
+          <Buttons>
+            <GuestEditInput
+              isHost={user.email === item.createBy}
+              // onClick={() => handleQuitGroup(item.id)}
+            >
+              退出讀書會
+            </GuestEditInput>
+            <HostEditInput
+              isHost={user.email === item.createBy}
+              // onClick={() => handleDelGroup(item.id)}
+            >
+              取消讀書會
+            </HostEditInput>
+            <HostEditInput
+              isHost={user.email === item.createBy}
+              // onClick={() => navigate(`/study-group/${item.id}/process`)}
+              >
+              編輯流程
+            </HostEditInput>
+            <HostEditInput
+              isHost={user.email === item.createBy}
+              // onClick={() => handleChangeState(item.id)}
+            >
+              開始讀書會
+            </HostEditInput>
+          </Buttons>
+        );
+      // case "ongoing":
+      //   return </>;
+      // case "finished":
+      //   return </>;
+      default:
+        return null;
+    }
+  };
+
   return (
     <ProfileStudyGroup>
       {groupData.map((item, i) => (
@@ -49,6 +94,7 @@ const Profile = () => {
                 .format('MM-DD hh:mm A')} —{' '}
               {moment.unix(item.endTime.seconds).format('MM-DD hh:mm A')}
             </Creator>
+            {<ProfileGroupCard key={i} item={item} />}
           </CardContent>
           <Status>{statusText[item.status]}</Status>
         </StudyGroupCard>
@@ -60,6 +106,10 @@ const Title = styled.div`
   font-weight: 600;
   font-size: 28px;
   letter-spacing: 0.05em;
+`;
+const Buttons = styled.div`
+  display: flex;
+  gap: 5px;
 `;
 const Status = styled.div`
   background-color: #df524d;
