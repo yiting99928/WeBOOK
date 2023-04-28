@@ -44,13 +44,12 @@ function StudyGroup() {
       ) : (
         <Container>
           <GroupInfo>
-            <BookGroupImg>
-              <img src={studyGroup.image} alt="feature" />
-            </BookGroupImg>
+            <BookGroupImg src={studyGroup.image} alt="feature" />
             <GroupDetail>
               <Title>{studyGroup.groupName}</Title>
-              <p>{studyGroup.name}</p>
               <BookInfo>
+                書名：{studyGroup.name}
+                <br />
                 作者：{studyGroup.author}
                 <br />
                 類別：{studyGroup.category}
@@ -123,8 +122,7 @@ const Title = styled.div`
   font-size: 40px;
 `;
 const BookInfo = styled.div``;
-const Creator = styled.div`
-`;
+const Creator = styled.div``;
 const GroupDetail = styled.div`
   display: flex;
   flex-direction: column;
@@ -138,14 +136,16 @@ const Container = styled.div`
   margin: 120px auto 200px auto;
   line-height: 150%;
 `;
-const BookGroupImg = styled.div`
+const BookGroupImg = styled.img`
   max-width: 300px;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
 `;
 const GroupInfo = styled.div`
   display: flex;
   gap: 40px;
   padding-bottom: 55px;
   border-bottom: 1px solid #b5b5b5;
+  color: #5b5b5b;
 `;
 export default StudyGroup;
