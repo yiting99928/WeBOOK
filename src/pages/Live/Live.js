@@ -29,7 +29,7 @@ import {
   BsCameraVideoFill,
   BsCameraVideoOffFill,
 } from 'react-icons/bs';
-import { MdFirstPage, MdLastPage, MdFitScreen } from 'react-icons/md';
+import { MdFirstPage, MdLastPage } from 'react-icons/md';
 import { FaPhoneSlash, FaMicrophoneSlash, FaMicrophone } from 'react-icons/fa';
 
 import moment from 'moment';
