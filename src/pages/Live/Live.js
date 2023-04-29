@@ -32,8 +32,8 @@ import {
 import { MdFirstPage, MdLastPage } from 'react-icons/md';
 import { FaPhoneSlash, FaMicrophoneSlash, FaMicrophone } from 'react-icons/fa';
 
-
 import moment from 'moment';
+import modal from '../../utils/modal';
 
 function reducer(processData, { type, payload = {} }) {
   const { processIndex, data, process } = payload;
@@ -82,7 +82,7 @@ function Live() {
   });
   const remoteVideoRef = useRef(null);
   const localVideoRef = useRef(null);
-  const [showLocalVideo, setShowLocalVideo] = useState(true);
+  // const [showLocalVideo, setShowLocalVideo] = useState(true);
   const [showChatRoom, setShowChatRoom] = useState(true);
 
   //--------------------//
@@ -293,6 +293,7 @@ function Live() {
         unsubscribe();
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [peerConnections, id]);
 
   //--------------------//
@@ -318,7 +319,7 @@ function Live() {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
@@ -345,7 +346,7 @@ function Live() {
       doc(db, 'studyGroups', id),
       (docSnapshot) => {
         if (docSnapshot.exists() && docSnapshot.data().status === 'finished') {
-          alert('結束直播');
+          modal.success('結束直播');
           navigate({ pathname: '/profile/finished' }, { replace: true });
           deleteDoc(doc(db, 'rooms', id));
         }
@@ -451,7 +452,7 @@ function Live() {
   async function handleStart() {
     setIsLive(true);
     await setDoc(doc(db, 'rooms', id), { currentCard: 0 });
-    alert('開始直播');
+    modal.success('開始直播');
     const studyGroupRef = doc(db, 'rooms', id);
     const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
       const studyGroupData = snapshot.data();
@@ -465,7 +466,7 @@ function Live() {
   }
 
   async function handleJoin() {
-    alert('加入直播');
+    modal.success('加入直播');
     const studyGroupRef = doc(db, 'rooms', id);
     const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
       if (
@@ -500,9 +501,9 @@ function Live() {
     }
   };
 
-  const handleVideoToggle = () => {
-    setShowLocalVideo(!showLocalVideo);
-  };
+  // const handleVideoToggle = () => {
+  //   setShowLocalVideo(!showLocalVideo);
+  // };
   const handleChatRoom = () => {
     setShowChatRoom(!showChatRoom);
   };
@@ -628,13 +629,13 @@ function Live() {
               autoPlay
               ref={localVideoRef}
               muted
-              show={showLocalVideo}
+              // show={showLocalVideo}
             />
             <RemoteVideo
               isHost={studyGroup.createBy === user.email}
               autoPlay
               ref={remoteVideoRef}
-              show={showLocalVideo}
+              // show={showLocalVideo}
             />
           </Broadcast>
         </LiveScreen>
@@ -874,11 +875,7 @@ const Button = styled.button`
   border-radius: 6px;
 `;
 //---全局---//
-const Container = styled.div`
-  display: flex;
-  min-height: 100vh;
-  background-color: rgba(236, 236, 236, 0.15);
-`;
+
 const GroupTitle = styled.div`
   display: flex;
   align-items: flex-start;
@@ -897,14 +894,5 @@ const GroupBook = styled.h2`
     padding-top: 5px;
     letter-spacing: 1.5;
   }
-`;
-const Content = styled.div`
-  transition: all 0.3s ease;
-  width: 1000px;
-  margin: 0 auto;
-  margin-bottom: 160px;
-  margin-top: 80px;
-  display: flex;
-  flex-direction: column;
 `;
 export default Live;
