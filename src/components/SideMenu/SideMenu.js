@@ -1,15 +1,14 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/authContext';
-// import { db } from '../../utils/firebase';
 import styled from 'styled-components/macro';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { AuthContext } from '../../context/authContext';
 import { getAuth, signOut } from 'firebase/auth';
 import {
   MdKeyboardDoubleArrowRight,
   MdKeyboardDoubleArrowLeft,
 } from 'react-icons/md';
-function SideMenu() {
+
+function SideMenu({ children }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
   const { user, setUser } = useContext(AuthContext);
@@ -31,35 +30,54 @@ function SideMenu() {
         console.log(error);
       });
   }
+
   return (
-    <Sidebar isOpen={isOpen}>
-      {isOpen ? (
-        <SidebarContainer isOpen={isOpen}>
-          <ArrowIcon>
-            <MdKeyboardDoubleArrowLeft onClick={toggleSidebar} />
-          </ArrowIcon>
-          <SidebarLinks>
-            <User>Hi! {user.name}</User>
-            <br />
-            <br />
-            <Link to={`/profile`}>所有讀書會</Link>
-            <Link to={`/profile/ongoing`}>進行中</Link>
-            <Link to={`/profile/preparing`}>準備中</Link>
-            <Link to={`/profile/finished`}>已結束</Link>
-            <br />
-            <Logout onClick={logOut}>登出</Logout>
-          </SidebarLinks>
-        </SidebarContainer>
-      ) : (
-        <SidebarContainer>
-          <ArrowIcon>
-            <MdKeyboardDoubleArrowRight onClick={toggleSidebar} />
-          </ArrowIcon>
-        </SidebarContainer>
-      )}
-    </Sidebar>
+    <Container>
+      <Sidebar isOpen={isOpen}>
+        {isOpen ? (
+          <SidebarContainer isOpen={isOpen}>
+            <ArrowIcon>
+              <MdKeyboardDoubleArrowLeft onClick={toggleSidebar} />
+            </ArrowIcon>
+            <SidebarLinks>
+              <User>Hi! {user.name}</User>
+              <br />
+              <br />
+              <Link to={`/profile`}>所有讀書會</Link>
+              <Link to={`/profile/ongoing`}>進行中</Link>
+              <Link to={`/profile/preparing`}>準備中</Link>
+              <Link to={`/profile/finished`}>已結束</Link>
+              <br />
+              <Logout onClick={logOut}>登出</Logout>
+            </SidebarLinks>
+          </SidebarContainer>
+        ) : (
+          <SidebarContainer>
+            <ArrowIcon>
+              <MdKeyboardDoubleArrowRight onClick={toggleSidebar} />
+            </ArrowIcon>
+          </SidebarContainer>
+        )}
+      </Sidebar>
+      <Content isOpen={true}>{children}</Content>
+    </Container>
   );
 }
+const Container = styled.div`
+  display: flex;
+  min-height: 100vh;
+`;
+
+const Content = styled.div`
+  transition: all 0.3s ease;
+  margin: 0 auto;
+  margin-top: 54px;
+  margin-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 960px;
+`;
 const Sidebar = styled.div`
   width: ${({ isOpen }) => (isOpen ? '200px' : '40px')};
   background-color: #eaeaea;
