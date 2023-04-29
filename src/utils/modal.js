@@ -5,7 +5,6 @@ import webookSwing from './webookSwing.gif';
 // import { useNavigate } from 'react-router-dom';
 
 const modal = {
-  // const navigate = useNavigate();
   success(text) {
     const success = withReactContent(Swal);
     success.fire({
@@ -17,24 +16,20 @@ const modal = {
     });
   },
   create(text, id) {
-    const success = withReactContent(Swal);
-    success
-      .fire({
-        title: text,
-        imageUrl: webookJump,
-        imageWidth: 100,
-        imageAlt: 'success',
-        scrollbarPadding: false,
-      })
-      .then((result) => {
-        if (result.isConfirmed && id) {
-          window.location = `/studyGroup/${id}`;
-        }
-      });
+    Swal.fire({
+      title: text,
+      imageUrl: webookJump,
+      imageWidth: 100,
+      imageAlt: 'success',
+      scrollbarPadding: false,
+    }).then((result) => {
+      if (result.isConfirmed && id) {
+        window.location = `/studyGroup/${id}`;
+      }
+    });
   },
   fail(text) {
-    const fail = withReactContent(Swal);
-    fail.fire({
+    Swal.fire({
       title: text,
       imageUrl: webookSwing,
       imageWidth: 100,
@@ -43,8 +38,7 @@ const modal = {
     });
   },
   quit(text) {
-    const fail = withReactContent(Swal);
-    fail.fire({
+    Swal.fire({
       title: text,
       imageUrl: webookSwing,
       imageWidth: 100,
@@ -53,20 +47,17 @@ const modal = {
     });
   },
   noUser(text) {
-    const fail = withReactContent(Swal);
-    fail
-      .fire({
-        title: text,
-        imageUrl: webookSwing,
-        imageWidth: 100,
-        imageAlt: 'quit',
-        scrollbarPadding: false,
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          window.location = `/login`;
-        }
-      });
+    Swal.fire({
+      title: text,
+      imageUrl: webookSwing,
+      imageWidth: 100,
+      imageAlt: 'quit',
+      scrollbarPadding: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location = `/login`;
+      }
+    });
   },
 };
 export default modal;
