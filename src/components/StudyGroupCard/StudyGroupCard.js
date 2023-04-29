@@ -34,6 +34,7 @@ function StudyGroupCard({ item, onClick, onJoinGroup }) {
     </BookGroup>
   );
 }
+
 const BookTitle = styled.div`
   padding-bottom: 4px;
   font-weight: 600;
@@ -49,8 +50,8 @@ const Creator = styled.div`
   margin-top: auto;
   line-height: 1.3;
 `;
+
 const BookGroupImg = styled.img`
-  max-height: 320px;
   object-fit: cover;
   cursor: pointer;
 `;
@@ -65,12 +66,12 @@ const BookGroup = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 230px;
+  max-width: 230px;
   border-radius: 8px;
   background: #ffffff;
   border: 1px solid #ececec;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  height: 510px;
+  max-height: 510px;
 `;
 export default StudyGroupCard;
