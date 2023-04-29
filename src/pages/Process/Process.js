@@ -406,21 +406,6 @@ const Title = styled.div`
   margin-bottom: 10px;
   gap: 10px;
 `;
-const Container = styled.div`
-  display: flex;
-  min-height: 100vh;
-  background-color: rgba(236, 236, 236, 0.15);
-`;
-const Content = styled.div`
-  transition: all 0.3s ease;
-  width: 960px;
-  margin: 0 auto;
-  margin-bottom: 160px;
-  margin-top: 80px;
-  padding-right: 50px;
-  display: flex;
-  flex-direction: column;
-`;
 const ProcessCard = styled.div`
   box-shadow: 0px 4px 17px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
