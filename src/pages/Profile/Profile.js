@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-// import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import data from '../../utils/api';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
 import { useNavigate, Link } from 'react-router-dom';
-import ProfileStudyGroup from '../../components/ProfileStudyGroup/ProfileStudyGroup';
+import ProfileStudyGroup from '../../components/ProfileStudyGroup';
 import {
   HostEditInput,
   GuestEditInput,
@@ -23,19 +23,29 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import modal from '../../utils/modal';
+import parse, { domToReact } from 'html-react-parser';
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
   const [groupData, setGroupData] = useState([]);
   const navigate = useNavigate();
+  const [expanded, setExpanded] = useState(Array(groupData.length).fill(false));
+  const { status } = useParams();
 
   async function getData() {
     const groupData = await data.fetchUserGroup(user.email);
-    setGroupData(groupData);
+    let filteredData;
+    if (status === undefined) {
+      filteredData = groupData;
+    } else {
+      filteredData = groupData.filter((item) => item.status === status);
+    }
+    setGroupData(filteredData);
   }
+
   useEffect(() => {
     getData();
-  }, []);
+  }, [status]);
 
   const statusText = {
     ongoing: '進行中',
@@ -105,7 +115,14 @@ const Profile = () => {
     }
   }
 
-  const ProfileGroupCard = ({ item }) => {
+  function handleExpanded(index) {
+    setExpanded((prevExpanded) => {
+      const newExpanded = [...prevExpanded];
+      newExpanded[index] = !newExpanded[index];
+      return newExpanded;
+    });
+  }
+  const ProfileGroupCard = ({ item, index }) => {
     switch (item.status) {
       case 'preparing':
         return (
@@ -143,7 +160,9 @@ const Profile = () => {
       case 'finished':
         return (
           <Buttons>
-            <OutlineBtn>讀書會筆記</OutlineBtn>
+            <OutlineBtn onClick={() => handleExpanded(index)}>
+              讀書會筆記
+            </OutlineBtn>
           </Buttons>
         );
 
@@ -151,40 +170,76 @@ const Profile = () => {
         return null;
     }
   };
-
+  const replace = (node) => {
+    if (node.attribs && node.attribs.contenteditable) {
+      delete node.attribs.contenteditable;
+      return (
+        <node.name {...node.attribs}>
+          {domToReact(node.children, { replace })}
+        </node.name>
+      );
+    }
+  };
   return (
     <ProfileStudyGroup>
-      {groupData.map((item, i) => (
-        <StudyGroupCard key={i}>
-          <BookGroupImg
-            src={item.image}
-            alt="feature"
-            onClick={() => navigate(`/studyGroup/${item.id}`)}
-          />
-          <CardContent>
-            <Title>{item.groupName}</Title>
-            <p>書籍：{item.name}</p>
-            <Creator>
-              導讀者：{item.host}
-              <br />
-              章節：{item.chapter}
-              <br />
-              {moment
-                .unix(item.startTime.seconds)
-                .format('MM-DD hh:mm A')} —{' '}
-              {moment.unix(item.endTime.seconds).format('MM-DD hh:mm A')}
-            </Creator>
-            {<ProfileGroupCard key={i} item={item} />}
-          </CardContent>
-          <Tag>
-            <Status>{statusText[item.status]}</Status>
-            <div>即將舉辦</div>
-          </Tag>
-        </StudyGroupCard>
-      ))}
+      {groupData.map((item, index) => {
+        const currentTime = moment().unix();
+        const threeDaysLater = moment().add(3, 'days').unix();
+        const startTime = item.startTime.seconds;
+        const isUpcoming =
+          startTime >= currentTime && startTime <= threeDaysLater;
+        return (
+          <StudyGroupCard key={index}>
+            <GroupInfo expanded={expanded[index]}>
+              <BookGroupImg
+                src={item.image}
+                alt="feature"
+                onClick={() => navigate(`/studyGroup/${item.id}`)}
+              />
+              <CardContent>
+                <Title>{item.groupName}</Title>
+                <p>書籍：{item.name}</p>
+                <Creator>
+                  導讀者：{item.host}
+                  <br />
+                  章節：{item.chapter}
+                  <br />
+                  {moment
+                    .unix(item.startTime.seconds)
+                    .format('MM-DD hh:mm A')}{' '}
+                  — {moment.unix(item.endTime.seconds).format('MM-DD hh:mm A')}
+                </Creator>
+                {<ProfileGroupCard index={index} item={item} />}
+              </CardContent>
+              <Tag>
+                <Status>{statusText[item.status]}</Status>
+                {isUpcoming && <Already>即將舉辦</Already>}
+              </Tag>
+            </GroupInfo>
+            {expanded[index] && (
+              <Note>
+                <br />
+                {parse(item.note, { replace })}
+              </Note>
+            )}
+          </StudyGroupCard>
+        );
+      })}
     </ProfileStudyGroup>
   );
 };
+const Note = styled.div`
+  border-top: 1px solid #b5b5b5;
+  padding-top: 15px;
+  line-height: 1.3;
+`;
+const Already = styled.div`
+  text-align: center;
+  background-color: #df524d;
+  padding: 5px 16px;
+  color: #fff;
+  border-radius: 6px;
+`;
 const Tag = styled.div`
   margin-left: auto;
   display: flex;
@@ -201,6 +256,7 @@ const Buttons = styled.div`
   gap: 5px;
 `;
 const Status = styled.div`
+  text-align: center;
   background-color: #df524d;
   padding: 5px 16px;
   color: #fff;
@@ -211,10 +267,15 @@ const BookGroupImg = styled.img`
   max-width: 150px;
   object-fit: cover;
 `;
-const StudyGroupCard = styled.div`
+const GroupInfo = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 50px;
+  padding-bottom: ${({ expanded }) => (expanded ? '30px' : '0px')};
+`;
+const StudyGroupCard = styled.div`
+  display: flex;
+  flex-direction: column;
   padding: 16px 20px;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
