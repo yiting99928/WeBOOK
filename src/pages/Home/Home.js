@@ -74,8 +74,8 @@ function Home() {
 
   return (
     <div>
+      <DecoBg />
       <Banner>
-        <DecoBg />
         <BannerInfo>
           <Title>
             走進書適圈
@@ -102,11 +102,11 @@ function Home() {
             <FeaturePoints>
               <FeaturePoint>
                 <RiLiveLine />
-                編輯導讀流程
+                <p>編輯導讀流程</p>
               </FeaturePoint>
               <FeaturePoint>
                 <AiOutlineEdit />
-                線上直播導讀
+                <p>線上直播導讀</p>
               </FeaturePoint>
             </FeaturePoints>
           </Feature>
@@ -124,19 +124,19 @@ function Home() {
             <FeaturePoints>
               <FeaturePoint>
                 <BsBook />
-                導讀講稿分享
+                <p>導讀講稿分享</p>
               </FeaturePoint>
               <FeaturePoint>
                 <AiOutlineQuestionCircle />
-                QA問答
+                <p>QA問答</p>
               </FeaturePoint>
               <FeaturePoint>
                 <MdHowToVote />
-                問題票選
+                <p>問題票選</p>
               </FeaturePoint>
               <FeaturePoint>
                 <BsSticky />
-                便利貼分享
+                <p>便利貼分享</p>
               </FeaturePoint>
             </FeaturePoints>
           </FeatureReversed>
@@ -154,11 +154,11 @@ function Home() {
             <FeaturePoints>
               <FeaturePoint>
                 <BsChatLeftDots />
-                與其他參與者聊天室互動
+                <p>與其他參與者聊天室互動</p>
               </FeaturePoint>
               <FeaturePoint>
                 <VscSave />
-                留存讀書會筆記
+                <p>留存讀書會筆記</p>
               </FeaturePoint>
             </FeaturePoints>
           </Feature>
@@ -213,11 +213,12 @@ const FooterBottom = styled.div`
 //-----Feature-----//
 const Features = styled.div`
   max-width: 1100px;
-  margin: 80px auto;
+  margin: 0 auto;
+  margin-top: 150px;
   letter-spacing: 0.05em;
   display: flex;
   flex-direction: column;
-  gap: 50px;
+  gap: 80px;
   margin-bottom: 150px;
 `;
 const FeatureWrap = styled.div`
@@ -232,7 +233,6 @@ const Feature = styled.div`
   flex-direction: column;
   gap: 18px;
   width: 480px;
-  line-height: 1.2;
 `;
 const FeatureReversed = styled(Feature)`
   order: -1;
@@ -244,8 +244,8 @@ const FeatureImg = styled.div`
   justify-content: center;
 `;
 const FeatureDeco = styled.div`
-  width: 300px;
-  height: 300px;
+  width: 450px;
+  height: 450px;
   background-color: rgba(239, 140, 138, 0.1);
   position: absolute;
   z-index: -1;
@@ -258,10 +258,12 @@ const FeatureTitle = styled.div`
   margin-bottom: 10px;
 `;
 const FeatureDescription = styled.div`
+  line-height: 1.5;
   color: #5b5b5b;
   font-size: 20px;
 `;
 const FeaturePoints = styled.div`
+  line-height: 1.5;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -270,6 +272,7 @@ const FeaturePoint = styled.div`
   font-size: 20px;
   color: #5b5b5b;
   display: flex;
+  align-items: center;
   gap: 10px;
 `;
 //-----Banner-----//
