@@ -5,7 +5,7 @@ import data from '../../utils/api';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
 import { useNavigate, Link } from 'react-router-dom';
-import ProfileStudyGroup from '../../components/ProfileStudyGroup';
+import SideMenu from '../../components/SideMenu';
 import {
   HostEditInput,
   GuestEditInput,
@@ -181,7 +181,7 @@ const Profile = () => {
     }
   };
   return (
-    <ProfileStudyGroup>
+    <SideMenu>
       {groupData.map((item, index) => {
         const currentTime = moment().unix();
         const threeDaysLater = moment().add(3, 'days').unix();
@@ -225,7 +225,7 @@ const Profile = () => {
           </StudyGroupCard>
         );
       })}
-    </ProfileStudyGroup>
+    </SideMenu>
   );
 };
 const Note = styled.div`

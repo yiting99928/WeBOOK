@@ -32,6 +32,7 @@ import {
 import { MdFirstPage, MdLastPage } from 'react-icons/md';
 import { FaPhoneSlash, FaMicrophoneSlash, FaMicrophone } from 'react-icons/fa';
 
+
 import moment from 'moment';
 
 function reducer(processData, { type, payload = {} }) {
@@ -506,179 +507,171 @@ function Live() {
     setShowChatRoom(!showChatRoom);
   };
   return (
-    <Container>
-      <SideMenu isOpen={true} />
-      <Content isOpen={true}>
-        <GroupTitle>
-          <GroupBook>
-            {studyGroup.groupName}
-            <br />
-            <p>{studyGroup.name}</p>
-          </GroupBook>
-          作者：{studyGroup.author}
+    <SideMenu>
+      <GroupTitle>
+        <GroupBook>
+          {studyGroup.groupName}
           <br />
-          導讀章節:{studyGroup.chapter}
-          <br />
-          舉辦時間:
-          {studyGroup && studyGroup.startTime ? (
-            moment
-              .unix(studyGroup.startTime.seconds)
-              .format('YYYY-MM-DD hh:mm A')
-          ) : (
-            <div>loading</div>
-          )}
-          <br />
-          導讀人：{studyGroup.host}
-        </GroupTitle>
-        <LiveContainer>
-          <LiveScreen showChatRoom={showChatRoom}>
-            <LiveIcon isLive={isLive}>Live</LiveIcon>
-            <LiveInputs isLive={isLive}>
-              <StartInput
-                isHost={studyGroup.createBy === user.email}
-                type="button"
-                value="開啟鏡頭"
-                onClick={openUserMedia}
-              />
-              <StartInput
-                isHost={studyGroup.createBy === user.email}
-                type="button"
-                value="開始直播"
-                disabled={videoState.isMuted && videoState.isVideoDisabled}
-                onClick={handleStart}
-              />
-              <JoinInput
-                isHost={studyGroup.createBy === user.email}
-                type="button"
-                value="加入直播"
-                disabled={isDisabled}
-                onClick={handleJoin}
-              />
-            </LiveInputs>
-            <Cards isLive={isLive}>
-              {!processData ? (
-                <></>
-              ) : (
-                processData.map((item, processIndex) => (
-                  <Card
-                    activeCard={processIndex === currentCard} // 卡片index & 目前 currentCard 相同則 block
-                    key={processIndex}>
-                    <Description>{item.description}</Description>
-                    <CardContent>
-                      {renderCardContent(item, processIndex)}
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </Cards>
-            {!processData || !isLive ? (
+          <p>{studyGroup.name}</p>
+        </GroupBook>
+        作者：{studyGroup.author}
+        <br />
+        導讀章節:{studyGroup.chapter}
+        <br />
+        舉辦時間:
+        {studyGroup && studyGroup.startTime ? (
+          moment.unix(studyGroup.startTime.seconds).format('YYYY-MM-DD hh:mm A')
+        ) : (
+          <div>loading</div>
+        )}
+        <br />
+        導讀人：{studyGroup.host}
+      </GroupTitle>
+      <LiveContainer>
+        <LiveScreen showChatRoom={showChatRoom}>
+          <LiveIcon isLive={isLive}>Live</LiveIcon>
+          <LiveInputs isLive={isLive}>
+            <StartInput
+              isHost={studyGroup.createBy === user.email}
+              type="button"
+              value="開啟鏡頭"
+              onClick={openUserMedia}
+            />
+            <StartInput
+              isHost={studyGroup.createBy === user.email}
+              type="button"
+              value="開始直播"
+              disabled={videoState.isMuted && videoState.isVideoDisabled}
+              onClick={handleStart}
+            />
+            <JoinInput
+              isHost={studyGroup.createBy === user.email}
+              type="button"
+              value="加入直播"
+              disabled={isDisabled}
+              onClick={handleJoin}
+            />
+          </LiveInputs>
+          <Cards isLive={isLive}>
+            {!processData ? (
               <></>
             ) : (
-              <ProcessInputs>
-                <HostInput isHost={studyGroup.createBy === user.email}>
-                  <MediaIcon>
-                    <MdFirstPage
-                      onClick={() =>
-                        setCurrentCard((prev) => {
-                          const newCard = prev > 0 ? prev - 1 : prev;
-                          updateCurrentCardInFirebase(newCard);
-                          return newCard;
-                        })
-                      }
-                    />
-                  </MediaIcon>
-                  <MediaIcon>
-                    <MdLastPage
-                      onClick={() => {
-                        setCurrentCard((prev) => {
-                          const newCard =
-                            prev < processData.length - 1 ? prev + 1 : prev;
-                          updateCurrentCardInFirebase(newCard);
-                          return newCard;
-                        });
-                      }}
-                    />
-                  </MediaIcon>
-                  <MutedIcon isMuted={videoState.isMuted}>
-                    {videoState.isMuted ? (
-                      <FaMicrophoneSlash onClick={toggleMute} />
-                    ) : (
-                      <FaMicrophone onClick={toggleMute} />
-                    )}
-                  </MutedIcon>
-                  <VideoDisabled isVideoDisabled={videoState.isVideoDisabled}>
-                    {videoState.isVideoDisabled ? (
-                      <BsCameraVideoOffFill onClick={toggleVideo} />
-                    ) : (
-                      <BsCameraVideoFill onClick={toggleVideo} />
-                    )}
-                  </VideoDisabled>
-                </HostInput>
-                {/* <MediaIcon>
+              processData.map((item, processIndex) => (
+                <Card
+                  activeCard={processIndex === currentCard} // 卡片index & 目前 currentCard 相同則 block
+                  key={processIndex}>
+                  <Description>{item.description}</Description>
+                  <CardContent>
+                    {renderCardContent(item, processIndex)}
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </Cards>
+          {!processData || !isLive ? (
+            <></>
+          ) : (
+            <ProcessInputs>
+              <HostInput isHost={studyGroup.createBy === user.email}>
+                <MediaIcon>
+                  <MdFirstPage
+                    onClick={() =>
+                      setCurrentCard((prev) => {
+                        const newCard = prev > 0 ? prev - 1 : prev;
+                        updateCurrentCardInFirebase(newCard);
+                        return newCard;
+                      })
+                    }
+                  />
+                </MediaIcon>
+                <MediaIcon>
+                  <MdLastPage
+                    onClick={() => {
+                      setCurrentCard((prev) => {
+                        const newCard =
+                          prev < processData.length - 1 ? prev + 1 : prev;
+                        updateCurrentCardInFirebase(newCard);
+                        return newCard;
+                      });
+                    }}
+                  />
+                </MediaIcon>
+                <MutedIcon isMuted={videoState.isMuted}>
+                  {videoState.isMuted ? (
+                    <FaMicrophoneSlash onClick={toggleMute} />
+                  ) : (
+                    <FaMicrophone onClick={toggleMute} />
+                  )}
+                </MutedIcon>
+                <VideoDisabled isVideoDisabled={videoState.isVideoDisabled}>
+                  {videoState.isVideoDisabled ? (
+                    <BsCameraVideoOffFill onClick={toggleVideo} />
+                  ) : (
+                    <BsCameraVideoFill onClick={toggleVideo} />
+                  )}
+                </VideoDisabled>
+              </HostInput>
+              {/* <MediaIcon>
                   <MdFitScreen onClick={handleVideoToggle} />
                 </MediaIcon> */}
-                <MediaIcon>
-                  <BsChatDotsFill onClick={handleChatRoom} />
-                </MediaIcon>
-                <Hangup isHost={studyGroup.createBy === user.email}>
-                  <FaPhoneSlash onClick={handleStop} />
-                </Hangup>
-              </ProcessInputs>
+              <MediaIcon>
+                <BsChatDotsFill onClick={handleChatRoom} />
+              </MediaIcon>
+              <Hangup isHost={studyGroup.createBy === user.email}>
+                <FaPhoneSlash onClick={handleStop} />
+              </Hangup>
+            </ProcessInputs>
+          )}
+          <Broadcast>
+            <LocalVideo
+              isHost={studyGroup.createBy === user.email}
+              autoPlay
+              ref={localVideoRef}
+              muted
+              show={showLocalVideo}
+            />
+            <RemoteVideo
+              isHost={studyGroup.createBy === user.email}
+              autoPlay
+              ref={remoteVideoRef}
+              show={showLocalVideo}
+            />
+          </Broadcast>
+        </LiveScreen>
+        <ChatRoom showChatRoom={showChatRoom}>
+          <ChatTitle>聊天室</ChatTitle>
+          <Message>
+            {messages.map((message, index) =>
+              user.email === message.sender ? (
+                <UserMessage key={index}>{message.message}</UserMessage>
+              ) : (
+                <GuestMessage key={index}>
+                  <span>{message.senderName}：</span>
+                  {message.message}
+                </GuestMessage>
+              )
             )}
-            <Broadcast>
-              <LocalVideo
-                isHost={studyGroup.createBy === user.email}
-                autoPlay
-                ref={localVideoRef}
-                muted
-                show={showLocalVideo}
-              />
-              <RemoteVideo
-                isHost={studyGroup.createBy === user.email}
-                autoPlay
-                ref={remoteVideoRef}
-                show={showLocalVideo}
-              />
-            </Broadcast>
-          </LiveScreen>
-          <ChatRoom showChatRoom={showChatRoom}>
-            <ChatTitle>聊天室</ChatTitle>
-            <Message>
-              {messages.map((message, index) =>
-                user.email === message.sender ? (
-                  <UserMessage key={index}>{message.message}</UserMessage>
-                ) : (
-                  <GuestMessage key={index}>
-                    <span>{message.senderName}：</span>
-                    {message.message}
-                  </GuestMessage>
-                )
-              )}
-              <div
-                ref={(el) => {
-                  messagesEndRef.current = el;
-                }}
-              />
-            </Message>
-            <ChatInput>
-              <form onSubmit={sendMessage}>
-                <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                />
-                <button type="submit">
-                  <IoIosArrowForward />
-                </button>
-              </form>
-            </ChatInput>
-          </ChatRoom>
-        </LiveContainer>
-        <Note>
-          <EditContent onChange={setNote} value={note} />
-          <Button onClick={handleSaveNote}>儲存筆記</Button>
-        </Note>
-      </Content>
-    </Container>
+            <div
+              ref={(el) => {
+                messagesEndRef.current = el;
+              }}
+            />
+          </Message>
+          <ChatInput>
+            <form onSubmit={sendMessage}>
+              <input value={input} onChange={(e) => setInput(e.target.value)} />
+              <button type="submit">
+                <IoIosArrowForward />
+              </button>
+            </form>
+          </ChatInput>
+        </ChatRoom>
+      </LiveContainer>
+      <Note>
+        <EditContent onChange={setNote} value={note} />
+        <Button onClick={handleSaveNote}>儲存筆記</Button>
+      </Note>
+    </SideMenu>
   );
 }
 const HostInput = styled.div`

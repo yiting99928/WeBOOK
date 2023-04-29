@@ -14,6 +14,7 @@ import { BiTrash, BiCopy } from 'react-icons/bi';
 import moment from 'moment';
 import modal from '../../utils/modal';
 
+
 function reducer(processData, { type, payload = {} }) {
   const { lecture, processIndex, templates, e, data, process } = payload;
   switch (type) {
@@ -233,103 +234,102 @@ function Process() {
     });
   };
   return (
-    <Container>
-      <SideMenu isOpen={true} />
-      <Content isOpen={true}>
-        <GroupTitle>
-          <GroupBook>{studyGroup.name}</GroupBook>
-          <GroupDetail>
-            作者：{studyGroup.author}
-            <br />
-            導讀章節:{studyGroup.chapter}
-            <br />
-            舉辦時間:
-            {studyGroup && studyGroup.startTime ? (
-              moment.unix(studyGroup.startTime.seconds).format('YYYY-MM-DD hh:mm A')
-            ) : (
-              <div>loading</div>
-            )}
-          </GroupDetail>
-        </GroupTitle>
-        <ProcessContainer>
-          {processData !== undefined &&
-            processData.map((item, processIndex) => {
-              return (
-                <ProcessCard
-                  key={processIndex}
-                  id={`card-${processIndex}`} // 添加此行
-                  onClick={() => setEditable(processIndex)}>
-                  <EditBlock editable={editable === processIndex}></EditBlock>
-                  <Drag
-                    draggable="true"
-                    onDragStart={(e) => handleDragStart(e, processIndex)}
-                    onDragOver={(e) => handleDragOver(e)}
-                    onDrop={(e) => handleDrop(e, processIndex)}>
-                    <img src={move} alt="move" />
-                  </Drag>
-                  <Title>
-                    <Description
-                      readOnly={editable !== processIndex}
-                      onChange={(e) => handleDescriptionChange(processIndex, e)}
-                      value={item.description}
-                    />
-                    <TemplateType
-                      name="templateType"
-                      value={item.type}
-                      onChange={(e) =>
-                        dispatch({
-                          type: 'CHANGE_CARD',
-                          payload: {
-                            processIndex: processIndex,
-                            templates: templates,
-                            e: e,
-                          },
-                        })
-                      }>
-                      <option value="lecture">導讀講稿</option>
-                      <option value="stickyNote">便利貼分享</option>
-                      <option value="QA">QA問答</option>
-                      <option value="vote">問題票選</option>
-                    </TemplateType>
-                  </Title>
+    <SideMenu>
+      <GroupTitle>
+        <GroupBook>{studyGroup.name}</GroupBook>
+        <GroupDetail>
+          作者：{studyGroup.author}
+          <br />
+          導讀章節:{studyGroup.chapter}
+          <br />
+          舉辦時間:
+          {studyGroup && studyGroup.startTime ? (
+            moment
+              .unix(studyGroup.startTime.seconds)
+              .format('YYYY-MM-DD hh:mm A')
+          ) : (
+            <div>loading</div>
+          )}
+        </GroupDetail>
+      </GroupTitle>
+      <ProcessContainer>
+        {processData !== undefined &&
+          processData.map((item, processIndex) => {
+            return (
+              <ProcessCard
+                key={processIndex}
+                id={`card-${processIndex}`} // 添加此行
+                onClick={() => setEditable(processIndex)}>
+                <EditBlock editable={editable === processIndex}></EditBlock>
+                <Drag
+                  draggable="true"
+                  onDragStart={(e) => handleDragStart(e, processIndex)}
+                  onDragOver={(e) => handleDragOver(e)}
+                  onDrop={(e) => handleDrop(e, processIndex)}>
+                  <img src={move} alt="move" />
+                </Drag>
+                <Title>
+                  <Description
+                    readOnly={editable !== processIndex}
+                    onChange={(e) => handleDescriptionChange(processIndex, e)}
+                    value={item.description}
+                  />
+                  <TemplateType
+                    name="templateType"
+                    value={item.type}
+                    onChange={(e) =>
+                      dispatch({
+                        type: 'CHANGE_CARD',
+                        payload: {
+                          processIndex: processIndex,
+                          templates: templates,
+                          e: e,
+                        },
+                      })
+                    }>
+                    <option value="lecture">導讀講稿</option>
+                    <option value="stickyNote">便利貼分享</option>
+                    <option value="QA">QA問答</option>
+                    <option value="vote">問題票選</option>
+                  </TemplateType>
+                </Title>
 
-                  {renderCardContent(item, processIndex)}
-                  <Buttons editable={editable === processIndex}>
-                    <GrAddCircle
-                      onClick={() => {
-                        const lecture = templates.find(
-                          (item) => item.type === 'lecture'
-                        );
-                        dispatch({
-                          type: 'ADD_CARD',
-                          payload: { lecture },
-                        });
-                      }}
-                    />
-                    <BiCopy
-                      onClick={() => {
-                        dispatch({
-                          type: 'COPY_CARD',
-                          payload: { processIndex },
-                        });
-                      }}
-                    />
-                    <BiTrash
-                      onClick={() => {
-                        dispatch({
-                          type: 'DEL_CARD',
-                          payload: { processIndex },
-                        });
-                      }}
-                    />
-                  </Buttons>
-                </ProcessCard>
-              );
-            })}
-        </ProcessContainer>
-        <SubmitInput onClick={() => handelSave(processData)}>儲存</SubmitInput>
-      </Content>
-    </Container>
+                {renderCardContent(item, processIndex)}
+                <Buttons editable={editable === processIndex}>
+                  <GrAddCircle
+                    onClick={() => {
+                      const lecture = templates.find(
+                        (item) => item.type === 'lecture'
+                      );
+                      dispatch({
+                        type: 'ADD_CARD',
+                        payload: { lecture },
+                      });
+                    }}
+                  />
+                  <BiCopy
+                    onClick={() => {
+                      dispatch({
+                        type: 'COPY_CARD',
+                        payload: { processIndex },
+                      });
+                    }}
+                  />
+                  <BiTrash
+                    onClick={() => {
+                      dispatch({
+                        type: 'DEL_CARD',
+                        payload: { processIndex },
+                      });
+                    }}
+                  />
+                </Buttons>
+              </ProcessCard>
+            );
+          })}
+      </ProcessContainer>
+      <SubmitInput onClick={() => handelSave(processData)}>儲存</SubmitInput>
+    </SideMenu>
   );
 }
 
