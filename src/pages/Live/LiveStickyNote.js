@@ -3,12 +3,11 @@ import { db } from '../../utils/firebase';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { BiMessageAdd, BiTrash } from 'react-icons/bi';
-import { useState } from 'react';
 
 function StickyNote({ item, dispatch, processIndex, id }) {
-  // const [noteColors, setNoteColors] = useState(['#FFE4E1', '#FFF5EE', '#FFE4B5', '#F0FFF0', '#E0FFFF']);
   useEffect(() => {
     handleUpdateNote();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.data]);
 
   const handleAddOption = () => {
