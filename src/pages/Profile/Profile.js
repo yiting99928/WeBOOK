@@ -35,8 +35,14 @@ const Profile = () => {
   async function getData() {
     const groupData = await data.fetchUserGroup(user.email);
     let filteredData;
-    if (status === undefined) {
-      filteredData = groupData;
+    if (!status) {
+      const finishedGroups = groupData.filter(
+        (group) => group.status === 'finished'
+      );
+      const otherGroups = groupData.filter(
+        (group) => group.status !== 'finished'
+      );
+      filteredData = [...otherGroups, ...finishedGroups];
     } else {
       filteredData = groupData.filter((item) => item.status === status);
     }
@@ -45,12 +51,14 @@ const Profile = () => {
 
   useEffect(() => {
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
   const statusText = {
-    ongoing: '進行中',
-    preparing: '準備中',
-    finished: '已結束',
+    ongoing: { type: '進行中', color: '#DF524D' },
+    preparing: { type: '準備中', color: '#F89D7D' },
+    finished: { type: '已結束', color: '#FAC6B8' },
+    upcoming: { type: '即將舉辦', color: '#DF524D' },
   };
 
   async function handleQuitGroup(id) {
@@ -187,7 +195,9 @@ const Profile = () => {
         const threeDaysLater = moment().add(3, 'days').unix();
         const startTime = item.startTime.seconds;
         const isUpcoming =
-          startTime >= currentTime && startTime <= threeDaysLater;
+          startTime >= currentTime &&
+          startTime <= threeDaysLater &&
+          item.status !== 'ongoing';
         return (
           <StudyGroupCard key={index}>
             <GroupInfo expanded={expanded[index]}>
@@ -212,8 +222,16 @@ const Profile = () => {
                 {<ProfileGroupCard index={index} item={item} />}
               </CardContent>
               <Tag>
-                <Status>{statusText[item.status]}</Status>
-                {isUpcoming && <Already>即將舉辦</Already>}
+                <Status
+                  statusColor={statusText[item.status].color}
+                  onClick={() => navigate(`/profile/${item.status}`)}>
+                  {statusText[item.status].type}
+                </Status>
+                {isUpcoming && (
+                  <Status statusColor={statusText.upcoming.color}>
+                    {statusText.upcoming.type}
+                  </Status>
+                )}
               </Tag>
             </GroupInfo>
             {expanded[index] && (
@@ -233,13 +251,7 @@ const Note = styled.div`
   padding-top: 15px;
   line-height: 1.3;
 `;
-const Already = styled.div`
-  text-align: center;
-  background-color: #df524d;
-  padding: 5px 16px;
-  color: #fff;
-  border-radius: 6px;
-`;
+
 const Tag = styled.div`
   margin-left: auto;
   display: flex;
@@ -257,10 +269,13 @@ const Buttons = styled.div`
 `;
 const Status = styled.div`
   text-align: center;
-  background-color: #df524d;
-  padding: 5px 16px;
+  background-color: ${({ statusColor }) => statusColor};
   color: #fff;
   border-radius: 6px;
+  padding: 5px 0px;
+  width: 95px;
+  cursor: pointer;
+  letter-spacing: 1.3;
 `;
 const BookGroupImg = styled.img`
   cursor: pointer;
