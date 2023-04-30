@@ -14,15 +14,14 @@ function StudyGroupCard({ item, onClick, onJoinGroup }) {
       />
       <BookGroupInfo>
         <BookTitle>{item.groupName}</BookTitle>
-        <BookAuthor>{item.name}</BookAuthor>
-        <BookAuthor>{item.author}</BookAuthor>
+        <p>
+          {item.name.length > 10 ? `${item.name.slice(0, 10)}...` : item.name}
+        </p>
         <Creator>
-          時間：
-          {moment
-            .unix(item.startTime.seconds)
-            .format('YYYY-MM-DD hh:mm A')}{' '}
-          <br />
           導讀人：{item.host}
+          <br />
+          時間：
+          {moment.unix(item.startTime.seconds).format('MM.DD HH:mm')}
         </Creator>
         <MainBtn
           onClick={(e) => {
@@ -39,28 +38,27 @@ const BookTitle = styled.div`
   padding-bottom: 4px;
   font-weight: 600;
   font-size: 18px;
-`;
-const BookAuthor = styled.div`
-  color: #5b5b5b;
-  padding-top: 6px;
-  font-size: 12px;
+  letter-spacing: 1.5;
+  padding-bottom: 8px;
 `;
 const Creator = styled.div`
   font-size: 14px;
   margin-top: auto;
-  line-height: 1.3;
+  line-height: 1.5;
 `;
 
 const BookGroupImg = styled.img`
+  height: 100%;
   object-fit: cover;
   cursor: pointer;
 `;
 const BookGroupInfo = styled.div`
-  height: 180px;
+  height: 250px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 10px 15px;
+  color: #5b5b5b;
 `;
 const BookGroup = styled.div`
   display: flex;
@@ -68,7 +66,7 @@ const BookGroup = styled.div`
   justify-content: space-between;
   max-width: 230px;
   border-radius: 8px;
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #ececec;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
