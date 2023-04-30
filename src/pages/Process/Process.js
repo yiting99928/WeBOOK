@@ -11,9 +11,8 @@ import QA from './QA';
 import move from './move.png';
 import { GrAddCircle } from 'react-icons/gr';
 import { BiTrash, BiCopy } from 'react-icons/bi';
-import moment from 'moment';
 import modal from '../../utils/modal';
-
+import GroupTitle from '../../components/GroupTitle/GroupTitle';
 
 function reducer(processData, { type, payload = {} }) {
   const { lecture, processIndex, templates, e, data, process } = payload;
@@ -235,23 +234,7 @@ function Process() {
   };
   return (
     <SideMenu>
-      <GroupTitle>
-        <GroupBook>{studyGroup.name}</GroupBook>
-        <GroupDetail>
-          作者：{studyGroup.author}
-          <br />
-          導讀章節:{studyGroup.chapter}
-          <br />
-          舉辦時間:
-          {studyGroup && studyGroup.startTime ? (
-            moment
-              .unix(studyGroup.startTime.seconds)
-              .format('YYYY-MM-DD hh:mm A')
-          ) : (
-            <div>loading</div>
-          )}
-        </GroupDetail>
-      </GroupTitle>
+      <GroupTitle studyGroup={studyGroup} />
       <ProcessContainer>
         {processData !== undefined &&
           processData.map((item, processIndex) => {
@@ -361,20 +344,6 @@ const Drag = styled.div`
   :active {s
     cursor: grabbing;
   }
-`;
-const GroupDetail = styled.div``;
-const GroupTitle = styled.div`
-  display: flex;
-  align-items: flex-start;
-  color: #5b5b5b;
-  gap: 20px;
-  margin-bottom: 40px;
-  line-height: 1.2;
-  justify-content: space-between;
-`;
-const GroupBook = styled.h2`
-  font-weight: 600;
-  font-size: 40px;
 `;
 const ProcessContainer = styled.div`
   display: flex;
