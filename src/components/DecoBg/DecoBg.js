@@ -52,7 +52,7 @@ const Decos = styled.div`
   position: absolute;
   z-index: -1;
   width: 100%;
-  height: 100vh;
+  height: 85vh;
   display: flex;
 `;
 
@@ -65,7 +65,7 @@ const Deco = styled.div`
   left: -10%;
   filter: blur(100px);
   border-radius: 50%;
-  animation: ${move1} 5s linear infinite alternate;
+  animation: ${move1} 2s linear infinite alternate;
 `;
 
 const Deco2 = styled.div`
@@ -77,7 +77,7 @@ const Deco2 = styled.div`
   background: rgba(231, 93, 16, 0.2);
   filter: blur(100px);
   border-radius: 50%;
-  animation: ${move2} 3s linear infinite alternate;
+  animation: ${move2} 1.5s linear infinite alternate;
 `;
 
 const Deco3 = styled.div`
@@ -89,7 +89,7 @@ const Deco3 = styled.div`
   background: rgba(96, 160, 255, 0.2);
   border-radius: 50%;
   filter: blur(40px);
-  animation: ${move3} 5s linear infinite alternate;
+  animation: ${move3} 3s linear infinite alternate;
 `;
 
 const Deco4 = styled.div`
