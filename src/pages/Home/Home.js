@@ -101,11 +101,11 @@ function Home() {
             </FeatureDescription>
             <FeaturePoints>
               <FeaturePoint>
-                <RiLiveLine />
+                <AiOutlineEdit />
                 <p>編輯導讀流程</p>
               </FeaturePoint>
               <FeaturePoint>
-                <AiOutlineEdit />
+                <RiLiveLine />
                 <p>線上直播導讀</p>
               </FeaturePoint>
             </FeaturePoints>
@@ -214,11 +214,11 @@ const FooterBottom = styled.div`
 const Features = styled.div`
   max-width: 1100px;
   margin: 0 auto;
-  margin-top: 150px;
+  margin-top: 180px;
   letter-spacing: 0.05em;
   display: flex;
   flex-direction: column;
-  gap: 80px;
+  gap: 100px;
   margin-bottom: 150px;
 `;
 const FeatureWrap = styled.div`
@@ -237,25 +237,31 @@ const Feature = styled.div`
 const FeatureReversed = styled(Feature)`
   order: -1;
 `;
+const FeatureDeco = styled.div`
+  width: 450px;
+  height: 400px;
+  background-color: rgba(239, 140, 138, 0.1);
+  position: absolute;
+  z-index: -1;
+  filter: blur(60px);
+
+`;
 const FeatureImg = styled.div`
   max-width: 500px;
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-const FeatureDeco = styled.div`
-  width: 450px;
-  height: 450px;
-  background-color: rgba(239, 140, 138, 0.1);
-  position: absolute;
-  z-index: -1;
-  filter: blur(60px);
+  position: relative;
+  :hover ${FeatureDeco} {
+    background-color: rgba(239, 140, 138, 0.2);
+  }
 `;
 const FeatureTitle = styled.div`
   color: #df524d;
   font-size: 36px;
   font-weight: 600;
   margin-bottom: 10px;
+  letter-spacing:1.5
 `;
 const FeatureDescription = styled.div`
   line-height: 1.5;
