@@ -1,22 +1,22 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/macro';
-import { AuthContext } from '../../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import {
   createUserWithEmailAndPassword,
   getAuth,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { db, auth } from '../../utils/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { ref, listAll, getDownloadURL } from 'firebase/storage';
+
+import { db, auth, storage } from '../../utils/firebase';
 import loginImg from './loginImg.png';
 import DecoBg from '../../components/DecoBg';
 import modal from '../../utils/modal';
 
 function Login() {
-  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  console.log('user', user);
   const [login, setLogin] = useState({
     email: '',
     password: '',
@@ -32,38 +32,38 @@ function Login() {
     e.preventDefault();
     const auth = getAuth();
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        login.email,
-        login.password,
-        login.name
-      );
-      const user = userCredential.user;
-      const userDocRef = doc(db, 'users', user.email);
-      const userDoc = await getDoc(userDocRef);
-
-      if (userDoc.exists()) {
-        modal.success('登入成功');
-        navigate('/studyGroups');
-      }
+      await signInWithEmailAndPassword(auth, login.email, login.password);
+      modal.success('登入成功');
+      navigate('/studyGroups');
     } catch (error) {
       modal.fail('錯誤的帳號或密碼');
     }
   };
-
-  const handleRegister = (e) => {
+  async function getImgUrl() {
+    const userImgStorageRef = ref(storage, 'userImg');
+    const { items } = await listAll(userImgStorageRef);
+    const randomIndex = Math.floor(Math.random() * items.length);
+    const randomImgRef = items[randomIndex];
+    const userImgURL = await getDownloadURL(randomImgRef);
+    console.log(userImgURL);
+  }
+  const ImgUrl = [
+    'https://firebasestorage.googleapis.com/v0/b/webook-studygroups.appspot.com/o/userImg%2FuserImg1.jpg?alt=media&token=869610eb-fe80-46ff-af95-80466259352a',
+    'https://firebasestorage.googleapis.com/v0/b/webook-studygroups.appspot.com/o/userImg%2FuserImg3.jpg?alt=media&token=3a0d39d1-b449-43b6-9426-06c193a18082',
+    'https://firebasestorage.googleapis.com/v0/b/webook-studygroups.appspot.com/o/userImg%2FuserImg2.jpg?alt=media&token=e90f2681-4fa8-479f-9e2c-dab3a787a192',
+    'https://firebasestorage.googleapis.com/v0/b/webook-studygroups.appspot.com/o/userImg%2FuserImg4.jpg?alt=media&token=37d32861-c9d0-4046-a2ba-daa9d06acc9f',
+    'https://firebasestorage.googleapis.com/v0/b/webook-studygroups.appspot.com/o/userImg%2FuserImg5.jpg?alt=media&token=430ce74b-8e60-462e-ad8b-c7d2b01fa471',
+  ];
+  const handleRegister = async (e) => {
     e.preventDefault();
-    createUserWithEmailAndPassword(
-      auth,
-      register.email,
-      register.password,
-      register.name
-    )
+    const randomUserImgURL = ImgUrl[Math.floor(Math.random() * ImgUrl.length)];
+    createUserWithEmailAndPassword(auth, register.email, register.password)
       .then((userCredential) => {
         setDoc(doc(db, 'users', register.email), {
           name: register.name,
           password: register.password,
           email: register.email,
+          userImg: randomUserImgURL,
         }).then(() => {
           modal.success('註冊成功');
         });
@@ -92,11 +92,26 @@ function Login() {
       setRegister((prev) => ({ ...prev, [name]: value }));
     }
   };
+
   const [isFlipped, setIsFlipped] = useState(false);
 
   function handleFlip() {
     setIsFlipped(!isFlipped);
   }
+
+  const handleResetPassword = () => {
+    const auth = getAuth();
+    sendPasswordResetEmail(auth, login.email)
+      .then(() => {
+        // console.log('Password reset email sent');
+        modal.success('重置密碼郵件已發送，請查收並按照提示操作');
+      })
+      .catch((error) => {
+        // console.log(error);
+        modal.fail('發送重置密碼郵件失敗，請確保電子郵件正確無誤');
+      });
+  };
+
   function alertTest() {
     prompt(
       '測試用帳號密碼：',
@@ -138,12 +153,11 @@ function Login() {
               </div>
               <SubmitInput type="submit">送出</SubmitInput>
               <FlipContainer>
-                <span>還不是會員嗎?</span>
-                <FlipButton
-                  type="button"
-                  onClick={handleFlip}
-                  value="前往註冊"
-                />
+                <ResetPassword onClick={handleResetPassword}>
+                  忘記密碼
+                </ResetPassword>
+                <p>還不是會員嗎?</p>
+                <FlipButton onClick={handleFlip}>前往註冊</FlipButton>
               </FlipContainer>
             </FormContainer>
           </LoginCard>
@@ -185,11 +199,8 @@ function Login() {
               <SubmitInput type="submit">送出</SubmitInput>
               <FlipContainer>
                 <span>已經是會員</span>
-                <FlipButton
-                  type="button"
-                  onClick={handleFlip}
-                  value="前往登入"
-                />
+                <FlipButton onClick={handleFlip}>前往登入</FlipButton>
+                <div onClick={getImgUrl}>取得網址</div>
               </FlipContainer>
             </FormContainer>
           </RegisterCard>
@@ -285,9 +296,13 @@ const FlipContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 10px;
 `;
-
-const FlipButton = styled.input`
+const ResetPassword = styled.a`
+  margin-right: auto;
+  cursor: pointer;
+`;
+const FlipButton = styled.div`
   background-color: #fff;
   border: none;
   color: #df524d;
