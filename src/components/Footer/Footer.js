@@ -8,7 +8,7 @@ export default function Footer() {
       <div>copyright © 2023 WeBOOK 書適圈</div>
       <ContactIcon>
         <ContactImg contact={linkedin}></ContactImg>
-        <ContactImg contact={github}></ContactImg>
+        <GitHubImg contact={github}></GitHubImg>
       </ContactIcon>
     </Container>
   );
@@ -16,7 +16,7 @@ export default function Footer() {
 const Container = styled.div`
   z-index: 2;
   margin-top: auto;
-  position:absolute;
+  position: absolute;
   bottom: 0;
   font-size: 14px;
   color: #fff;
@@ -38,4 +38,6 @@ const ContactImg = styled.div`
   background-image: url(${(props) => props.contact});
   background-size: cover;
 `;
-
+const GitHubImg = styled(ContactImg)`
+  margin-top: -3px;
+`;
