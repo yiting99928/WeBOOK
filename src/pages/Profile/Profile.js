@@ -208,12 +208,13 @@ const Profile = () => {
               />
               <CardContent>
                 <Title>{item.groupName}</Title>
-                <p>書籍：{item.name}</p>
+                <BookName>{item.name}</BookName>
                 <Creator>
-                  導讀者：{item.host}
+                  導讀人：{item.host}
                   <br />
                   章節：{item.chapter}
                   <br />
+                  時間：
                   {moment
                     .unix(item.startTime.seconds)
                     .format('MM-DD hh:mm A')}{' '}
@@ -251,7 +252,11 @@ const Note = styled.div`
   padding-top: 15px;
   line-height: 1.3;
 `;
-
+const BookName = styled.div`
+  padding-left: 10px;
+  font-size: 28px;
+  letter-spacing: 1.5;
+`;
 const Tag = styled.div`
   margin-left: auto;
   display: flex;
@@ -261,7 +266,7 @@ const Tag = styled.div`
 const Title = styled.div`
   font-weight: 600;
   font-size: 28px;
-  letter-spacing: 0.05em;
+  letter-spacing: 1.5;
 `;
 const Buttons = styled.div`
   display: flex;
@@ -281,6 +286,7 @@ const BookGroupImg = styled.img`
   cursor: pointer;
   max-width: 150px;
   object-fit: cover;
+  height: 100%;
 `;
 const GroupInfo = styled.div`
   display: flex;
@@ -297,6 +303,7 @@ const StudyGroupCard = styled.div`
 `;
 const Creator = styled.div`
   margin-top: auto;
+  font-size: 14px;
   line-height: 1.5;
 `;
 const CardContent = styled.div`
@@ -305,5 +312,6 @@ const CardContent = styled.div`
   flex-direction: column;
   height: 100%;
   max-width: 600px;
+  color: #5b5b5b;
 `;
 export default Profile;
