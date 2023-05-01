@@ -8,9 +8,8 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { ref, listAll, getDownloadURL } from 'firebase/storage';
 
-import { db, auth, storage } from '../../utils/firebase';
+import { db, auth } from '../../utils/firebase';
 import loginImg from './loginImg.png';
 import DecoBg from '../../components/DecoBg';
 import modal from '../../utils/modal';
@@ -39,14 +38,6 @@ function Login() {
       modal.fail('錯誤的帳號或密碼');
     }
   };
-  async function getImgUrl() {
-    const userImgStorageRef = ref(storage, 'userImg');
-    const { items } = await listAll(userImgStorageRef);
-    const randomIndex = Math.floor(Math.random() * items.length);
-    const randomImgRef = items[randomIndex];
-    const userImgURL = await getDownloadURL(randomImgRef);
-    console.log(userImgURL);
-  }
   const ImgUrl = [
     'https://firebasestorage.googleapis.com/v0/b/webook-studygroups.appspot.com/o/userImg%2FuserImg1.jpg?alt=media&token=869610eb-fe80-46ff-af95-80466259352a',
     'https://firebasestorage.googleapis.com/v0/b/webook-studygroups.appspot.com/o/userImg%2FuserImg3.jpg?alt=media&token=3a0d39d1-b449-43b6-9426-06c193a18082',
@@ -119,7 +110,7 @@ function Login() {
     );
   }
   return (
-    <div>
+    <CenterContainer>
       <DecoBg height={550} />
       <Container>
         <Cards isFlipped={isFlipped}>
@@ -200,7 +191,6 @@ function Login() {
               <FlipContainer>
                 <span>已經是會員</span>
                 <FlipButton onClick={handleFlip}>前往登入</FlipButton>
-                <div onClick={getImgUrl}>取得網址</div>
               </FlipContainer>
             </FormContainer>
           </RegisterCard>
@@ -209,9 +199,15 @@ function Login() {
           <img src={loginImg} alt="loginImg" />
         </LoginImg>
       </Container>
-    </div>
+    </CenterContainer>
   );
 }
+const CenterContainer = styled.div`
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 const FormTitle = styled.div`
   padding-bottom: 24px;
   border-bottom: 1px solid #a9a9a9;
@@ -251,18 +247,15 @@ const Title = styled.div`
   font-weight: 600;
   font-size: 22px;
   color: #df524d;
-  ${'' /* padding-bottom: 12px; */}
 `;
 const Description = styled.div`
   text-align: center;
-  ${'' /* font-size: 14px; */}
 `;
 const Container = styled.div`
   display: flex;
-  margin: 80px auto 140px auto;
-  max-width: 1160px;
   justify-content: space-between;
   align-items: center;
+  gap: 50px;
   padding: 0 30px;
 `;
 
