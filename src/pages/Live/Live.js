@@ -31,9 +31,8 @@ import {
 } from 'react-icons/bs';
 import { MdFirstPage, MdLastPage } from 'react-icons/md';
 import { FaPhoneSlash, FaMicrophoneSlash, FaMicrophone } from 'react-icons/fa';
-
-import moment from 'moment';
 import modal from '../../utils/modal';
+import GroupTitle from '../../components/GroupTitle/GroupTitle';
 
 function reducer(processData, { type, payload = {} }) {
   const { processIndex, data, process } = payload;
@@ -80,6 +79,7 @@ function Live() {
     isMuted: true,
     isVideoDisabled: true,
   });
+  const [showSaveInfo, setShowSaveInfo] = useState(false);
   const remoteVideoRef = useRef(null);
   const localVideoRef = useRef(null);
   // const [showLocalVideo, setShowLocalVideo] = useState(true);
@@ -149,7 +149,7 @@ function Live() {
     return stream;
   }
 
-  async function createRoom(userUUID) {
+  async function createRoom() {
     const roomRef = doc(collection(db, 'rooms'), id);
 
     const configuration = {
@@ -162,12 +162,10 @@ function Live() {
       peerConnection,
     ]);
 
-    // if (localStream) {
     localStream.getTracks().forEach((track) => {
       console.log(track);
       peerConnection.addTrack(track, localStream);
     });
-    // }
 
     onSnapshot(doc(db, 'rooms', id), async (doc) => {
       const { offer } = doc.data();
@@ -223,7 +221,7 @@ function Live() {
       //開始播放刪除 offer & answer
       setTimeout(async () => {
         await deleteOfferAndAnswer();
-      }, 2000);
+      }, 500);
     });
 
     const mutedAudioAndEmptyVideoStream =
@@ -283,8 +281,8 @@ function Live() {
         if (data) {
           const { viewers } = data;
           if (viewers && viewers.length > peerConnections.length) {
-            const newUserUUID = viewers[viewers.length - 1];
-            createRoom(newUserUUID);
+            // const newUserUUID = viewers[viewers.length - 1];
+            createRoom();
           }
         }
       });
@@ -366,7 +364,7 @@ function Live() {
 
       const unsubscribe = onSnapshot(roomRef, (roomSnapshot) => {
         if (roomSnapshot.exists()) {
-          console.log('Room exists!');
+          // console.log('Room exists!');
           setIsDisabled(false);
         } else {
           console.log('Room does not exist!');
@@ -388,6 +386,7 @@ function Live() {
       timestamp: new Date(),
       sender: user.email,
       senderName: user.name,
+      sanderImg: user.userImg,
     });
     setInput('');
   };
@@ -399,8 +398,11 @@ function Live() {
       await setDoc(newGroupRef, {
         note: note,
       });
-
-      console.log(`儲存 ${id} 筆記`);
+      setShowSaveInfo(true);
+      // console.log(`儲存 ${id} 筆記`);
+      setTimeout(() => {
+        setShowSaveInfo(false);
+      }, 1000);
     } catch (error) {
       console.error('Error: ', error);
     }
@@ -485,10 +487,36 @@ function Live() {
 
   function handleStop() {
     setIsLive(false);
-    handleChangeState();
-  }
+    // 關閉 Peer 連接
 
-  function handleChangeState() {
+    if (peerConnections.length > 0) {
+      peerConnections.forEach((pc) => pc.close());
+      setPeerConnections([]);
+
+      // 移除媒體軌道
+      if (localStream) {
+        localStream.getTracks().forEach((track) => {
+          track.stop();
+        });
+        setLocalStream(null);
+      }
+
+      // 移除遠程媒體軌道
+      if (remoteVideoRef.current && remoteVideoRef.current.srcObject) {
+        remoteVideoRef.current.srcObject.getTracks().forEach((track) => {
+          track.stop();
+        });
+        remoteVideoRef.current.srcObject = null;
+      }
+
+      // 移除本地媒體軌道
+      if (localVideoRef.current && localVideoRef.current.srcObject) {
+        localVideoRef.current.srcObject.getTracks().forEach((track) => {
+          track.stop();
+        });
+        localVideoRef.current.srcObject = null;
+      }
+    }
     updateDoc(doc(db, 'studyGroups', id), { status: 'finished' });
   }
 
@@ -507,27 +535,10 @@ function Live() {
   const handleChatRoom = () => {
     setShowChatRoom(!showChatRoom);
   };
+
   return (
     <SideMenu>
-      <GroupTitle>
-        <GroupBook>
-          {studyGroup.groupName}
-          <br />
-          <p>{studyGroup.name}</p>
-        </GroupBook>
-        作者：{studyGroup.author}
-        <br />
-        導讀章節:{studyGroup.chapter}
-        <br />
-        舉辦時間:
-        {studyGroup && studyGroup.startTime ? (
-          moment.unix(studyGroup.startTime.seconds).format('YYYY-MM-DD hh:mm A')
-        ) : (
-          <div>loading</div>
-        )}
-        <br />
-        導讀人：{studyGroup.host}
-      </GroupTitle>
+      <GroupTitle studyGroup={studyGroup} />
       <LiveContainer>
         <LiveScreen showChatRoom={showChatRoom}>
           <LiveIcon isLive={isLive}>Live</LiveIcon>
@@ -647,6 +658,7 @@ function Live() {
                 <UserMessage key={index}>{message.message}</UserMessage>
               ) : (
                 <GuestMessage key={index}>
+                  <UserImg src={message.sanderImg} alt="userImg" />
                   <span>{message.senderName}：</span>
                   {message.message}
                 </GuestMessage>
@@ -671,21 +683,31 @@ function Live() {
       <Note>
         <EditContent onChange={setNote} value={note} />
         <Button onClick={handleSaveNote}>儲存筆記</Button>
+        <SaveInfo showSaveInfo={showSaveInfo}>已儲存筆記</SaveInfo>
       </Note>
     </SideMenu>
   );
 }
+const SaveInfo = styled.div`
+  opacity: ${({ showSaveInfo }) => (showSaveInfo ? 1 : 0)};
+  font-size: 14px;
+  color: #e95f5c;
+  display: inline-block;
+  margin-left: 10px;
+`;
 const HostInput = styled.div`
   display: ${({ isHost }) => (isHost ? 'flex' : 'none')};
   gap: 10px;
 `;
 const LocalVideo = styled.video`
-  display: ${({ isHost, show }) => (isHost && show ? 'block' : 'none')};
+  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  ${'' /* display: ${({ isHost, show }) => (isHost && show ? 'block' : 'none')}; */}
   width: 200px;
   border-radius: 6px;
 `;
 const RemoteVideo = styled.video`
-  display: ${({ isHost, show }) => (isHost || !show ? 'none' : 'block')};
+  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
+  ${'' /* display: ${({ isHost, show }) => (isHost || !show ? 'none' : 'block')}; */}
   width: 200px;
   border-radius: 6px;
 `;
@@ -826,6 +848,15 @@ const GuestMessage = styled.div`
   border-radius: 6px;
   background-color: #f1f1f1;
   padding: 0 10px;
+  display: flex;
+  align-items: center;
+`;
+const UserImg = styled.img`
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  margin-right: 5px;
+  border-radius: 50%;
 `;
 const UserMessage = styled(GuestMessage)`
   align-self: flex-end;
@@ -838,6 +869,7 @@ const Message = styled.div`
   overflow: auto;
   padding: 10px;
   gap: 15px;
+  font-size: 14px;
 `;
 const ChatInput = styled.div`
   margin-top: auto;
@@ -846,12 +878,15 @@ const ChatInput = styled.div`
   padding: 0 5px;
   margin: 10px;
   border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   form {
     display: flex;
     align-items: center;
   }
   button {
-    margin-top: 5px;
+    cursor: pointer;
   }
 `;
 const ChatTitle = styled.div`
@@ -873,26 +908,6 @@ const Button = styled.button`
   padding: 8px 15px;
   margin-top: 10px;
   border-radius: 6px;
-`;
-//---全局---//
-
-const GroupTitle = styled.div`
-  display: flex;
-  align-items: flex-start;
-  color: #5b5b5b;
-  gap: 20px;
-  margin-bottom: 40px;
-  line-height: 1.2;
-  justify-content: space-between;
-`;
-const GroupBook = styled.h2`
-  font-weight: 600;
-  font-size: 32px;
-  p {
-    font-size: 28px;
-    font-weight: 500;
-    padding-top: 5px;
-    letter-spacing: 1.5;
-  }
+  cursor: pointer;
 `;
 export default Live;
