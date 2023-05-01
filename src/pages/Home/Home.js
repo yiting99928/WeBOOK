@@ -1,8 +1,5 @@
 import styled from 'styled-components/macro';
 import bannerImg from './bannerImg.png';
-import editProcess from './editProcess.png';
-import live from './live.png';
-import note from './note.png';
 import DecoBg from '../../components/DecoBg';
 import { RiLiveLine } from 'react-icons/ri';
 import { AiOutlineEdit, AiOutlineQuestionCircle } from 'react-icons/ai';
@@ -21,6 +18,9 @@ import { db } from '../../utils/firebase';
 import StudyGroupCard from '../../components/StudyGroupCard';
 import { AuthContext } from '../../context/authContext';
 import modal from '../../utils/modal';
+import edit from './edit.mp4';
+import live from './live.mp4';
+import note from './note.mp4';
 
 function Home() {
   const [allGroupsData, setAllGroupsData] = useState([]);
@@ -84,15 +84,21 @@ function Home() {
           </Title>
           <SubTitle>Cozy up with books!</SubTitle>
         </BannerInfo>
-        <BannerImg>
-          <img src={bannerImg} alt="banner" />
-        </BannerImg>
+        <BannerImg src={bannerImg} alt="banner" />
       </Banner>
       <Features>
         <FeatureWrap>
           <FeatureImg>
             <FeatureDeco />
-            <img src={editProcess} alt="feature" />
+            <Video
+              loop
+              playsInline
+              autoPlay
+              muted
+              src={edit}
+              type="video/mp4"
+              controls={false}
+            />
           </FeatureImg>
           <Feature>
             <FeatureTitle>協助導讀的流程</FeatureTitle>
@@ -114,7 +120,15 @@ function Home() {
         <FeatureWrap>
           <FeatureImg>
             <FeatureDeco />
-            <img src={live} alt="feature" />
+            <Video
+              loop
+              playsInline
+              autoPlay
+              muted
+              src={live}
+              type="video/mp4"
+              controls={false}
+            />
           </FeatureImg>
           <FeatureReversed>
             <FeatureTitle>有趣的讀書會互動</FeatureTitle>
@@ -144,7 +158,15 @@ function Home() {
         <FeatureWrap>
           <FeatureImg>
             <FeatureDeco />
-            <img src={note} alt="feature" />
+            <Video
+              loop
+              playsInline
+              autoPlay
+              muted
+              src={note}
+              type="video/mp4"
+              controls={false}
+            />
           </FeatureImg>
           <Feature>
             <FeatureTitle>讀書會的文字紀錄</FeatureTitle>
@@ -184,7 +206,12 @@ function Home() {
     </div>
   );
 }
-
+const Video = styled.video`
+  width: 100%;
+  border-radius: 6px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid white;
+`;
 const RecommendedTitle = styled.div`
   text-align: center;
   color: #df524d;
@@ -214,12 +241,12 @@ const FooterBottom = styled.div`
 const Features = styled.div`
   max-width: 1100px;
   margin: 0 auto;
-  margin-top: 180px;
   letter-spacing: 0.05em;
   display: flex;
   flex-direction: column;
-  gap: 100px;
-  margin-bottom: 150px;
+  margin-bottom: 180px;
+  height: 1300px;
+  justify-content: space-between;
 `;
 const FeatureWrap = styled.div`
   display: flex;
@@ -244,7 +271,6 @@ const FeatureDeco = styled.div`
   position: absolute;
   z-index: -1;
   filter: blur(60px);
-
 `;
 const FeatureImg = styled.div`
   max-width: 500px;
@@ -253,7 +279,7 @@ const FeatureImg = styled.div`
   justify-content: center;
   position: relative;
   :hover ${FeatureDeco} {
-    background-color: rgba(239, 140, 138, 0.2);
+    background-color: rgba(239, 140, 138, 0.3);
   }
 `;
 const FeatureTitle = styled.div`
@@ -261,7 +287,7 @@ const FeatureTitle = styled.div`
   font-size: 36px;
   font-weight: 600;
   margin-bottom: 10px;
-  letter-spacing:1.5
+  letter-spacing: 1.5;
 `;
 const FeatureDescription = styled.div`
   line-height: 1.5;
@@ -291,15 +317,15 @@ const Title = styled.div`
   font-weight: 600;
   color: #e95f5c;
   font-size: 42px;
-  letter-spacing: 0.05em;
-  line-height: 1.2;
+  letter-spacing: 1.5;
+  line-height: 1.5;
 `;
-const BannerImg = styled.div`
+const BannerImg = styled.img`
   z-index: 1;
   max-width: 712px;
 `;
 const Banner = styled.div`
-  height: 600px;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -311,5 +337,6 @@ const Banner = styled.div`
 const BannerInfo = styled.div`
   padding-left: 20px;
   z-index: 1;
+  align-items: center;
 `;
 export default Home;
