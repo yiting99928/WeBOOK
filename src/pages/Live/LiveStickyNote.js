@@ -1,18 +1,20 @@
 import styled from 'styled-components/macro';
 import { db } from '../../utils/firebase';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import { BiMessageAdd, BiTrash } from 'react-icons/bi';
+import { AuthContext } from '../../context/authContext';
 
 function StickyNote({ item, dispatch, processIndex, id }) {
+  const { user } = useContext(AuthContext);
   useEffect(() => {
     handleUpdateNote();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.data]);
 
   const handleAddOption = () => {
     const newItem = {
-      name: '請填寫名字',
+      name: user.name,
       message: `請填寫分享內容`,
     };
     const updatedData = [...item.data, newItem];
@@ -30,7 +32,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
       payload: { processIndex, data: updatedData },
     });
   };
-  
+
   const handleDelOption = async (index) => {
     const updatedData = [...item.data];
     console.log([...item.data]);
@@ -57,7 +59,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
   };
 
   const noteColor = ['#FFE4E1', '#FFF5EE', '#FFE4B5', '#F0FFF0', '#E0FFFF'];
-
+  console.log(item);
   return (
     <NoteContainer>
       {item.data === undefined ? (
@@ -78,10 +80,11 @@ function StickyNote({ item, dispatch, processIndex, id }) {
               value={item.message}
               onChange={(e) => handleOptionChange(index, e, 'message')}
             />
-           <Name
+            <Name
               type="text"
               value={item.name}
               onChange={(e) => handleOptionChange(index, e, 'name')}
+              readOnly
             />
           </Note>
         ))
@@ -110,10 +113,10 @@ const NoteContainer = styled.div`
   overflow-x: scroll;
   align-items: center;
 `;
-const Message = styled.div`
+const Message = styled.textarea`
   padding: 5px 0;
-  overflow-wrap: break-word;
-  max-width: 160px;
+  height: 100%;
+  width: 100%;
 `;
 const Note = styled.div`
   position: relative;
@@ -122,11 +125,9 @@ const Note = styled.div`
   background-color: ${(props) => props.noteColor || '#efefef'};
   display: flex;
   flex-direction: column;
-  padding: 15px;
+  padding: 20px;
 `;
-const Name = styled.div`
+const Name = styled.input`
   margin-top: auto;
-  overflow-wrap: break-word;
-  max-width: 100%;
 `;
 export default StickyNote;
