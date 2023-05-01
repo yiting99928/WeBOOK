@@ -5,6 +5,7 @@ import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
 import modal from '../../utils/modal';
+import { MainBtn } from '../../components/Buttons/Buttons';
 
 import { useParams } from 'react-router-dom';
 function StudyGroup() {
@@ -33,12 +34,13 @@ function StudyGroup() {
   };
 
   const statusText = {
-    ongoing: '進行中',
-    preparing: '準備中',
-    finished: '已結束',
+    ongoing: { type: '進行中', color: '#DF524D' },
+    preparing: { type: '準備中', color: '#F89D7D' },
+    finished: { type: '已結束', color: '#FAC6B8' },
+    upcoming: { type: '即將舉辦', color: '#DF524D' },
   };
   return (
-    <>
+    <div>
       {studyGroup === null ? (
         <>load</>
       ) : (
@@ -50,27 +52,32 @@ function StudyGroup() {
               <BookInfo>
                 書名：{studyGroup.name}
                 <br />
-                作者：{studyGroup.author}
-                <br />
                 類別：{studyGroup.category}
               </BookInfo>
-              <Status>{statusText[studyGroup.status]}</Status>
+              <Status statusColor={statusText[studyGroup.status].color}>
+                {statusText[studyGroup.status].type}
+              </Status>
               <Creator>
-                導讀者：{studyGroup.host}
+                作者：{studyGroup.author}
                 <br />
-                導讀章節：{studyGroup.chapter}
+                導讀人：{studyGroup.host}
                 <br />
-                舉辦時間：
-                {moment
+                章節：{studyGroup.chapter}
+                <br />
+                時間：
+                {`${moment
                   .unix(studyGroup.startTime.seconds)
-                  .format('YYYY-MM-DD hh:mm A')}
+                  .format('MM.DD HH:mm')} — ${moment
+                  .unix(studyGroup.endTime.seconds)
+                  .format('MM.DD HH:mm')}`}
               </Creator>
-              <GroupButton
+              <MainBtn
                 onClick={() => {
                   handleJoinGroup(id);
-                }}>
+                }}
+                height={'45px'}>
                 加入讀書會
-              </GroupButton>
+              </MainBtn>
             </GroupDetail>
           </GroupInfo>
           <Announcement>
@@ -79,73 +86,65 @@ function StudyGroup() {
           </Announcement>
         </Container>
       )}
-    </>
+    </div>
   );
 }
 
 const Announcement = styled.div`
   margin-top: 40px;
-  color: #5b5b5b;
 `;
 const Description = styled.div`
   font-size: 20px;
   font-weight: 600;
   padding-bottom: 20px;
 `;
-const GroupButton = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 50px;
-  background: #ffac4c;
-  border-radius: 10px;
-  color: white;
-  font-weight: 600;
-  letter-spacing: 1.2;
-  font-size: 18px;
-  margin-top: 8px;
-`;
 const Status = styled.div`
-  background-color: #df524d;
-  padding: 5px 16px;
-  margin-right: auto;
+  text-align: center;
+  background-color: ${({ statusColor }) => statusColor};
   color: #fff;
   border-radius: 6px;
+  padding: 5px 0px;
   width: 95px;
-  text-align: center;
+  cursor: pointer;
+  letter-spacing: 1.3;
   margin-top: auto;
-  margin-bottom: -10px;
 `;
 const Title = styled.div`
-  color: #5b5b5b;
   font-weight: 600;
-  font-size: 40px;
+  font-size: 36px;
+  letter-spacing: 1.5;
 `;
 const BookInfo = styled.div``;
-const Creator = styled.div``;
+const Creator = styled.div`
+  margin-bottom: -8px;
+`;
 const GroupDetail = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  font-size: 18px;
-  line-height: 150%;
+  gap: 10px;
+  width: 100%;
 `;
 
 const Container = styled.div`
-  width: 800px;
-  margin: 120px auto 200px auto;
-  line-height: 150%;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.5;
+  margin-top: 80px;
+  margin-bottom: 180px;
+  color: #5b5b5b;
 `;
 const BookGroupImg = styled.img`
-  max-width: 300px;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   object-fit: cover;
+  max-width: 300px;
 `;
 const GroupInfo = styled.div`
   display: flex;
+  justify-content: space-between;
   gap: 40px;
   padding-bottom: 55px;
   border-bottom: 1px solid #b5b5b5;
-  color: #5b5b5b;
+  width: 100%;
+  height: 500px;
 `;
 export default StudyGroup;
