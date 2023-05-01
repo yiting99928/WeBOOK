@@ -157,6 +157,10 @@ const Logo = styled.div`
 const Menu = styled.div`
   display: flex;
   gap: 40px;
+
+  a:hover {
+    color: #df524d;
+  }
   @media screen and (max-width: 768px) {
     display: none;
   }
