@@ -40,7 +40,6 @@ const GroupName = styled.div`
   font-size: 28px;
 `;
 const BookName = styled.div`
-  padding-left: 10px;
   font-size: 28px;
 `;
 const TitleContainer = styled.div`
