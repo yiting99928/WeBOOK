@@ -147,7 +147,7 @@ const Profile = () => {
             </HostEditInput>
             <HostEditInput
               isHost={user.email === item.createBy}
-              onClick={() => navigate(`/study-group/${item.id}/process`)}>
+              onClick={() => navigate(`/studyGroup/${item.id}/process`)}>
               編輯流程
             </HostEditInput>
             <HostEditInput
@@ -160,7 +160,7 @@ const Profile = () => {
       case 'ongoing':
         return (
           <Buttons>
-            <Link to={`/study-group/${item.id}/live`}>
+            <Link to={`/studyGroup/${item.id}/live`}>
               <OutlineBtn>進入直播間</OutlineBtn>
             </Link>
           </Buttons>
