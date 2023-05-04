@@ -1,4 +1,5 @@
 import styled from 'styled-components/macro';
+import { produce } from 'immer';
 
 function QA({ item, processIndex, editable, dispatch }) {
   const handleAddOption = () => {
@@ -6,38 +7,41 @@ function QA({ item, processIndex, editable, dispatch }) {
       option: '請填寫選項並點選正確的選項',
       answer: false,
     };
-    const updatedData = [...item.data, newItem];
+    const updatedData = produce(item.data, (draft) => {
+      draft.push(newItem);
+    });
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
   const handleOptionChange = (index, e) => {
-    const updatedData = [...item.data];
-    updatedData[index].option = e.target.value;
+    const updatedData = produce(item.data, (draft) => {
+      draft[index].option = e.target.value;
+    });
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
   const handleCheckboxChange = (index, e) => {
-    const updatedData = [...item.data];
-    updatedData[index].answer = e.target.checked;
-    console.log(updatedData);
+    const updatedData = produce(item.data, (draft) => {
+      draft[index].answer = e.target.checked;
+    });
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
   const handleDelOption = (index) => {
-    const updatedData = [...item.data];
-    updatedData.splice(index, 1);
+    const updatedData = produce(item.data, (draft) => {
+      draft.splice(index, 1);
+    });
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
-
   return (
     <div>
       {item.data.map((item, index = 0) => (

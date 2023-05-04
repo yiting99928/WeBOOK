@@ -13,74 +13,125 @@ import { GrAddCircle } from 'react-icons/gr';
 import { BiTrash, BiCopy } from 'react-icons/bi';
 import modal from '../../utils/modal';
 import GroupTitle from '../../components/GroupTitle/GroupTitle';
+import { produce } from 'immer';
 
+// function reducer(processData, { type, payload = {} }) {
+//   const { lecture, processIndex, templates, e, data, process } = payload;
+//   switch (type) {
+//     case 'INIT_CARD': {
+//       return [{ ...lecture }];
+//     }
+//     case 'SET_CARD': {
+//       return [...process];
+//     }
+//     case 'ADD_CARD': {
+//       return [...processData, { ...lecture }];
+//     }
+//     case 'CHANGE_CARD': {
+//       return processData.map((card, cardIndex) => {
+//         if (cardIndex === processIndex) {
+//           const newTemplate = templates.find(
+//             (template) => template.type === e.target.value
+//           );
+//           return { ...newTemplate };
+//         }
+//         return card;
+//       });
+//     }
+//     case 'COPY_CARD': {
+//       const updatedCard = processData[processIndex];
+//       return [
+//         ...processData.slice(0, processIndex + 1),
+//         { ...updatedCard },
+//         ...processData.slice(processIndex + 1),
+//       ];
+//     }
+//     case 'DEL_CARD': {
+//       const updatedCard = [...processData];
+//       updatedCard.splice(processIndex, 1);
+//       return updatedCard;
+//     }
+//     case 'MOVE_CARD': {
+//       const { fromIndex, toIndex } = payload;
+//       const itemToMove = processData[fromIndex];
+//       const updatedCard = [...processData];
+//       updatedCard.splice(fromIndex, 1);
+//       updatedCard.splice(toIndex, 0, itemToMove);
+//       return updatedCard;
+//     }
+//     case 'UPDATE_DESCRIPTION': {
+//       const updatedCard = processData.map((card, index) => {
+//         if (index === processIndex) {
+//           return { ...card, description: data };
+//         }
+//         return card;
+//       });
+//       return updatedCard;
+//     }
+//     case 'UPDATE_DATA': {
+//       const updatedCard = processData.map((card, index) => {
+//         if (index === processIndex) {
+//           return { ...card, data };
+//         }
+//         return card;
+//       });
+//       return updatedCard;
+//     }
+//     default:
+//       throw new Error(`Unknown action: ${type}`);
+//   }
+// }
 function reducer(processData, { type, payload = {} }) {
   const { lecture, processIndex, templates, e, data, process } = payload;
-  switch (type) {
-    case 'INIT_CARD': {
-      return [{ ...lecture }];
+  return produce(processData, (draft) => {
+    switch (type) {
+      case 'INIT_CARD': {
+        draft.push(lecture);
+        break;
+      }
+      case 'SET_CARD': {
+        return process;
+      }
+      case 'ADD_CARD': {
+        draft.push(lecture);
+        break;
+      }
+      case 'CHANGE_CARD': {
+        const newTemplate = templates.find(
+          (template) => template.type === e.target.value
+        );
+        draft[processIndex] = newTemplate;
+        break;
+      }
+      case 'COPY_CARD': {
+        const updatedCard = draft[processIndex];
+        draft.splice(processIndex + 1, 0, updatedCard);
+        break;
+      }
+      case 'DEL_CARD': {
+        draft.splice(processIndex, 1);
+        break;
+      }
+      case 'MOVE_CARD': {
+        const { fromIndex, toIndex } = payload;
+        const itemToMove = draft[fromIndex];
+        draft.splice(fromIndex, 1);
+        draft.splice(toIndex, 0, itemToMove);
+        break;
+      }
+      case 'UPDATE_DESCRIPTION': {
+        draft[processIndex].description = data;
+        break;
+      }
+      case 'UPDATE_DATA': {
+        draft[processIndex].data = data;
+        break;
+      }
+      default:
+        throw new Error(`Unknown action: ${type}`);
     }
-    case 'SET_CARD': {
-      return [...process];
-    }
-    case 'ADD_CARD': {
-      return [...processData, { ...lecture }];
-    }
-    case 'CHANGE_CARD': {
-      return processData.map((card, cardIndex) => {
-        if (cardIndex === processIndex) {
-          const newTemplate = templates.find(
-            (template) => template.type === e.target.value
-          );
-          return { ...newTemplate };
-        }
-        return card;
-      });
-    }
-    case 'COPY_CARD': {
-      const updatedCard = processData[processIndex];
-      return [
-        ...processData.slice(0, processIndex + 1),
-        { ...updatedCard },
-        ...processData.slice(processIndex + 1),
-      ];
-    }
-    case 'DEL_CARD': {
-      const updatedCard = [...processData];
-      updatedCard.splice(processIndex, 1);
-      return updatedCard;
-    }
-    case 'MOVE_CARD': {
-      const { fromIndex, toIndex } = payload;
-      const itemToMove = processData[fromIndex];
-      const updatedCard = [...processData];
-      updatedCard.splice(fromIndex, 1);
-      updatedCard.splice(toIndex, 0, itemToMove);
-      return updatedCard;
-    }
-    case 'UPDATE_DESCRIPTION': {
-      const updatedCard = processData.map((card, index) => {
-        if (index === processIndex) {
-          return { ...card, description: data };
-        }
-        return card;
-      });
-      return updatedCard;
-    }
-    case 'UPDATE_DATA': {
-      const updatedCard = processData.map((card, index) => {
-        if (index === processIndex) {
-          return { ...card, data };
-        }
-        return card;
-      });
-      return updatedCard;
-    }
-    default:
-      throw new Error(`Unknown action: ${type}`);
-  }
+  });
 }
-
 function Process() {
   const [processData, dispatch] = useReducer(reducer, []);
   const [templates, setTemplates] = useState([]);
@@ -128,14 +179,12 @@ function Process() {
         );
       case 'stickyNote':
         return (
-          <>
-            <StickyNote
-              item={item}
-              processIndex={processIndex}
-              editable={editable}
-              dispatch={dispatch}
-            />
-          </>
+          <StickyNote
+            item={item}
+            processIndex={processIndex}
+            editable={editable}
+            dispatch={dispatch}
+          />
         );
       case 'QA':
         return (
@@ -174,16 +223,6 @@ function Process() {
       return;
     }
     e.dataTransfer.setData('text/plain', processIndex);
-
-    // const currentCard = document.getElementById(`card-${processIndex}`);
-    // const inputs = currentCard.querySelectorAll('input,div');
-    // inputs.forEach((input) => {
-    //   input.readOnly = true;
-    // });
-    // const qlEditors = currentCard.querySelectorAll('.ql-editor');
-    // qlEditors.forEach((editor) => {
-    //   editor.contentEditable = 'false';
-    // });
   };
 
   const handleDragOver = (e) => {
@@ -198,19 +237,6 @@ function Process() {
       payload: { fromIndex, toIndex: processIndex },
     });
     setEditable(processIndex);
-
-    // if (fromIndex !== processIndex) {
-    //   const currentCard = document.getElementById(`card-${processIndex}`);
-    //   const inputs = currentCard.querySelectorAll('input');
-    //   inputs.forEach((input) => {
-    //     input.readOnly = false;
-    //   });
-
-    //   const qlEditors = currentCard.querySelectorAll('.ql-editor');
-    //   qlEditors.forEach((editor) => {
-    //     editor.contentEditable = 'true';
-    //   });
-    // }
   };
 
   function handelSave(processData) {

@@ -1,40 +1,43 @@
 import styled from 'styled-components';
+import { produce } from 'immer';
 
 function Vote({ item, processIndex, editable, dispatch }) {
-  // console.log(item);
-
   const handleAddOption = () => {
     const newItem = {
       number: 0,
       option: `請填寫投票選項`,
     };
-    const updatedData = [...item.data, newItem];
+    const updatedData = produce(item.data, (draft) => {
+      draft.push(newItem);
+    });
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
   const handleDelOption = (index) => {
-    const updatedData = [...item.data];
-    updatedData.splice(index, 1);
+    const updatedData = produce(item.data, (draft) => {
+      draft.splice(index, 1);
+    });
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
   const handleOptionChange = (index, e) => {
-    const updatedData = [...item.data];
-    updatedData[index].option = e.target.value;
+    const updatedData = produce(item.data, (draft) => {
+      draft[index].option = e.target.value;
+    });
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
+
   return (
     <div>
       {item.data.map((voteItem, index) => (
         <VoteItem key={index}>
-          <input type="radio" name="option" />
           <ItemNum>{index + 1}.</ItemNum>
           <OptionInput
             type="text"

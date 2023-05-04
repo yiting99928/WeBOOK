@@ -1,9 +1,15 @@
 import styled from 'styled-components/macro';
+import { produce } from 'immer';
+import { useContext } from 'react';
+import { AuthContext } from '../../context/authContext';
 
 function StickyNote({ item, dispatch, processIndex, editable }) {
+  const { user } = useContext(AuthContext);
   const handleOptionChange = (index, e, field) => {
-    const updatedData = [...item.data];
-    updatedData[index][field] = e.target.value;
+    const updatedData = produce(item.data, (draft) => {
+      draft[index][field] = e.target.value;
+    });
+
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
@@ -23,12 +29,7 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
               value={item.message}
               onChange={(e) => handleOptionChange(index, e, 'message')}
             />
-            <Name
-              readOnly={editable !== processIndex}
-              type="text"
-              value={item.name}
-              onChange={(e) => handleOptionChange(index, e, 'name')}
-            />
+            <Name>{user.name}</Name>
           </Note>
         ))
       )}
@@ -39,6 +40,7 @@ const Message = styled.textarea`
   padding: 5px 0;
   height: 100%;
   width: 100%;
+  outline: none;
 `;
 const Note = styled.div`
   width: 200px;
@@ -49,7 +51,7 @@ const Note = styled.div`
   padding: 20px;
   border-radius: 5px;
 `;
-const Name = styled.input`
+const Name = styled.div`
   margin-top: auto;
 `;
 export default StickyNote;
