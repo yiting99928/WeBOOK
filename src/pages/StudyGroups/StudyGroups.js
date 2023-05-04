@@ -77,17 +77,29 @@ function StudyGroups() {
   const searchByText = async (e) => {
     e.preventDefault();
     const studyGroupRef = collection(db, 'studyGroups');
-    const q = query(
-      studyGroupRef,
-      where('name', '>=', searchText),
-      where('name', '<=', searchText + '\uf8ff')
-    );
-    const querySnapshot = await getDocs(q);
-    let groups = [];
-    querySnapshot.forEach((doc) => {
-      groups.push({ id: doc.id, ...doc.data() });
+
+    const searchWords = searchText.split(' ');
+
+    const allGroupsSnapshot = await getDocs(studyGroupRef);
+    const allGroups = allGroupsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    const filteredGroups = allGroups.filter((group) => {
+      const groupNameLower = group.name.toLowerCase();
+      const hostLower = group.host.toLowerCase();
+      const nameLower = group.name.toLowerCase();
+      return searchWords.some((word) => {
+        const wordLower = word.toLowerCase();
+        return (
+          groupNameLower.includes(wordLower) ||
+          hostLower.includes(wordLower) ||
+          nameLower.includes(wordLower)
+        );
+      });
     });
-    setAllGroupsData(groups);
+
+    setAllGroupsData(filteredGroups);
   };
 
   function filterGroups(groups, filterOption) {
