@@ -177,12 +177,6 @@ const UploadText = styled.div`
   }
 `;
 
-const UserImg = styled.img`
-  height: 100px;
-  width: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-`;
 const Logout = styled.div`
   padding-top: 20px;
   border-top: 1px solid #5b5b5b;
