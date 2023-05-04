@@ -1,5 +1,11 @@
 import { createGlobalStyle } from 'styled-components';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  Navigate,
+  Outlet,
+} from 'react-router-dom';
 import Create from './pages/Create/Create';
 import Profile from './pages/Profile/Profile';
 import Process from './pages/Process/Process';
@@ -10,21 +16,35 @@ import StudyGroups from './pages/StudyGroups/StudyGroups';
 import StudyGroup from './pages/StudyGroup/StudyGroup';
 import Header from './components/Header/Header';
 import Footer from './components/Footer';
+import { useContext } from 'react';
+import { AuthContext } from './context/authContext';
 
+const UserRouter = () => {
+  const { user } = useContext(AuthContext);
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  } else {
+    return <Outlet />;
+  }
+};
 function App() {
   return (
     <BrowserRouter>
       <GlobalStyle />
       <Header />
       <Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/create" element={<Create />} />
         <Route path="/studyGroups" element={<StudyGroups />} />
         <Route path="/studyGroup/:id" element={<StudyGroup />} />
-        <Route path="/profile/:status?" element={<Profile />} />
-        <Route path="/study-group/:id/process" element={<Process />} />
-        <Route path="/study-group/:id/live" element={<Live />} />
+
+        <Route element={<UserRouter />}>
+          <Route path="/profile/:status?" element={<Profile />} />
+          <Route path="/studyGroup/:id/process" element={<Process />} />
+          <Route path="/studyGroup/:id/live" element={<Live />} />
+          <Route path="/create" element={<Create />} />
+        </Route>
       </Routes>
       <Footer />
     </BrowserRouter>
