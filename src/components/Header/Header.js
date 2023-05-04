@@ -18,15 +18,9 @@ function Header() {
             <Logo />
           </Link>
           <Menu>
-            <p>
-              <Link to={user ? '/create' : '/login'}>創建讀書會</Link>
-            </p>
-            <p>
-              <Link to={`/studyGroups`}>所有讀書會</Link>
-            </p>
-            <p>
-              <Link to={user ? '/profile' : '/login'}>會員</Link>
-            </p>
+            <Link to="/studyGroups">所有讀書會</Link>
+            <Link to={user ? '/create' : '/login'}>創建讀書會</Link>
+            <Link to={user ? '/profile' : '/login'}>會員</Link>
           </Menu>
         </Wrapper>
       </Container>
@@ -157,7 +151,49 @@ const Logo = styled.div`
 const Menu = styled.div`
   display: flex;
   gap: 40px;
+  letter-spacing: 2;
 
+  a {
+    overflow: visible;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transition: color 0.4s;
+    transition: color 0.4s;
+  }
+
+  @keyframes eff24-move {
+    30% {
+      -webkit-transform: translate3d(0, -5px, 0) rotate(5deg);
+      transform: translate3d(0, -5px, 0) rotate(5deg);
+    }
+    50% {
+      -webkit-transform: translate3d(0, -3px, 0) rotate(-4deg);
+      transform: translate3d(0, -3px, 0) rotate(-4deg);
+    }
+    80% {
+      -webkit-transform: translate3d(0, 0, 0) rotate(-3deg);
+      transform: translate3d(0, 0, 0) rotate(-3deg);
+    }
+    100% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+  }
+
+  a:hover {
+    color: #df524d;
+    -webkit-animation-name: eff24-move;
+    animation-name: eff24-move;
+    -webkit-animation-duration: 0.4s;
+    animation-duration: 0.4s;
+    -webkit-animation-timing-function: linear;
+    animation-timing-function: linear;
+    -webkit-animation-iteration-count: 1;
+    animation-iteration-count: 1;
+  }
   a:hover {
     color: #df524d;
   }
