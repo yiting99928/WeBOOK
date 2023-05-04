@@ -29,8 +29,14 @@ function StudyGroup() {
   }, [id]);
 
   const handleJoinGroup = async (id) => {
-    const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
-    await setDoc(userGroupRef, { note: '' }).then(modal.success('加入讀書會'));
+    if (user) {
+      const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
+      await setDoc(userGroupRef, { note: '' }).then(
+        modal.success('已加入讀書會!')
+      );
+    } else {
+      modal.noUser('請先登入再加入讀書會唷!');
+    }
   };
 
   const statusText = {
