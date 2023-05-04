@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import React, { useState } from 'react';
 import { db } from '../../utils/firebase';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
+import { produce } from 'immer';
 
 function Vote({ item, id, processIndex }) {
   const [hasVoted, setHasVoted] = useState(false);
@@ -10,30 +11,25 @@ function Vote({ item, id, processIndex }) {
     setHasVoted(true);
     const studyGroupDocRef = doc(db, 'studyGroups', id);
     const studyGroupDocSnapshot = await getDoc(studyGroupDocRef);
-    // console.log(studyGroupDocSnapshot.data().process[processIndex].data);
 
-    const newVoteItems = [
-      ...studyGroupDocSnapshot.data().process[processIndex].data,
-    ];
-    newVoteItems[index].number += 1;
-    // console.log(newVoteItems);
+    const updatedProcess = produce(
+      studyGroupDocSnapshot.data().process,
+      (draftProcess) => {
+        draftProcess[processIndex].data[index].number += 1;
+      }
+    );
 
-    // 複製整個process
-    const updatedProcess = [...studyGroupDocSnapshot.data().process];
-
-    // 用新的newVoteItems取代process[processIndex].data
-    updatedProcess[processIndex].data = newVoteItems;
-    // console.log(updatedProcess);
-    // 更新整個process
     await updateDoc(studyGroupDocRef, {
       process: updatedProcess,
     });
   };
+
   const maxVotes = Math.max(...item.data.map((voteItem) => voteItem.number));
   const totalVotes = item.data.reduce(
     (acc, voteItem) => acc + voteItem.number,
     0
   );
+
   return (
     <VoteItems>
       {item.data.map((voteItem, index) => {
@@ -63,6 +59,7 @@ function Vote({ item, id, processIndex }) {
 }
 const ItemNum = styled.div`
   padding: 0 8px;
+  width: 25px;
 `;
 const Option = styled.div`
   white-space: nowrap;

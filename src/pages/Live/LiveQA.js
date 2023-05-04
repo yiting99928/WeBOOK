@@ -58,6 +58,7 @@ const Button = styled.button`
 
 const ItemNum = styled.div`
   padding: 0 8px;
+  width: 25px;
 `;
 const CorrectOption = styled.p`
   display: ${({ submitted }) => (submitted ? 'block' : 'none')};

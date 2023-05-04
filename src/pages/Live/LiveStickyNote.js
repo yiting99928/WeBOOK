@@ -2,12 +2,30 @@ import styled from 'styled-components/macro';
 import { db } from '../../utils/firebase';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { useEffect, useContext } from 'react';
-import { BiMessageAdd, BiTrash } from 'react-icons/bi';
+import { BiMessageAdd } from 'react-icons/bi';
+import { RiChatDeleteLine } from 'react-icons/ri';
 import { AuthContext } from '../../context/authContext';
+import { produce } from 'immer';
 
 function StickyNote({ item, dispatch, processIndex, id }) {
   const { user } = useContext(AuthContext);
   useEffect(() => {
+    const handleUpdateNote = async () => {
+      const studyGroupDocRef = doc(db, 'studyGroups', id);
+      const studyGroupDocSnapshot = await getDoc(studyGroupDocRef);
+      // 複製整個process
+      const updatedProcess = produce(
+        studyGroupDocSnapshot.data().process,
+        (draft) => {
+          draft[processIndex].data = item.data;
+        }
+      );
+      // console.log(updatedProcess);
+      // 更新整個process
+      await updateDoc(studyGroupDocRef, {
+        process: updatedProcess,
+      });
+    };
     handleUpdateNote();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.data]);
@@ -17,16 +35,19 @@ function StickyNote({ item, dispatch, processIndex, id }) {
       name: user.name,
       message: `請填寫分享內容`,
     };
-    const updatedData = [...item.data, newItem];
+    const updatedData = produce(item.data, (draft) => {
+      draft.push(newItem);
+    });
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
 
-  const handleOptionChange = (index, e, field) => {
-    const updatedData = [...item.data];
-    updatedData[index][field] = e.target.value;
+  const handleOptionChange = (index, e) => {
+    const updatedData = produce(item.data, (draft) => {
+      draft[index].message = e.target.value;
+    });
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
@@ -34,78 +55,74 @@ function StickyNote({ item, dispatch, processIndex, id }) {
   };
 
   const handleDelOption = async (index) => {
-    const updatedData = [...item.data];
-    console.log([...item.data]);
-    updatedData.splice(index, 1);
+    const updatedData = produce(item.data, (draft) => {
+      draft.splice(index, 1);
+    });
     await dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
   };
 
-  const handleUpdateNote = async () => {
-    const studyGroupDocRef = doc(db, 'studyGroups', id);
-    const studyGroupDocSnapshot = await getDoc(studyGroupDocRef);
-    // console.log(studyGroupDocSnapshot.data().process[processIndex].data);
-
-    // 複製整個process
-    const updatedProcess = [...studyGroupDocSnapshot.data().process];
-    updatedProcess[processIndex].data = item.data;
-    // console.log(updatedProcess);
-    // 更新整個process
-    await updateDoc(studyGroupDocRef, {
-      process: updatedProcess,
-    });
-  };
-
   const noteColor = ['#FFE4E1', '#FFF5EE', '#FFE4B5', '#F0FFF0', '#E0FFFF'];
-  console.log(item);
+  // console.log(item);
   return (
-    <NoteContainer>
-      {item.data === undefined ? (
-        <></>
-      ) : (
-        item.data.map((item, index = 0) => (
-          <Note key={index} noteColor={noteColor[index % noteColor.length]}>
-            <Icons>
-              <BiMessageAdd onClick={handleAddOption} />
-              {index === 0 ? (
-                <div></div>
-              ) : (
-                <BiTrash onClick={() => handleDelOption(index)} />
-              )}
-            </Icons>
-            <Message
-              type="text"
-              value={item.message}
-              onChange={(e) => handleOptionChange(index, e, 'message')}
-            />
-            <Name
-              type="text"
-              value={item.name}
-              onChange={(e) => handleOptionChange(index, e, 'name')}
-              readOnly
-            />
-          </Note>
-        ))
-      )}
-    </NoteContainer>
+    <>
+      <Add>
+        <BiMessageAdd onClick={handleAddOption} />
+      </Add>
+      <NoteContainer>
+        {item.data === undefined ? (
+          <></>
+        ) : (
+          item.data.map((item, index = 0) => (
+            <Note key={index} noteColor={noteColor[index % noteColor.length]}>
+              <Icons>
+                <RiChatDeleteLine onClick={() => handleDelOption(index)} />
+              </Icons>
+              <Message
+                type="text"
+                value={item.message}
+                onChange={(e) => handleOptionChange(index, e, 'message')}
+              />
+              <Name>{item.name}</Name>
+            </Note>
+          ))
+        )}
+      </NoteContainer>
+    </>
   );
 }
+const Add = styled.div`
+  position: absolute;
+  top: 75px;
+  left: 40px;
+  cursor: pointer;
+  background-color: #e95f5c;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  svg {
+    color: white;
+    transform: scale(1.3);
+  }
+`;
 const Icons = styled.div`
   padding: 3px;
-  border-radius: 6px;
   position: absolute;
   top: 5px;
   right: 5px;
-  display: flex;
-  gap: 2px;
   svg {
     cursor: pointer;
     color: #5b5b5b;
+    transform: scale(1.2);
   }
 `;
 const NoteContainer = styled.div`
+  position: relative;
   display: flex;
   gap: 15px;
   width: 100%;
@@ -117,6 +134,7 @@ const Message = styled.textarea`
   padding: 5px 0;
   height: 100%;
   width: 100%;
+  outline: none;
 `;
 const Note = styled.div`
   position: relative;
@@ -127,7 +145,7 @@ const Note = styled.div`
   flex-direction: column;
   padding: 20px;
 `;
-const Name = styled.input`
+const Name = styled.div`
   margin-top: auto;
 `;
 export default StickyNote;
