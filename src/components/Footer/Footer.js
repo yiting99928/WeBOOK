@@ -1,14 +1,23 @@
 import styled from 'styled-components/macro';
-import linkedin from './linkedin.png';
-import github from './github.png';
+import { BsGithub, BsLinkedin } from 'react-icons/bs';
 
 export default function Footer() {
   return (
     <Container>
       <div>copyright © 2023 WeBOOK 書適圈</div>
       <ContactIcon>
-        <ContactImg contact={linkedin}></ContactImg>
-        <GitHubImg contact={github}></GitHubImg>
+        <a
+          href="https://github.com/yiting99928"
+          target="_blank"
+          rel="noopener noreferrer">
+          <BsGithub />
+        </a>
+        <a
+          href="https://www.linkedin.com/in/yiting-yang999628"
+          target="_blank"
+          rel="noopener noreferrer">
+          <BsLinkedin />
+        </a>
       </ContactIcon>
     </Container>
   );
@@ -30,14 +39,10 @@ const Container = styled.div`
 const ContactIcon = styled.div`
   display: flex;
   margin-left: auto;
-  gap: 15px;
-`;
-const ContactImg = styled.div`
-  height: 35px;
-  width: 35px;
-  background-image: url(${(props) => props.contact});
-  background-size: cover;
-`;
-const GitHubImg = styled(ContactImg)`
-  margin-top: -3px;
+  gap: 30px;
+  align-items: center;
+  svg {
+    transform: scale(1.8);
+    color: #fff;
+  }
 `;
