@@ -189,3 +189,39 @@ textarea::-ms-resizer {
 textarea::resizer {
     display: none;
 }
+
+::-webkit-scrollbar {
+
+    width: 10px;
+    height: 10px
+}
+
+::-webkit-scrollbar-button {
+
+    background: transparent;
+
+    border-radius: 4px;
+
+}
+
+::-webkit-scrollbar-track-piece {
+
+    background: transparent;
+
+}
+
+::-webkit-scrollbar-thumb {
+
+    border-radius: 10px;
+
+    background-color: rgba(98, 98, 98, 0.3);
+
+    border: 1px solid rgb(255, 255, 255);
+
+}
+
+::-webkit-scrollbar-track {
+
+    box-shadow: transparent;
+
+}
