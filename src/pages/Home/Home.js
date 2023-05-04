@@ -1,5 +1,4 @@
 import styled from 'styled-components/macro';
-import bannerImg from './bannerImg.png';
 import DecoBg from '../../components/DecoBg';
 import { RiLiveLine } from 'react-icons/ri';
 import { AiOutlineEdit, AiOutlineQuestionCircle } from 'react-icons/ai';
@@ -7,6 +6,7 @@ import { BsBook, BsSticky, BsChatLeftDots } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import { VscSave } from 'react-icons/vsc';
 import React, { useState, useEffect, useContext } from 'react';
+import BannerImg from './BannerImg';
 import {
   collection,
   getDocs,
@@ -68,7 +68,7 @@ function Home() {
         modal.success('已加入讀書會!')
       );
     } else {
-      modal.noUser('請先登入再創辦讀書會唷!');
+      modal.noUser('請先登入再加入讀書會唷!');
     }
   };
 
@@ -84,7 +84,7 @@ function Home() {
           </Title>
           <SubTitle>Cozy up with books!</SubTitle>
         </BannerInfo>
-        <BannerImg src={bannerImg} alt="banner" />
+        <BannerImg />
       </Banner>
       <Features>
         <FeatureWrap>
@@ -319,10 +319,6 @@ const Title = styled.div`
   font-size: 42px;
   letter-spacing: 1.5;
   line-height: 1.5;
-`;
-const BannerImg = styled.img`
-  z-index: 1;
-  max-width: 712px;
 `;
 const Banner = styled.div`
   height: 100vh;
