@@ -25,11 +25,17 @@ import QA from './LiveQA';
 import { v4 as uuidv4 } from 'uuid';
 import { IoIosArrowForward } from 'react-icons/io';
 import {
-  BsChatDotsFill,
   BsCameraVideoFill,
   BsCameraVideoOffFill,
+  BsChatLeftDotsFill,
 } from 'react-icons/bs';
-import { MdFirstPage, MdLastPage } from 'react-icons/md';
+import { RiChatOffFill } from 'react-icons/ri';
+import {
+  MdFirstPage,
+  MdLastPage,
+  MdVideoChat,
+  MdOutlineVideoChat,
+} from 'react-icons/md';
 import { FaPhoneSlash, FaMicrophoneSlash, FaMicrophone } from 'react-icons/fa';
 import modal from '../../utils/modal';
 import GroupTitle from '../../components/GroupTitle/GroupTitle';
@@ -65,7 +71,7 @@ function Live() {
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [chatInput, setChatInput] = useState(null);
   const messagesEndRef = useRef(null);
   // const [seconds, setSeconds] = useState(0);
   const [isLive, setIsLive] = useState(false);
@@ -82,7 +88,7 @@ function Live() {
   const [showSaveInfo, setShowSaveInfo] = useState(false);
   const remoteVideoRef = useRef(null);
   const localVideoRef = useRef(null);
-  // const [showLocalVideo, setShowLocalVideo] = useState(true);
+  const [showLocalVideo, setShowLocalVideo] = useState(true);
   const [showChatRoom, setShowChatRoom] = useState(true);
 
   //--------------------//
@@ -381,14 +387,16 @@ function Live() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    await addDoc(collection(db, 'rooms', id, 'messages'), {
-      message: input,
-      timestamp: new Date(),
-      sender: user.email,
-      senderName: user.name,
-      sanderImg: user.userImg,
-    });
-    setInput('');
+    if (chatInput) {
+      await addDoc(collection(db, 'rooms', id, 'messages'), {
+        message: chatInput,
+        timestamp: new Date(),
+        sender: user.email,
+        senderName: user.name,
+        sanderImg: user.userImg,
+      });
+      setChatInput('');
+    }
   };
 
   async function handleSaveNote() {
@@ -529,9 +537,10 @@ function Live() {
     }
   };
 
-  // const handleVideoToggle = () => {
-  //   setShowLocalVideo(!showLocalVideo);
-  // };
+  const handleVideoToggle = () => {
+    console.log(666);
+    setShowLocalVideo(!showLocalVideo);
+  };
   const handleChatRoom = () => {
     setShowChatRoom(!showChatRoom);
   };
@@ -623,12 +632,20 @@ function Live() {
                   )}
                 </VideoDisabled>
               </HostInput>
-              {/* <MediaIcon>
-                  <MdFitScreen onClick={handleVideoToggle} />
-                </MediaIcon> */}
-              <MediaIcon>
-                <BsChatDotsFill onClick={handleChatRoom} />
-              </MediaIcon>
+              <LocalDisable showLocalVideo={showLocalVideo}>
+                {showLocalVideo ? (
+                  <MdVideoChat onClick={handleVideoToggle} />
+                ) : (
+                  <MdOutlineVideoChat onClick={handleVideoToggle} />
+                )}
+              </LocalDisable>
+              <ChatDisable showChatRoom={showChatRoom}>
+                {showChatRoom ? (
+                  <BsChatLeftDotsFill onClick={handleChatRoom} />
+                ) : (
+                  <RiChatOffFill onClick={handleChatRoom} />
+                )}
+              </ChatDisable>
               <Hangup isHost={studyGroup.createBy === user.email}>
                 <FaPhoneSlash onClick={handleStop} />
               </Hangup>
@@ -640,13 +657,13 @@ function Live() {
               autoPlay
               ref={localVideoRef}
               muted
-              // show={showLocalVideo}
+              show={showLocalVideo}
             />
             <RemoteVideo
               isHost={studyGroup.createBy === user.email}
               autoPlay
               ref={remoteVideoRef}
-              // show={showLocalVideo}
+              show={showLocalVideo}
             />
           </Broadcast>
         </LiveScreen>
@@ -672,8 +689,11 @@ function Live() {
           </Message>
           <ChatInput>
             <form onSubmit={sendMessage}>
-              <input value={input} onChange={(e) => setInput(e.target.value)} />
-              <button type="submit">
+              <input
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+              />
+              <button type="submit" chatInput={chatInput}>
                 <IoIosArrowForward />
               </button>
             </form>
@@ -700,14 +720,14 @@ const HostInput = styled.div`
   gap: 10px;
 `;
 const LocalVideo = styled.video`
-  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
-  ${'' /* display: ${({ isHost, show }) => (isHost && show ? 'block' : 'none')}; */}
+  display: ${({ isHost, show }) => (isHost && show ? 'block' : 'none')};
+
   width: 200px;
   border-radius: 6px;
 `;
 const RemoteVideo = styled.video`
-  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
-  ${'' /* display: ${({ isHost, show }) => (isHost || !show ? 'none' : 'block')}; */}
+  display: ${({ isHost, show }) => (isHost || !show ? 'none' : 'block')};
+
   width: 200px;
   border-radius: 6px;
 `;
@@ -741,8 +761,7 @@ const LiveScreen = styled.div`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  ${'' /* width: 100%; */}
-  width: ${({ showChatRoom }) => (showChatRoom ? '740px' : '100%')};
+  width: ${({ showChatRoom }) => (showChatRoom ? '75%' : '100%')};
   padding: 10px;
   position: relative;
   border-radius: 6px;
@@ -801,6 +820,7 @@ const ProcessInputs = styled.div`
   gap: 8px;
   display: flex;
   justify-content: center;
+  padding-right: 20px;
   svg {
     transform: scale(1.2);
     cursor: pointer;
@@ -811,6 +831,13 @@ const MediaIcon = styled.div`
   padding: 10px;
   border-radius: 25px;
   background-color: #f1f1f1;
+  :hover {
+    background-color: #e95f5c;
+    svg {
+      color: #fff;
+      transition: 0s;
+    }
+  }
 `;
 const MutedIcon = styled(MediaIcon)`
   background-color: ${({ isMuted }) => (isMuted ? '#e95f5c' : '#f1f1f1')};
@@ -823,6 +850,20 @@ const VideoDisabled = styled(MediaIcon)`
     isVideoDisabled ? '#e95f5c' : '#f1f1f1'};
   svg {
     color: ${({ isVideoDisabled }) => (isVideoDisabled ? '#fff' : '#5b5b5b')};
+  }
+`;
+const ChatDisable = styled(MediaIcon)`
+  background-color: ${({ showChatRoom }) =>
+    showChatRoom ? '#f1f1f1' : '#e95f5c'};
+  svg {
+    color: ${({ showChatRoom }) => (showChatRoom ? '#5b5b5b' : '#fff')};
+  }
+`;
+const LocalDisable = styled(MediaIcon)`
+  background-color: ${({ showLocalVideo }) =>
+    showLocalVideo ? '#f1f1f1' : '#e95f5c'};
+  svg {
+    color: ${({ showLocalVideo }) => (showLocalVideo ? '#5b5b5b' : '#fff')};
   }
 `;
 
@@ -842,7 +883,6 @@ const ChatRoom = styled.div`
   border-radius: 6px;
   overflow: hidden;
   background-color: #fff;
-  width: 240px;
 `;
 const GuestMessage = styled.div`
   border-radius: 6px;
@@ -886,6 +926,7 @@ const ChatInput = styled.div`
     align-items: center;
   }
   button {
+    ${'' /* display: ${({ chatInput }) => (!chatInput ? 'none' : 'block')}; */}
     cursor: pointer;
   }
 `;
