@@ -10,9 +10,9 @@ import {
 import { doc, setDoc } from 'firebase/firestore';
 
 import { db, auth } from '../../utils/firebase';
-import loginImg from './loginImg.png';
 import DecoBg from '../../components/DecoBg';
 import modal from '../../utils/modal';
+import LoginImg from './LoginImg';
 
 function Login() {
   const navigate = useNavigate();
@@ -67,6 +67,9 @@ function Login() {
             break;
           case 'auth/weak-password':
             modal.fail('密碼應至少為6個字符');
+            break;
+          case 'auth/invalid-email':
+            modal.fail('無效的電子郵件');
             break;
           default:
             modal.fail('註冊失敗，請重試');
@@ -195,9 +198,7 @@ function Login() {
             </FormContainer>
           </RegisterCard>
         </Cards>
-        <LoginImg>
-          <img src={loginImg} alt="loginImg" />
-        </LoginImg>
+        <LoginImg />
       </Container>
     </CenterContainer>
   );
@@ -300,9 +301,6 @@ const FlipButton = styled.div`
   border: none;
   color: #df524d;
   cursor: pointer;
-`;
-const LoginImg = styled.div`
-  max-width: 550px;
 `;
 
 export default Login;
