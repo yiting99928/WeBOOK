@@ -7,11 +7,13 @@ function StudyGroupCard({ item, onClick, onJoinGroup }) {
   const navigate = useNavigate();
   return (
     <BookGroup onClick={onClick}>
-      <BookGroupImg
-        src={item.image}
-        alt="feature"
-        onClick={() => navigate(`/studyGroup/${item.id}`)}
-      />
+      <ImgContainer>
+        <BookGroupImg
+          src={item.image}
+          alt="feature"
+          onClick={() => navigate(`/studyGroup/${item.id}`)}
+        />
+      </ImgContainer>
       <BookGroupInfo>
         <BookTitle>{item.groupName}</BookTitle>
         <p>
@@ -33,7 +35,10 @@ function StudyGroupCard({ item, onClick, onJoinGroup }) {
     </BookGroup>
   );
 }
-
+const ImgContainer = styled.div`
+  overflow: hidden;
+  height: 100%;
+`;
 const BookTitle = styled.div`
   padding-bottom: 4px;
   font-weight: 600;
@@ -51,6 +56,9 @@ const BookGroupImg = styled.img`
   height: 100%;
   object-fit: cover;
   cursor: pointer;
+  :hover {
+    transform: scale(1.2);
+  }
 `;
 const BookGroupInfo = styled.div`
   height: 250px;
