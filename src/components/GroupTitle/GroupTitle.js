@@ -48,5 +48,6 @@ const TitleContainer = styled.div`
   margin-bottom: 20px;
   line-height: 1.5;
   justify-content: space-between;
+  width: 100%;
 `;
 export default GroupTitle;
