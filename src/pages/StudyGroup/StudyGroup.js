@@ -1,18 +1,22 @@
 import { setDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { useState, useEffect, useContext } from 'react';
-import styled from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
 import modal from '../../utils/modal';
 import { MainBtn } from '../../components/Buttons/Buttons';
 
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+
 function StudyGroup() {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [studyGroup, setStudyGroup] = useState(null);
   const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const fetchStudyGroup = async () => {
       const studyGroupRef = doc(db, 'studyGroups', id);
@@ -28,12 +32,22 @@ function StudyGroup() {
     fetchStudyGroup();
   }, [id]);
 
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [studyGroup]);
+
   const handleJoinGroup = async (id) => {
     if (user) {
       const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
       await setDoc(userGroupRef, { note: '' }).then(
         modal.success('已加入讀書會!')
       );
+      if (studyGroup.status === 'ongoing') {
+        navigate(`/studyGroup/${id}/live`);
+      } else {
+        navigate(`/profile`);
+      }
     } else {
       modal.noUser('請先登入再加入讀書會唷!');
     }
@@ -47,8 +61,22 @@ function StudyGroup() {
   };
   return (
     <div>
-      {studyGroup === null ? (
-        <>load</>
+      {isLoading ? (
+        <Container>
+          <GroupInfo>
+            <LoadingImg />
+            <LoadingInfo>
+              <Info height={'56px'} width={'100%'} />
+              <Info height={'50px'} width={'50%'} />
+              <Info3 height={'36px'} width={'20%'} />
+              <Info height={'40px'} width={'60%'} />
+              <Info height={'40px'} width={'60%'} />
+              <Info5 />
+            </LoadingInfo>
+          </GroupInfo>
+          <Info height={'40px'} width={'20%'} />
+          <Info height={'120px'} width={'100%'} />
+        </Container>
       ) : (
         <Container>
           <GroupInfo>
@@ -95,6 +123,44 @@ function StudyGroup() {
     </div>
   );
 }
+const pulse = keyframes`
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+`;
+
+const Pulse = styled.div`
+  animation: ${pulse} 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+`;
+const Info = styled(Pulse)`
+  height: ${({ height }) => height};
+  width: ${({ width }) => width};
+  background-color: #ececec;
+  border-radius: 25px;
+  margin-top: 15px;
+`;
+const Info3 = styled(Info)`
+  margin-top: auto;
+`;
+const Info5 = styled(Info)`
+  height: 45px;
+  border-radius: 6px;
+`;
+
+const LoadingInfo = styled.div`
+  width: 360px;
+  gap: 20px;
+  display: flex;
+  flex-direction: column;
+`;
+const LoadingImg = styled(Pulse)`
+  width: 300px;
+  height: 443px;
+  background-color: #ececec;
+`;
 
 const Announcement = styled.div`
   margin-top: 40px;
@@ -111,7 +177,6 @@ const Status = styled.div`
   border-radius: 6px;
   padding: 5px 0px;
   width: 95px;
-  cursor: pointer;
   letter-spacing: 1.3;
   margin-top: auto;
 `;
