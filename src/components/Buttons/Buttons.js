@@ -7,9 +7,12 @@ const MainBtn = ({ children, onClick, height = '36px' }) => {
     </MainBtnStyled>
   );
 };
-const OutlineBtn = ({ children, onClick, isHost }) => {
+const OutlineBtn = ({ children, onClick, isHost, selectedCategory }) => {
   return (
-    <OutlineBtnStyled onClick={onClick} isHost={isHost}>
+    <OutlineBtnStyled
+      onClick={onClick}
+      isHost={isHost}
+      selectedCategory={selectedCategory}>
       {children}
     </OutlineBtnStyled>
   );
@@ -39,8 +42,9 @@ const OutlineBtnStyled = styled.div`
   padding: 5px 8px 4px 8px;
   border: 2px solid #ffac4c;
   border-radius: 5px;
-  background-color: white;
-  color: #ffac4c;
+  background-color: ${({ selectedCategory }) =>
+    selectedCategory ? '#ffac4c' : '#fff'};
+  color: ${({ selectedCategory }) => (selectedCategory ? '#fff' : '#ffac4c')};
   cursor: pointer;
   letter-spacing: 1.2;
   font-size: 14px;
