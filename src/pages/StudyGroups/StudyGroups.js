@@ -9,18 +9,19 @@ import {
   orderBy,
 } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components/macro';
-import { AuthContext } from '../../context/authContext';
 import { GrSearch } from 'react-icons/gr';
-import modal from '../../utils/modal';
 import StudyGroupCard from '../../components/StudyGroupCard';
 import { OutlineBtn } from '../../components/Buttons/Buttons';
+import webookRest from './webookRest.png';
+import GroupsLoading from '../../components/GroupsLoading';
 
 function StudyGroups() {
-  const { user } = useContext(AuthContext);
   const [allGroupsData, setAllGroupsData] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   async function getData() {
     const StudyGroupsData = collection(db, 'studyGroups');
@@ -44,36 +45,53 @@ function StudyGroups() {
     getData();
   }, []);
 
-  const handleJoinGroup = async (id) => {
-    if (user) {
-      const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
-      await setDoc(userGroupRef, { note: '' }).then(
-        modal.success('已加入讀書會!')
-      );
-    } else {
-      modal.noUser('請先登入再創辦讀書會唷!');
+  useEffect(() => {
+    if (allGroupsData.length !== 0) {
+      setTimeout(() => setIsLoading(false), 1200);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allGroupsData]);
 
   const searchByCategory = async (category) => {
+    if (category === selectedCategory) {
+      setSelectedCategory('全部讀書會');
+    }
     if (category === '全部讀書會') {
-      const groups = await getData();
+      const groups = (await getData()).filter(
+        (item) => item.status !== 'finished'
+      );
       return groups;
     } else {
       const studyGroupsRef = collection(db, 'studyGroups');
-      const q = query(studyGroupsRef, where('category', '==', category));
+      const q = query(
+        studyGroupsRef,
+        where('category', '==', category),
+        where('status', '!=', 'finished')
+      );
       const querySnapshot = await getDocs(q);
       let groups = [];
       querySnapshot.forEach((doc) => {
         groups.push({ id: doc.id, ...doc.data() });
       });
+      setSelectedCategory('');
       return groups;
     }
   };
   const handleSearchByCategory = async (category) => {
-    const groups = await searchByCategory(category);
-    setAllGroupsData(groups);
+    if (category === selectedCategory) {
+      setSelectedCategory('');
+      const groups = (await getData()).filter(
+        (item) => item.status !== 'finished'
+      );
+      setAllGroupsData(groups);
+    } else {
+      const groups = await searchByCategory(category);
+      setAllGroupsData(groups);
+      setSelectedCategory(category);
+    }
   };
+
+  // console.log(allGroupsData);
   const searchByText = async (e) => {
     e.preventDefault();
     const studyGroupRef = collection(db, 'studyGroups');
@@ -89,14 +107,18 @@ function StudyGroups() {
       const groupNameLower = group.name.toLowerCase();
       const hostLower = group.host.toLowerCase();
       const nameLower = group.name.toLowerCase();
-      return searchWords.some((word) => {
-        const wordLower = word.toLowerCase();
-        return (
-          groupNameLower.includes(wordLower) ||
-          hostLower.includes(wordLower) ||
-          nameLower.includes(wordLower)
-        );
-      });
+      const isNotFinished = group.status !== 'finished';
+      return (
+        isNotFinished &&
+        searchWords.some((word) => {
+          const wordLower = word.toLowerCase();
+          return (
+            groupNameLower.includes(wordLower) ||
+            hostLower.includes(wordLower) ||
+            nameLower.includes(wordLower)
+          );
+        })
+      );
     });
 
     setAllGroupsData(filteredGroups);
@@ -185,7 +207,8 @@ function StudyGroups() {
               {categories.map((category) => (
                 <OutlineBtn
                   key={category}
-                  onClick={() => handleSearchByCategory(category)}>
+                  onClick={() => handleSearchByCategory(category)}
+                  selectedCategory={selectedCategory === category}>
                   {category}
                 </OutlineBtn>
               ))}
@@ -193,29 +216,52 @@ function StudyGroups() {
           </SearchBar>
         </SearchInputs>
         <BookGroupWrap>
-          {allGroupsData.length === 0 ? (
-            <>目前此類別讀書會</>
-          ) : (
-            allGroupsData.map((item, index) => (
-              <StudyGroupCard
-                item={item}
-                key={index}
-                onJoinGroup={handleJoinGroup}
-              />
-            ))
+          {isLoading && (
+            <>
+              <GroupsLoading />
+              <GroupsLoading />
+              <GroupsLoading />
+              <GroupsLoading />
+            </>
           )}
+          {!isLoading &&
+            (allGroupsData.length === 0 ? (
+              <NoGroup>
+                <img src={webookRest} alt="no data" />
+                <p>目前此類別無讀書會</p>
+              </NoGroup>
+            ) : (
+              allGroupsData.map((item, index) => (
+                <StudyGroupCard item={item} key={index} />
+              ))
+            ))}
         </BookGroupWrap>
       </Container>
     </div>
   );
 }
+const NoGroup = styled.div`
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  position: absolute;
+  left: 50%;
+  margin-top: 50px;
+  transform: translateX(-50%);
+  letter-spacing: 2px;
+  font-size: 18px;
+`;
 const BookGroupWrap = styled.div`
+  position: relative;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 23px;
   margin-top: 40px;
   margin-bottom: 120px;
+  ${'' /* padding: 0 20px; */}
 `;
 const SearchBar = styled.div`
   display: flex;
@@ -240,6 +286,7 @@ const SearchText = styled.form`
     right: 10px;
     transform: scale(1.2);
     color: #909090;
+    cursor: pointer;
   }
 `;
 const SelectInput = styled.select`
@@ -258,6 +305,7 @@ const SearchBtns = styled.div`
   gap: 10px;
   flex-wrap: wrap;
   margin-top: -3px;
+  width: 90%;
 `;
 const SearchBtnTitle = styled.div`
   width: 50px;
@@ -268,5 +316,6 @@ const Container = styled.div`
   margin: 0 auto;
   margin-top: 60px;
   margin-bottom: 200px;
+  padding: 0 20px;
 `;
 export default StudyGroups;
