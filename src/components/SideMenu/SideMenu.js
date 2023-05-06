@@ -59,6 +59,7 @@ function SideMenu({ children }) {
     }));
   };
   // console.log(fileInputRef.current);
+  // console.log(status);
   return (
     <Container>
       <Sidebar isOpen={isOpen}>
@@ -91,14 +92,14 @@ function SideMenu({ children }) {
                 <UserName>Hi! {user.name}</UserName>
               </User>
               <br />
-              <br />
-              <Link to={`/profile`}>所有讀書會</Link>
-              <Link to={`/profile/ongoing`}>進行中</Link>
-              <Link to={`/profile/preparing`}>準備中</Link>
-              <Link to={`/profile/finished`}>已結束</Link>
-              <br />
-              <Logout onClick={logOut}>登出</Logout>
+              <SideMenuLink>
+                <StyledLink to={`/profile`}>我的讀書會</StyledLink>
+                <StyledLink to={`/profile/ongoing`}>進行中</StyledLink>
+                <StyledLink to={`/profile/preparing`}>準備中</StyledLink>
+                <StyledLink to={`/profile/finished`}>已結束</StyledLink>
+              </SideMenuLink>
             </SidebarLinks>
+            <Logout onClick={logOut}>登出</Logout>
           </SidebarContainer>
         ) : (
           <SidebarContainer>
@@ -112,9 +113,23 @@ function SideMenu({ children }) {
     </Container>
   );
 }
+const StyledLink = styled(Link)`
+  color: black;
+  padding: 0px 30px;
+  line-height: 2.5;
+
+  &:hover {
+    color: #df524d;
+  }
+`;
+const SideMenuLink = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
+  position: relative;
 `;
 
 const Content = styled.div`
@@ -122,13 +137,16 @@ const Content = styled.div`
   margin: 0 auto;
   margin-top: 54px;
   margin-bottom: 120px;
+  width: 960px;
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  width: 960px;
+  gap: 20px;
+  align-items: center;
 `;
 const Sidebar = styled.div`
-  width: ${({ isOpen }) => (isOpen ? '200px' : '40px')};
+  width: ${({ isOpen }) => (isOpen ? '10%' : '40px')};
+  min-width: ${({ isOpen }) => (isOpen ? '200px' : '40px')};
   background-color: #eaeaea;
   transition: all 0.3s ease;
   background-color: #fee0d4;
@@ -136,7 +154,8 @@ const Sidebar = styled.div`
 `;
 const SidebarContainer = styled.div`
   position: fixed;
-  width: ${({ isOpen }) => (isOpen ? '200px' : '40px')};
+  min-width: ${({ isOpen }) => (isOpen ? '200px' : '40px')};
+  width: ${({ isOpen }) => (isOpen ? '10%' : '40px')};
 `;
 const User = styled.div`
   display: flex;
@@ -159,8 +178,8 @@ const UserImgContainer = styled.div`
 `;
 const UploadText = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0px;
+  left: 0px;
   height: 100%;
   width: 100%;
   display: flex;
@@ -178,9 +197,15 @@ const UploadText = styled.div`
 `;
 
 const Logout = styled.div`
-  padding-top: 20px;
-  border-top: 1px solid #5b5b5b;
+  margin: 0px 30px;
+  line-height: 2;
+  margin-top: 10px;
   cursor: pointer;
+  border-top: 1px solid gray;
+  padding-top: 20px;
+  &:hover {
+    color: #df524d;
+  }
 `;
 const ArrowIcon = styled.div`
   cursor: pointer;
@@ -193,8 +218,6 @@ const ArrowIcon = styled.div`
 `;
 const SidebarLinks = styled.div`
   padding-top: 70px;
-  padding-right: 30px;
-  padding-left: 30px;
   display: flex;
   flex-direction: column;
   gap: 10px;
