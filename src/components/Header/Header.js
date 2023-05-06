@@ -152,8 +152,8 @@ const Menu = styled.div`
   display: flex;
   gap: 40px;
   letter-spacing: 2;
-
   a {
+    color: #5b5b5b;
     overflow: visible;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
