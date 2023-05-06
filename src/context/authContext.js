@@ -2,7 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../utils/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-
+import Loading from '../components/Loading';
 export const AuthContext = createContext({});
 
 export const AuthContextProvider = ({ children }) => {
@@ -18,15 +18,19 @@ export const AuthContextProvider = ({ children }) => {
       } else {
         setUser(null);
       }
-      setIsLoading(false);
     });
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
 
     return () => {
       unsubscribe();
+      clearTimeout(timeoutId);
     };
   }, []);
-  if (!user && isLoading) {
-    return;
+
+  if (isLoading) {
+    return <Loading />;
   }
   console.log(user);
   console.log(isLoading);
