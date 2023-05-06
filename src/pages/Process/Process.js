@@ -15,72 +15,6 @@ import modal from '../../utils/modal';
 import GroupTitle from '../../components/GroupTitle/GroupTitle';
 import { produce } from 'immer';
 
-// function reducer(processData, { type, payload = {} }) {
-//   const { lecture, processIndex, templates, e, data, process } = payload;
-//   switch (type) {
-//     case 'INIT_CARD': {
-//       return [{ ...lecture }];
-//     }
-//     case 'SET_CARD': {
-//       return [...process];
-//     }
-//     case 'ADD_CARD': {
-//       return [...processData, { ...lecture }];
-//     }
-//     case 'CHANGE_CARD': {
-//       return processData.map((card, cardIndex) => {
-//         if (cardIndex === processIndex) {
-//           const newTemplate = templates.find(
-//             (template) => template.type === e.target.value
-//           );
-//           return { ...newTemplate };
-//         }
-//         return card;
-//       });
-//     }
-//     case 'COPY_CARD': {
-//       const updatedCard = processData[processIndex];
-//       return [
-//         ...processData.slice(0, processIndex + 1),
-//         { ...updatedCard },
-//         ...processData.slice(processIndex + 1),
-//       ];
-//     }
-//     case 'DEL_CARD': {
-//       const updatedCard = [...processData];
-//       updatedCard.splice(processIndex, 1);
-//       return updatedCard;
-//     }
-//     case 'MOVE_CARD': {
-//       const { fromIndex, toIndex } = payload;
-//       const itemToMove = processData[fromIndex];
-//       const updatedCard = [...processData];
-//       updatedCard.splice(fromIndex, 1);
-//       updatedCard.splice(toIndex, 0, itemToMove);
-//       return updatedCard;
-//     }
-//     case 'UPDATE_DESCRIPTION': {
-//       const updatedCard = processData.map((card, index) => {
-//         if (index === processIndex) {
-//           return { ...card, description: data };
-//         }
-//         return card;
-//       });
-//       return updatedCard;
-//     }
-//     case 'UPDATE_DATA': {
-//       const updatedCard = processData.map((card, index) => {
-//         if (index === processIndex) {
-//           return { ...card, data };
-//         }
-//         return card;
-//       });
-//       return updatedCard;
-//     }
-//     default:
-//       throw new Error(`Unknown action: ${type}`);
-//   }
-// }
 function reducer(processData, { type, payload = {} }) {
   const { lecture, processIndex, templates, e, data, process } = payload;
   return produce(processData, (draft) => {
@@ -260,14 +194,16 @@ function Process() {
   };
   return (
     <SideMenu>
-      <GroupTitle studyGroup={studyGroup} />
+      <TitleContainer>
+        <GroupTitle studyGroup={studyGroup} />
+      </TitleContainer>
       <ProcessContainer>
         {processData !== undefined &&
           processData.map((item, processIndex) => {
             return (
               <ProcessCard
                 key={processIndex}
-                id={`card-${processIndex}`} // 添加此行
+                id={`card-${processIndex}`}
                 onClick={() => setEditable(processIndex)}>
                 <EditBlock editable={editable === processIndex}></EditBlock>
                 <Drag
@@ -341,7 +277,9 @@ function Process() {
     </SideMenu>
   );
 }
-
+const TitleContainer = styled.div`
+  width: 90%;
+`;
 const SubmitInput = styled.div`
   background: #df524d;
   border-radius: 6px;
@@ -375,6 +313,7 @@ const ProcessContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 90%;
 `;
 const Buttons = styled.div`
   display: ${({ editable }) => (editable ? 'flex' : 'none')};
