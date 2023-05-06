@@ -69,7 +69,8 @@ input{
   position:relative;
 }
 .swal2-popup{
-  width:20em
+  width:20em;
+  font-family:'Poppins', sans-serif;
 }
 .swal2-styled.swal2-confirm{
   background-color:#E95F5C;
