@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components/macro';
 import data from '../../utils/api';
 import { AuthContext } from '../../context/authContext';
 import moment from 'moment';
@@ -24,6 +24,8 @@ import {
 import { db } from '../../utils/firebase';
 import modal from '../../utils/modal';
 import parse, { domToReact } from 'html-react-parser';
+import webookLogo from './webookLogo.png';
+import Loading from '../../components/Loading';
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
@@ -31,6 +33,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(Array(groupData.length).fill(false));
   const { status } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
 
   async function getData() {
     const groupData = await data.fetchUserGroup(user.email);
@@ -53,6 +56,13 @@ const Profile = () => {
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
+
+  useEffect(() => {
+    if (groupData.length !== 0) {
+      setTimeout(() => setIsLoading(false), 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupData]);
 
   const statusText = {
     ongoing: { type: '進行中', color: '#DF524D' },
@@ -188,72 +198,176 @@ const Profile = () => {
       );
     }
   };
+  // console.log(isLoading);
   return (
     <SideMenu>
-      {groupData.map((item, index) => {
-        const currentTime = moment().unix();
-        const threeDaysLater = moment().add(3, 'days').unix();
-        const startTime = item.startTime.seconds;
-        const isUpcoming =
-          startTime >= currentTime &&
-          startTime <= threeDaysLater &&
-          item.status !== 'ongoing';
-        return (
-          <StudyGroupCard key={index}>
-            <GroupInfo expanded={expanded[index]}>
-              <BookGroupImg
-                src={item.image}
-                alt="feature"
-                onClick={() => navigate(`/studyGroup/${item.id}`)}
-              />
-              <CardContent>
-                <Title>{item.groupName}</Title>
-                <BookName>{item.name}</BookName>
-                <Creator>
-                  導讀人：{item.host}
-                  <br />
-                  章節：{item.chapter}
-                  <br />
-                  時間：
-                  {moment
-                    .unix(item.startTime.seconds)
-                    .format('MM-DD hh:mm A')}{' '}
-                  — {moment.unix(item.endTime.seconds).format('MM-DD hh:mm A')}
-                </Creator>
-                {<ProfileGroupCard index={index} item={item} />}
-              </CardContent>
-              <Tag>
-                <Status
-                  statusColor={statusText[item.status].color}
-                  onClick={() => navigate(`/profile/${item.status}`)}>
-                  {statusText[item.status].type}
-                </Status>
-                {isUpcoming && (
-                  <Status statusColor={statusText.upcoming.color}>
-                    {statusText.upcoming.type}
-                  </Status>
+      {isLoading && (
+        <>
+          <LoadingContainer>
+            <LoadingImg />
+            <LoadingContent>
+              <Info height={'56px'} width={'80%'} />
+              <Info height={'56px'} width={'60%'} />
+              <Info height={'56px'} width={'200px'} />
+              <Info height={'25px'} width={'90px'} />
+            </LoadingContent>
+          </LoadingContainer>
+          <LoadingContainer>
+            <LoadingImg />
+            <LoadingContent>
+              <Info height={'56px'} width={'80%'} />
+              <Info height={'56px'} width={'60%'} />
+              <Info height={'56px'} width={'200px'} />
+              <Info height={'25px'} width={'90px'} />
+            </LoadingContent>
+          </LoadingContainer>
+          <LoadingContainer>
+            <LoadingImg />
+            <LoadingContent>
+              <Info height={'56px'} width={'80%'} />
+              <Info height={'56px'} width={'60%'} />
+              <Info height={'56px'} width={'200px'} />
+              <Info height={'25px'} width={'90px'} />
+            </LoadingContent>
+          </LoadingContainer>
+        </>
+      )}
+
+      {!isLoading &&
+        (groupData.length === 0 ? (
+          <NoData>
+            <img src={webookLogo} alt="img" />
+            此類別目前無讀書會 <br />
+            到全部讀書會逛逛吧~
+          </NoData>
+        ) : (
+          groupData.map((item, index) => {
+            const currentTime = moment().unix();
+            const threeDaysLater = moment().add(3, 'days').unix();
+            const startTime = item.startTime.seconds;
+            const isUpcoming =
+              startTime >= currentTime &&
+              startTime <= threeDaysLater &&
+              item.status !== 'ongoing';
+            return (
+              <StudyGroupCard key={index}>
+                <GroupInfo expanded={expanded[index]}>
+                  <ImgContainer>
+                    <BookGroupImg
+                      src={item.image}
+                      alt="feature"
+                      onClick={() => navigate(`/studyGroup/${item.id}`)}
+                    />
+                  </ImgContainer>
+                  <CardContent>
+                    <Title>{item.groupName}</Title>
+                    <BookName>{item.name}</BookName>
+                    <Creator>
+                      導讀人：{item.host}
+                      <br />
+                      章節：{item.chapter}
+                      <br />
+                      時間：
+                      {moment
+                        .unix(item.startTime.seconds)
+                        .format('MM.DD HH:mm')}{' '}
+                      —{' '}
+                      {moment.unix(item.endTime.seconds).format('MM.DD HH:mm')}
+                    </Creator>
+                    {<ProfileGroupCard index={index} item={item} />}
+                  </CardContent>
+                  <Tag>
+                    <Status
+                      statusColor={statusText[item.status].color}
+                      onClick={() => navigate(`/profile/${item.status}`)}>
+                      {statusText[item.status].type}
+                    </Status>
+                    {isUpcoming && (
+                      <Status statusColor={statusText.upcoming.color}>
+                        {statusText.upcoming.type}
+                      </Status>
+                    )}
+                  </Tag>
+                </GroupInfo>
+                {expanded[index] && (
+                  <Note>
+                    <br />
+                    {item.note ? (
+                      parse(item.note, { replace })
+                    ) : (
+                      <NoNote>無讀書會筆記</NoNote>
+                    )}
+                  </Note>
                 )}
-              </Tag>
-            </GroupInfo>
-            {expanded[index] && (
-              <Note>
-                <br />
-                {parse(item.note, { replace })}
-              </Note>
-            )}
-          </StudyGroupCard>
-        );
-      })}
+              </StudyGroupCard>
+            );
+          })
+        ))}
     </SideMenu>
   );
 };
+
+const pulse = keyframes`
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+`;
+
+const Pulse = styled.div`
+  animation: ${pulse} 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+`;
+
+const LoadingContainer = styled.div`
+  width: 100%;
+  height: 248px;
+  display: flex;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1.5px solid #ececec;
+  align-self: flex-start;
+`;
+
+const LoadingImg = styled(Pulse)`
+  width: 150px;
+  margin-right: 50px;
+  background-color: #ececec;
+`;
+
+const LoadingContent = styled.div`
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+`;
+const Info = styled(Pulse)`
+  height: ${({ height }) => height};
+  width: ${({ width }) => width};
+  background-color: #ececec;
+  border-radius: 25px;
+`;
+const NoNote = styled.div`
+  margin-bottom: 20px;
+  text-align: center;
+`;
+const NoData = styled.div`
+  text-align: center;
+  line-height: 1.5;
+  font-size: 20px;
+  margin: 0 auto;
+  img {
+    width: 200px;
+    height: 200px;
+  }
+`;
 const Note = styled.div`
   border-top: 1px solid #b5b5b5;
   padding-top: 15px;
   line-height: 1.3;
 `;
 const BookName = styled.div`
-  padding-left: 10px;
   font-size: 28px;
   letter-spacing: 1.5;
 `;
@@ -282,24 +396,29 @@ const Status = styled.div`
   cursor: pointer;
   letter-spacing: 1.3;
 `;
+
+const ImgContainer = styled.div`
+  overflow: hidden;
+`;
 const BookGroupImg = styled.img`
-  cursor: pointer;
-  max-width: 150px;
+  width: 150px;
+  height: 210px;
   object-fit: cover;
-  height: 100%;
+  cursor: pointer;
+  :hover {
+    transform: scale(1.15);
+  }
 `;
 const GroupInfo = styled.div`
   display: flex;
-  align-items: flex-start;
   gap: 50px;
   padding-bottom: ${({ expanded }) => (expanded ? '30px' : '0px')};
 `;
 const StudyGroupCard = styled.div`
-  display: flex;
-  flex-direction: column;
   padding: 16px 20px;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
+  width: 100%;
 `;
 const Creator = styled.div`
   margin-top: auto;
@@ -310,7 +429,6 @@ const CardContent = styled.div`
   gap: 10px;
   display: flex;
   flex-direction: column;
-  height: 100%;
   max-width: 600px;
   color: #5b5b5b;
 `;
