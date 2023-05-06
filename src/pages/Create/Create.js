@@ -346,6 +346,7 @@ const ImgContainer = styled.div`
 const ImgInput = styled.input`
   height: 350px;
   opacity: 0;
+  cursor: pointer;
 `;
 const TextInput = styled.input`
   width: 100%;
