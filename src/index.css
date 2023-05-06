@@ -140,12 +140,6 @@ a:link {
     color: black;
 }
 
-a:visited {
-    text-decoration: none;
-    color: black;
-}
-
-
 input[type=text]:focus {
     outline: none;
 }
