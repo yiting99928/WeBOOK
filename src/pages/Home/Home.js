@@ -1,4 +1,4 @@
-import styled from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components/macro';
 import DecoBg from '../../components/DecoBg';
 import { RiLiveLine } from 'react-icons/ri';
 import { AiOutlineEdit, AiOutlineQuestionCircle } from 'react-icons/ai';
@@ -77,12 +77,9 @@ function Home() {
       <DecoBg />
       <Banner>
         <BannerInfo>
-          <Title>
-            走進書適圈
-            <br />
-            找到你的閱讀舒適圈
-          </Title>
-          <SubTitle>Cozy up with books!</SubTitle>
+          <Title delay={0}>走進書適圈</Title>
+          <Title delay={0.5}>找到你的閱讀舒適圈</Title>
+          <SubTitle delay={1}>Cozy up with books!</SubTitle>
         </BannerInfo>
         <BannerImg />
       </Banner>
@@ -231,6 +228,7 @@ const Recommended = styled.div`
   max-width: 1000px;
   margin: 0 auto;
   margin-bottom: 110px;
+  padding:0 20px;
   overflow: hidden;
 `;
 const FooterBottom = styled.div`
@@ -308,10 +306,21 @@ const FeaturePoint = styled.div`
   gap: 10px;
 `;
 //-----Banner-----//
+const fadeIn = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
+
 const SubTitle = styled.div`
   margin-top: 16px;
   font-size: 24px;
   color: #e95f5c;
+  animation: ${fadeIn} 2s cubic-bezier(0.5, 0, 0.1, 1) both;
+  animation-delay: ${(props) => props.delay}s;
 `;
 const Title = styled.div`
   font-weight: 600;
@@ -319,6 +328,8 @@ const Title = styled.div`
   font-size: 42px;
   letter-spacing: 1.5;
   line-height: 1.5;
+  animation: ${fadeIn} 2s cubic-bezier(0.5, 0, 0.1, 1) both;
+  animation-delay: ${(props) => props.delay}s;
 `;
 const Banner = styled.div`
   height: 100vh;
@@ -329,6 +340,7 @@ const Banner = styled.div`
   margin: 0 auto;
   position: relative;
   justify-content: space-between;
+  padding: 0px 50px;
 `;
 const BannerInfo = styled.div`
   padding-left: 20px;
