@@ -3,7 +3,7 @@ import { db } from '../../utils/firebase';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { useEffect, useContext } from 'react';
 import { BiMessageAdd } from 'react-icons/bi';
-import { RiChatDeleteLine } from 'react-icons/ri';
+import { MdClose } from 'react-icons/md';
 import { AuthContext } from '../../context/authContext';
 import { produce } from 'immer';
 
@@ -78,7 +78,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
           item.data.map((item, index = 0) => (
             <Note key={index} noteColor={noteColor[index % noteColor.length]}>
               <Icons>
-                <RiChatDeleteLine onClick={() => handleDelOption(index)} />
+                <MdClose onClick={() => handleDelOption(index)} />
               </Icons>
               <Message
                 type="text"
@@ -124,7 +124,7 @@ const Icons = styled.div`
 const NoteContainer = styled.div`
   position: relative;
   display: flex;
-  gap: 15px;
+  gap: 10px;
   width: 100%;
   height: 70%;
   overflow-x: scroll;

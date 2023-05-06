@@ -28,14 +28,12 @@ import {
   BsCameraVideoFill,
   BsCameraVideoOffFill,
   BsChatLeftDotsFill,
+  BsPeopleFill,
+  BsBoxArrowInDownRight,
+  BsBoxArrowInUpLeft,
 } from 'react-icons/bs';
 import { RiChatOffFill } from 'react-icons/ri';
-import {
-  MdFirstPage,
-  MdLastPage,
-  MdVideoChat,
-  MdOutlineVideoChat,
-} from 'react-icons/md';
+import { MdFirstPage, MdLastPage } from 'react-icons/md';
 import { FaPhoneSlash, FaMicrophoneSlash, FaMicrophone } from 'react-icons/fa';
 import modal from '../../utils/modal';
 import GroupTitle from '../../components/GroupTitle/GroupTitle';
@@ -71,7 +69,7 @@ function Live() {
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState([]);
-  const [chatInput, setChatInput] = useState(null);
+  const [MessageInput, setMessageInput] = useState('');
   const messagesEndRef = useRef(null);
   // const [seconds, setSeconds] = useState(0);
   const [isLive, setIsLive] = useState(false);
@@ -90,6 +88,8 @@ function Live() {
   const localVideoRef = useRef(null);
   const [showLocalVideo, setShowLocalVideo] = useState(true);
   const [showChatRoom, setShowChatRoom] = useState(true);
+  const [viewersNum, setViewersNum] = useState(0);
+  const [isDisabled, setIsDisabled] = useState(true);
 
   //--------------------//
   //-----直播區開始-----//
@@ -169,7 +169,7 @@ function Live() {
     ]);
 
     localStream.getTracks().forEach((track) => {
-      console.log(track);
+      // console.log(track);
       peerConnection.addTrack(track, localStream);
     });
 
@@ -190,7 +190,7 @@ function Live() {
       }
     });
     peerConnection.addEventListener('icecandidate', (event) => {
-      console.log(event);
+      // console.log(event);
       if (event.candidate) {
         const json = event.candidate.toJSON();
         addDoc(collection(db, 'rooms', id, 'host'), json);
@@ -211,9 +211,23 @@ function Live() {
     const roomRef = doc(db, 'rooms', id);
     const userUUID = uuidv4();
     await updateDoc(roomRef, {
-      viewers: arrayUnion(userUUID),
+      viewers: arrayUnion({ uuid: userUUID, name: user.name }),
     });
-
+    const enterMessages = [
+      `${user.name} 剛剛進入直播間`,
+      `${user.name} 剛剛著陸`,
+      `野生的 ${user.name} 出現`,
+      `${user.name} 仙女下凡`,
+    ];
+    const randomMessage =
+      enterMessages[Math.floor(Math.random() * enterMessages.length)];
+    await addDoc(collection(db, 'rooms', id, 'messages'), {
+      message: randomMessage,
+      timestamp: new Date(),
+      sender: null,
+      senderName: null,
+      sanderImg: null,
+    });
     const configuration = {
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     };
@@ -278,25 +292,28 @@ function Live() {
       answer: deleteField(),
     });
   }
+
   useEffect(() => {
-    if (user.email === studyGroup.createBy) {
-      const roomRef = doc(db, 'rooms', id);
+    const roomRef = doc(db, 'rooms', id);
 
-      const unsubscribe = onSnapshot(roomRef, (doc) => {
-        const data = doc.data();
-        if (data) {
-          const { viewers } = data;
-          if (viewers && viewers.length > peerConnections.length) {
-            // const newUserUUID = viewers[viewers.length - 1];
-            createRoom();
-          }
+    const unsubscribe = onSnapshot(roomRef, async (doc) => {
+      const data = doc.data();
+      if (data) {
+        const { viewers } = data;
+        setViewersNum(viewers.length);
+        if (
+          user.email === studyGroup.createBy &&
+          viewers &&
+          viewers.length > peerConnections.length
+        ) {
+          createRoom();
         }
-      });
+      }
+    });
 
-      return () => {
-        unsubscribe();
-      };
-    }
+    return () => {
+      unsubscribe();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [peerConnections, id]);
 
@@ -362,23 +379,17 @@ function Live() {
     };
   }, [id, navigate]);
 
-  const [isDisabled, setIsDisabled] = useState(true);
-
   useEffect(() => {
     if (id) {
       const roomRef = doc(collection(db, 'rooms'), id);
 
       const unsubscribe = onSnapshot(roomRef, (roomSnapshot) => {
         if (roomSnapshot.exists()) {
-          // console.log('Room exists!');
           setIsDisabled(false);
         } else {
-          console.log('Room does not exist!');
           setIsDisabled(true);
         }
       });
-
-      // Clean up the listener when the component is unmounted
       return () => {
         unsubscribe();
       };
@@ -387,15 +398,17 @@ function Live() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (chatInput) {
+    const trimmedMessage = MessageInput.trim();
+
+    if (trimmedMessage) {
       await addDoc(collection(db, 'rooms', id, 'messages'), {
-        message: chatInput,
+        message: trimmedMessage,
         timestamp: new Date(),
         sender: user.email,
         senderName: user.name,
         sanderImg: user.userImg,
       });
-      setChatInput('');
+      setMessageInput('');
     }
   };
 
@@ -461,13 +474,13 @@ function Live() {
 
   async function handleStart() {
     setIsLive(true);
-    await setDoc(doc(db, 'rooms', id), { currentCard: 0 });
+    await setDoc(doc(db, 'rooms', id), { currentCard: 0, viewers: [] });
     modal.success('開始直播');
     const studyGroupRef = doc(db, 'rooms', id);
     const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
       const studyGroupData = snapshot.data();
       if (studyGroupData && studyGroupData.currentCard !== undefined) {
-        console.log(studyGroupData.currentCard);
+        // console.log(studyGroupData.currentCard);
         setCurrentCard(studyGroupData.currentCard);
       }
     });
@@ -538,7 +551,6 @@ function Live() {
   };
 
   const handleVideoToggle = () => {
-    console.log(666);
     setShowLocalVideo(!showLocalVideo);
   };
   const handleChatRoom = () => {
@@ -547,167 +559,190 @@ function Live() {
 
   return (
     <SideMenu>
-      <GroupTitle studyGroup={studyGroup} />
-      <LiveContainer>
-        <LiveScreen showChatRoom={showChatRoom}>
-          <LiveIcon isLive={isLive}>Live</LiveIcon>
-          <LiveInputs isLive={isLive}>
-            <StartInput
-              isHost={studyGroup.createBy === user.email}
-              type="button"
-              value="開啟鏡頭"
-              onClick={openUserMedia}
-            />
-            <StartInput
-              isHost={studyGroup.createBy === user.email}
-              type="button"
-              value="開始直播"
-              disabled={videoState.isMuted && videoState.isVideoDisabled}
-              onClick={handleStart}
-            />
-            <JoinInput
-              isHost={studyGroup.createBy === user.email}
-              type="button"
-              value="加入直播"
-              disabled={isDisabled}
-              onClick={handleJoin}
-            />
-          </LiveInputs>
-          <Cards isLive={isLive}>
-            {!processData ? (
+      <Container>
+        <GroupTitle studyGroup={studyGroup} />
+        <LiveContainer>
+          <LiveScreen showChatRoom={showChatRoom}>
+            <LiveInfo>
+              <LiveIcon isLive={isLive}>Live</LiveIcon>
+              <LiveNum>
+                <BsPeopleFill />
+                {viewersNum}人
+              </LiveNum>
+            </LiveInfo>
+            <LiveInputs isLive={isLive}>
+              <StartInput
+                isHost={studyGroup.createBy === user.email}
+                type="button"
+                value="開啟鏡頭"
+                onClick={openUserMedia}
+              />
+              <StartInput
+                isHost={studyGroup.createBy === user.email}
+                type="button"
+                value="開始直播"
+                disabled={videoState.isMuted && videoState.isVideoDisabled}
+                onClick={handleStart}
+              />
+              <JoinInput
+                isHost={studyGroup.createBy === user.email}
+                type="button"
+                value="加入直播"
+                disabled={isDisabled}
+                onClick={handleJoin}
+              />
+            </LiveInputs>
+            <Cards isLive={isLive}>
+              {!processData ? (
+                <></>
+              ) : (
+                processData.map((item, processIndex) => (
+                  <Card
+                    activeCard={processIndex === currentCard} // 卡片index & 目前 currentCard 相同則 block
+                    key={processIndex}>
+                    <Description>{item.description}</Description>
+                    <CardContent>
+                      {renderCardContent(item, processIndex)}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </Cards>
+            {!processData || !isLive ? (
               <></>
             ) : (
-              processData.map((item, processIndex) => (
-                <Card
-                  activeCard={processIndex === currentCard} // 卡片index & 目前 currentCard 相同則 block
-                  key={processIndex}>
-                  <Description>{item.description}</Description>
-                  <CardContent>
-                    {renderCardContent(item, processIndex)}
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </Cards>
-          {!processData || !isLive ? (
-            <></>
-          ) : (
-            <ProcessInputs>
-              <HostInput isHost={studyGroup.createBy === user.email}>
-                <MediaIcon>
-                  <MdFirstPage
-                    onClick={() =>
-                      setCurrentCard((prev) => {
-                        const newCard = prev > 0 ? prev - 1 : prev;
-                        updateCurrentCardInFirebase(newCard);
-                        return newCard;
-                      })
-                    }
-                  />
-                </MediaIcon>
-                <MediaIcon>
-                  <MdLastPage
-                    onClick={() => {
-                      setCurrentCard((prev) => {
-                        const newCard =
-                          prev < processData.length - 1 ? prev + 1 : prev;
-                        updateCurrentCardInFirebase(newCard);
-                        return newCard;
-                      });
-                    }}
-                  />
-                </MediaIcon>
-                <MutedIcon isMuted={videoState.isMuted}>
-                  {videoState.isMuted ? (
-                    <FaMicrophoneSlash onClick={toggleMute} />
+              <ProcessInputs>
+                <HostInput isHost={studyGroup.createBy === user.email}>
+                  <MediaIcon>
+                    <MdFirstPage
+                      onClick={() =>
+                        setCurrentCard((prev) => {
+                          const newCard = prev > 0 ? prev - 1 : prev;
+                          updateCurrentCardInFirebase(newCard);
+                          return newCard;
+                        })
+                      }
+                    />
+                  </MediaIcon>
+                  <MediaIcon>
+                    <MdLastPage
+                      onClick={() => {
+                        setCurrentCard((prev) => {
+                          const newCard =
+                            prev < processData.length - 1 ? prev + 1 : prev;
+                          updateCurrentCardInFirebase(newCard);
+                          return newCard;
+                        });
+                      }}
+                    />
+                  </MediaIcon>
+                  <MutedIcon isMuted={videoState.isMuted}>
+                    {videoState.isMuted ? (
+                      <FaMicrophoneSlash onClick={toggleMute} />
+                    ) : (
+                      <FaMicrophone onClick={toggleMute} />
+                    )}
+                  </MutedIcon>
+                  <VideoDisabled isVideoDisabled={videoState.isVideoDisabled}>
+                    {videoState.isVideoDisabled ? (
+                      <BsCameraVideoOffFill onClick={toggleVideo} />
+                    ) : (
+                      <BsCameraVideoFill onClick={toggleVideo} />
+                    )}
+                  </VideoDisabled>
+                </HostInput>
+                <LocalDisable showLocalVideo={showLocalVideo}>
+                  {showLocalVideo ? (
+                    <BsBoxArrowInDownRight onClick={handleVideoToggle} />
                   ) : (
-                    <FaMicrophone onClick={toggleMute} />
+                    <BsBoxArrowInUpLeft onClick={handleVideoToggle} />
                   )}
-                </MutedIcon>
-                <VideoDisabled isVideoDisabled={videoState.isVideoDisabled}>
-                  {videoState.isVideoDisabled ? (
-                    <BsCameraVideoOffFill onClick={toggleVideo} />
+                </LocalDisable>
+                <ChatDisable showChatRoom={showChatRoom}>
+                  {showChatRoom ? (
+                    <BsChatLeftDotsFill onClick={handleChatRoom} />
                   ) : (
-                    <BsCameraVideoFill onClick={toggleVideo} />
+                    <RiChatOffFill onClick={handleChatRoom} />
                   )}
-                </VideoDisabled>
-              </HostInput>
-              <LocalDisable showLocalVideo={showLocalVideo}>
-                {showLocalVideo ? (
-                  <MdVideoChat onClick={handleVideoToggle} />
-                ) : (
-                  <MdOutlineVideoChat onClick={handleVideoToggle} />
-                )}
-              </LocalDisable>
-              <ChatDisable showChatRoom={showChatRoom}>
-                {showChatRoom ? (
-                  <BsChatLeftDotsFill onClick={handleChatRoom} />
-                ) : (
-                  <RiChatOffFill onClick={handleChatRoom} />
-                )}
-              </ChatDisable>
-              <Hangup isHost={studyGroup.createBy === user.email}>
-                <FaPhoneSlash onClick={handleStop} />
-              </Hangup>
-            </ProcessInputs>
-          )}
-          <Broadcast>
-            <LocalVideo
-              isHost={studyGroup.createBy === user.email}
-              autoPlay
-              ref={localVideoRef}
-              muted
-              show={showLocalVideo}
-            />
-            <RemoteVideo
-              isHost={studyGroup.createBy === user.email}
-              autoPlay
-              ref={remoteVideoRef}
-              show={showLocalVideo}
-            />
-          </Broadcast>
-        </LiveScreen>
-        <ChatRoom showChatRoom={showChatRoom}>
-          <ChatTitle>聊天室</ChatTitle>
-          <Message>
-            {messages.map((message, index) =>
-              user.email === message.sender ? (
-                <UserMessage key={index}>{message.message}</UserMessage>
-              ) : (
-                <GuestMessage key={index}>
-                  <UserImg src={message.sanderImg} alt="userImg" />
-                  <span>{message.senderName}：</span>
-                  {message.message}
-                </GuestMessage>
-              )
+                </ChatDisable>
+                <Hangup isHost={studyGroup.createBy === user.email}>
+                  <FaPhoneSlash onClick={handleStop} />
+                </Hangup>
+              </ProcessInputs>
             )}
-            <div
-              ref={(el) => {
-                messagesEndRef.current = el;
-              }}
-            />
-          </Message>
-          <ChatInput>
-            <form onSubmit={sendMessage}>
-              <input
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
+            <Broadcast>
+              <LocalVideo
+                isHost={studyGroup.createBy === user.email}
+                autoPlay
+                ref={localVideoRef}
+                muted
+                show={showLocalVideo}
               />
-              <button type="submit" chatInput={chatInput}>
-                <IoIosArrowForward />
-              </button>
-            </form>
-          </ChatInput>
-        </ChatRoom>
-      </LiveContainer>
-      <Note>
-        <EditContent onChange={setNote} value={note} />
-        <Button onClick={handleSaveNote}>儲存筆記</Button>
-        <SaveInfo showSaveInfo={showSaveInfo}>已儲存筆記</SaveInfo>
-      </Note>
+              <RemoteVideo
+                isHost={studyGroup.createBy === user.email}
+                autoPlay
+                ref={remoteVideoRef}
+                show={showLocalVideo}
+              />
+            </Broadcast>
+          </LiveScreen>
+          <ChatRoom showChatRoom={showChatRoom}>
+            <ChatTitle>聊天室</ChatTitle>
+            <Message>
+              {messages.map((message, index) => {
+                if (message.sender === null) {
+                  return (
+                    <SystemMessage key={index}>{message.message}</SystemMessage>
+                  );
+                } else if (user.email === message.sender) {
+                  return (
+                    <UserMessage key={index}>{message.message}</UserMessage>
+                  );
+                } else {
+                  return (
+                    <GuestMessage key={index}>
+                      <UserImg src={message.sanderImg} alt="userImg" />
+                      <SenderMessage>
+                        <SenderName>{message.senderName}</SenderName>
+                        <p>{message.message}</p>
+                      </SenderMessage>
+                    </GuestMessage>
+                  );
+                }
+              })}
+              <div
+                ref={(el) => {
+                  messagesEndRef.current = el;
+                }}
+              />
+            </Message>
+            <ChatInput>
+              <form onSubmit={sendMessage}>
+                <input
+                  value={MessageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                />
+                <button type="submit">
+                  <IoIosArrowForward />
+                </button>
+              </form>
+            </ChatInput>
+          </ChatRoom>
+        </LiveContainer>
+        <Note>
+          <EditContent onChange={setNote} value={note} />
+          <Button onClick={handleSaveNote}>儲存筆記</Button>
+          <SaveInfo showSaveInfo={showSaveInfo}>已儲存筆記</SaveInfo>
+        </Note>
+      </Container>
     </SideMenu>
   );
 }
+
+const Container = styled.div`
+  width: 100%;
+`;
+
 const SaveInfo = styled.div`
   opacity: ${({ showSaveInfo }) => (showSaveInfo ? 1 : 0)};
   font-size: 14px;
@@ -720,25 +755,23 @@ const HostInput = styled.div`
   gap: 10px;
 `;
 const LocalVideo = styled.video`
-  display: ${({ isHost, show }) => (isHost && show ? 'block' : 'none')};
-
-  width: 200px;
+  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  width: ${({ show }) => (show ? '200px' : '100px')};
   border-radius: 6px;
 `;
 const RemoteVideo = styled.video`
-  display: ${({ isHost, show }) => (isHost || !show ? 'none' : 'block')};
-
+  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
+  width: ${({ show }) => (show ? '200px' : '100px')};
   width: 200px;
   border-radius: 6px;
 `;
 
 const LiveContainer = styled.div`
   display: flex;
-  width: 100%;
   height: 500px;
-  gap: 15px;
   justify-content: space-between;
   margin-bottom: 20px;
+  gap: 10px;
 `;
 const Broadcast = styled.div`
   position: absolute;
@@ -746,6 +779,16 @@ const Broadcast = styled.div`
   bottom: 10px;
 `;
 //---直播---//
+const LiveInfo = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+`;
+
 const LiveIcon = styled.div`
   background: #f0f0f0;
   background: ${({ isLive }) => (isLive ? '#DF524D' : '#f0f0f0')};
@@ -753,19 +796,23 @@ const LiveIcon = styled.div`
   border-radius: 25px;
   text-align: center;
   padding: 5px 20px;
-  position: absolute;
-  top: 10px;
-  right: 10px;
+`;
+const LiveNum = styled.div`
+  letter: 1.3px;
+  svg {
+    margin-right: 10px;
+    color: #5b5b5b;
+  }
 `;
 const LiveScreen = styled.div`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  width: ${({ showChatRoom }) => (showChatRoom ? '75%' : '100%')};
   padding: 10px;
   position: relative;
   border-radius: 6px;
   background-color: #fff;
+  width: ${({ showChatRoom }) => (showChatRoom ? '75%' : '100%')};
 `;
 const LiveInputs = styled.div`
   display: ${({ isLive }) => (isLive ? 'none' : 'flex')};
@@ -821,6 +868,9 @@ const ProcessInputs = styled.div`
   display: flex;
   justify-content: center;
   padding-right: 20px;
+  z-index: 1;
+  margin-right: 30px;
+
   svg {
     transform: scale(1.2);
     cursor: pointer;
@@ -876,30 +926,46 @@ const Hangup = styled(MediaIcon)`
 `;
 
 //---聊天室---//
+const SenderMessage = styled.div`
+  background-color: #f1f1f1;
+  padding: 5px 10px;
+  border-radius: 6px;
+`;
 const ChatRoom = styled.div`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   display: ${({ showChatRoom }) => (showChatRoom ? 'flex' : 'none')};
   flex-direction: column;
   border-radius: 6px;
   overflow: hidden;
-  background-color: #fff;
+  width: 230px;
+`;
+const SenderName = styled.div`
+  color: #5b5b5b;
+  font-size: 12px;
 `;
 const GuestMessage = styled.div`
   border-radius: 6px;
-  background-color: #f1f1f1;
-  padding: 0 10px;
-  display: flex;
   align-items: center;
+  align-self: flex-start;
+  display: inline-flex;
 `;
 const UserImg = styled.img`
-  width: 20px;
-  height: 20px;
+  width: 35px;
+  height: 35px;
   display: inline-block;
   margin-right: 5px;
   border-radius: 50%;
+  align-self: flex-start;
+  object-fit: cover;
 `;
 const UserMessage = styled(GuestMessage)`
+  padding: 5px 10px;
+  background-color: #f1f1f1;
   align-self: flex-end;
+`;
+const SystemMessage = styled.div`
+  text-align: center;
+  color: #df524d;
 `;
 const Message = styled.div`
   display: flex;
@@ -908,14 +974,12 @@ const Message = styled.div`
   height: 500px;
   overflow: auto;
   padding: 10px;
-  gap: 15px;
+  gap: 10px;
   font-size: 14px;
 `;
 const ChatInput = styled.div`
   margin-top: auto;
   background-color: #f1f1f1;
-  height: 30px;
-  padding: 0 5px;
   margin: 10px;
   border-radius: 25px;
   display: flex;
@@ -925,8 +989,10 @@ const ChatInput = styled.div`
     display: flex;
     align-items: center;
   }
+  input {
+    margin: 5px 10px;
+  }
   button {
-    ${'' /* display: ${({ chatInput }) => (!chatInput ? 'none' : 'block')}; */}
     cursor: pointer;
   }
 `;
