@@ -225,10 +225,10 @@ const BookGroupWrap = styled.div`
   margin-bottom: 50px;
 `;
 const Recommended = styled.div`
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   margin-bottom: 110px;
-  padding:0 20px;
+  padding: 0 20px;
   overflow: hidden;
 `;
 const FooterBottom = styled.div`
@@ -340,7 +340,7 @@ const Banner = styled.div`
   margin: 0 auto;
   position: relative;
   justify-content: space-between;
-  padding: 0px 50px;
+  padding: 0px 20px;
 `;
 const BannerInfo = styled.div`
   padding-left: 20px;
