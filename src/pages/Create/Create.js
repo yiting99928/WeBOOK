@@ -46,7 +46,9 @@ function Create() {
       fileReader.onload = () => {
         setPreviewUrl(fileReader.result);
       };
-      fileReader.readAsDataURL(e.target.files[0]);
+      if (e.target.files.length > 0) {
+        fileReader.readAsDataURL(e.target.files[0]);
+      }
     } else {
       setCreateForm((prevContact) => ({
         ...prevContact,
@@ -108,9 +110,9 @@ function Create() {
       await setDoc(userStudyGroupsRef, {
         note: '',
       });
-      modal.create('成功創建讀書會!', docRef.id);
+      modal.create('成功建立讀書會!', docRef.id);
     } catch (error) {
-      modal.fail('讀書會創建失敗!');
+      modal.fail('讀書會建立失敗!');
       console.error('Error: ', error);
     }
   };
@@ -144,7 +146,7 @@ function Create() {
     <Wrapper>
       <DecoBg />
       <FormContainer>
-        <FormTitle>創建讀書會</FormTitle>
+        <FormTitle>建立讀書會</FormTitle>
         <Form>
           <InputContainer>
             <FormInputs>
@@ -260,7 +262,7 @@ function Create() {
           </div>
         </Form>
         <MainBtn onClick={handleSubmit} height={'44px'}>
-          創建讀書會
+          建立讀書會
         </MainBtn>
       </FormContainer>
     </Wrapper>
