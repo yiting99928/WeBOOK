@@ -51,7 +51,7 @@ const LiveTag = styled.div`
 const LiveIcon = styled.div`
   width: 12px;
   height: 12px;
-  background-image: url(//cdn-cos-ke.myoed.com/ke_proj/core/_next/static/media/live-icon-1.0b738b5c.gif);
+  background-image: url(https://cdn-cos-ke.myoed.com/ke_proj/core/_next/static/media/live-icon-1.0b738b5c.gif);
   background-size: contain;
   background-repeat: no-repeat;
 `;
