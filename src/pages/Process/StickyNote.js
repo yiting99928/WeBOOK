@@ -5,9 +5,11 @@ import { AuthContext } from '../../context/authContext';
 
 function StickyNote({ item, dispatch, processIndex, editable }) {
   const { user } = useContext(AuthContext);
+
   const handleOptionChange = (index, e, field) => {
     const updatedData = produce(item.data, (draft) => {
       draft[index][field] = e.target.value;
+      draft[index]['name'] = user.name;
     });
 
     dispatch({

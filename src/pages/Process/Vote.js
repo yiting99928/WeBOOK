@@ -64,6 +64,7 @@ const OptionInput = styled.input`
 const ItemNum = styled.div`
   padding: 0 8px;
   margin-top: 3px;
+  width: 25px;
 `;
 const Button = styled.button`
   display: ${({ editing }) => (editing ? 'block' : 'none')};
