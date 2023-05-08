@@ -19,7 +19,7 @@ function Header() {
           </Link>
           <Menu>
             <Link to="/studyGroups">所有讀書會</Link>
-            <Link to={user ? '/create' : '/login'}>創建讀書會</Link>
+            <Link to={user ? '/create' : '/login'}>建立讀書會</Link>
             <Link to={user ? '/profile' : '/login'}>會員</Link>
           </Menu>
         </Wrapper>
@@ -33,7 +33,7 @@ function Header() {
       <MobileWrap isOpen={isOpen}>
         <MobileMenu>
           <p>
-            <Link to={user ? '/create' : '/login'}>創建讀書會</Link>
+            <Link to={user ? '/create' : '/login'}>建立讀書會</Link>
           </p>
           <p>
             <Link to={`/studyGroups`}>所有讀書會</Link>
