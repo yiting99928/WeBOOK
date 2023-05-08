@@ -1,7 +1,5 @@
 import {
-  setDoc,
   collection,
-  doc,
   getDocs,
   query,
   where,
@@ -37,25 +35,17 @@ function StudyGroups() {
       id: doc.id,
       ...doc.data(),
     }));
-
-    setAllGroupsData(groups);
     return groups;
   }
   useEffect(() => {
-    getData();
+    setIsLoading(true);
+    getData().then((groups) => {
+      setAllGroupsData(groups);
+      setIsLoading(false);
+    });
   }, []);
 
-  useEffect(() => {
-    if (allGroupsData.length !== 0) {
-      setTimeout(() => setIsLoading(false), 1200);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allGroupsData]);
-
   const searchByCategory = async (category) => {
-    if (category === selectedCategory) {
-      setSelectedCategory('全部讀書會');
-    }
     if (category === '全部讀書會') {
       const groups = (await getData()).filter(
         (item) => item.status !== 'finished'
@@ -73,21 +63,21 @@ function StudyGroups() {
       querySnapshot.forEach((doc) => {
         groups.push({ id: doc.id, ...doc.data() });
       });
-      setSelectedCategory('');
       return groups;
     }
   };
+
   const handleSearchByCategory = async (category) => {
     if (category === selectedCategory) {
-      setSelectedCategory('');
+      setSelectedCategory('全部讀書會');
       const groups = (await getData()).filter(
         (item) => item.status !== 'finished'
       );
       setAllGroupsData(groups);
     } else {
+      setSelectedCategory(category);
       const groups = await searchByCategory(category);
       setAllGroupsData(groups);
-      setSelectedCategory(category);
     }
   };
 
@@ -157,7 +147,6 @@ function StudyGroups() {
     const filterOption = event.target.value;
     getData().then((groups) => {
       const filteredGroups = filterGroups(groups, filterOption);
-      // console.log(filteredGroups);
       setAllGroupsData(filteredGroups);
     });
   }
