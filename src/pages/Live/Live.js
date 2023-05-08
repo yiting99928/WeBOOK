@@ -37,30 +37,27 @@ import { MdFirstPage, MdLastPage } from 'react-icons/md';
 import { FaPhoneSlash, FaMicrophoneSlash, FaMicrophone } from 'react-icons/fa';
 import modal from '../../utils/modal';
 import GroupTitle from '../../components/GroupTitle/GroupTitle';
+import { produce } from 'immer';
 
 function reducer(processData, { type, payload = {} }) {
   const { processIndex, data, process } = payload;
-  switch (type) {
-    case 'SET_DATA': {
-      return process;
+  return produce(processData, (draft) => {
+    switch (type) {
+      case 'SET_DATA': {
+        return process;
+      }
+      case 'DEL_CARD': {
+        draft.splice(processIndex, 1);
+        break;
+      }
+      case 'UPDATE_DATA': {
+        draft[processIndex].data = data;
+        break;
+      }
+      default:
+        throw new Error(`Unknown action: ${type}`);
     }
-    case 'DEL_CARD': {
-      const updatedCard = [...processData];
-      updatedCard.splice(processIndex, 1);
-      return updatedCard;
-    }
-    case 'UPDATE_DATA': {
-      const updatedCard = processData.map((card, index) => {
-        if (index === processIndex) {
-          return { ...card, data };
-        }
-        return card;
-      });
-      return updatedCard;
-    }
-    default:
-      throw new Error(`Unknown action: ${type}`);
-  }
+  });
 }
 
 function Live() {

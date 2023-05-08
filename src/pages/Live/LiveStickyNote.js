@@ -30,6 +30,8 @@ function StickyNote({ item, dispatch, processIndex, id }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.data]);
 
+  //更新自己的便利貼 state 當自己便利貼是自己的就不從 db 更新
+
   const handleAddOption = () => {
     const newItem = {
       name: user.name,
