@@ -1,11 +1,11 @@
-import styled from 'styled-components/macro';
-import { db } from '../../utils/firebase';
-import { updateDoc, doc, getDoc } from 'firebase/firestore';
-import { useEffect, useContext } from 'react';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { produce } from 'immer';
+import { useContext, useEffect } from 'react';
 import { BiMessageAdd } from 'react-icons/bi';
 import { MdClose } from 'react-icons/md';
+import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
-import { produce } from 'immer';
+import { db } from '../../utils/firebase';
 
 function StickyNote({ item, dispatch, processIndex, id }) {
   const { user } = useContext(AuthContext);
@@ -13,15 +13,12 @@ function StickyNote({ item, dispatch, processIndex, id }) {
     const handleUpdateNote = async () => {
       const studyGroupDocRef = doc(db, 'studyGroups', id);
       const studyGroupDocSnapshot = await getDoc(studyGroupDocRef);
-      // 複製整個process
       const updatedProcess = produce(
         studyGroupDocSnapshot.data().process,
         (draft) => {
           draft[processIndex].data = item.data;
         }
       );
-      // console.log(updatedProcess);
-      // 更新整個process
       await updateDoc(studyGroupDocRef, {
         process: updatedProcess,
       });
@@ -29,8 +26,6 @@ function StickyNote({ item, dispatch, processIndex, id }) {
     handleUpdateNote();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.data]);
-
-  //更新自己的便利貼 state 當自己便利貼是自己的就不從 db 更新
 
   const handleAddOption = () => {
     const newItem = {
@@ -67,7 +62,6 @@ function StickyNote({ item, dispatch, processIndex, id }) {
   };
 
   const noteColor = ['#FFE4E1', '#FFF5EE', '#FFE4B5', '#F0FFF0', '#E0FFFF'];
-  // console.log(item);
   return (
     <>
       <Add>

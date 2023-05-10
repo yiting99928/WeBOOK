@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../../context/authContext';
 import styled from 'styled-components/macro';
+import { AuthContext } from '../../context/authContext';
 import logoImg from './logo.png';
 
 function Header() {
@@ -46,7 +46,6 @@ function Header() {
     </>
   );
 }
-//-----HamburgerMenu-----//
 const HamburgerIcon = styled.div`
   width: 30px;
   height: 20px;

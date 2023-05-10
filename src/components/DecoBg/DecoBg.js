@@ -2,12 +2,12 @@ import styled, { keyframes } from 'styled-components/macro';
 
 function DecoBg() {
   return (
-      <Decos>
-        <Deco />
-        <Deco2 />
-        <Deco3 />
-        <Deco4 />
-      </Decos>
+    <Decos>
+      <Deco />
+      <Deco2 />
+      <Deco3 />
+      <Deco4 />
+    </Decos>
   );
 }
 
@@ -46,7 +46,6 @@ const move4 = keyframes`
     transform: translate(-100%, 0%);
   }
 `;
-
 
 const Decos = styled.div`
   position: absolute;

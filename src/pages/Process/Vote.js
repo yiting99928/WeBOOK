@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { produce } from 'immer';
+import styled from 'styled-components';
 
 function Vote({ item, processIndex, editable, dispatch }) {
   const handleAddOption = () => {

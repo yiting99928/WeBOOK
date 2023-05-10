@@ -1,10 +1,5 @@
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-} from 'firebase/firestore';
 
 const data = {
   async fetchUserGroup(email) {

@@ -1,7 +1,7 @@
-import ReactQuill, { Quill } from 'react-quill';
 import * as Emoji from 'quill-emoji';
-import 'react-quill/dist/quill.snow.css';
 import 'quill-emoji/dist/quill-emoji.css';
+import ReactQuill, { Quill } from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 Quill.register('modules/emoji', Emoji);
 
 const quillModules = {

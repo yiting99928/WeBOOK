@@ -1,13 +1,13 @@
-import { setDoc, doc, getDoc } from 'firebase/firestore';
-import { db } from '../../utils/firebase';
-import { useState, useEffect, useContext } from 'react';
-import styled, { keyframes } from 'styled-components/macro';
-import { AuthContext } from '../../context/authContext';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import moment from 'moment';
-import modal from '../../utils/modal';
+import { useContext, useEffect, useState } from 'react';
+import styled, { keyframes } from 'styled-components/macro';
 import { MainBtn } from '../../components/Buttons/Buttons';
+import { AuthContext } from '../../context/authContext';
+import { db } from '../../utils/firebase';
+import modal from '../../utils/modal';
 
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function StudyGroup() {
   const { user } = useContext(AuthContext);

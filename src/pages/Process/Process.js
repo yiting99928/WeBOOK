@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
+import { produce } from 'immer';
+import React, { useEffect, useReducer, useState } from 'react';
+import { BiCopy, BiTrash } from 'react-icons/bi';
+import { GrAddCircle } from 'react-icons/gr';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import GroupTitle from '../../components/GroupTitle/GroupTitle';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
-import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
+import modal from '../../utils/modal';
 import Lecture from './Lecture';
+import QA from './QA';
 import StickyNote from './StickyNote';
 import Vote from './Vote';
-import QA from './QA';
 import move from './move.png';
-import { GrAddCircle } from 'react-icons/gr';
-import { BiTrash, BiCopy } from 'react-icons/bi';
-import modal from '../../utils/modal';
-import GroupTitle from '../../components/GroupTitle/GroupTitle';
-import { produce } from 'immer';
 
 function reducer(processData, { type, payload = {} }) {
   const { lecture, processIndex, templates, e, data, process } = payload;
@@ -176,12 +176,10 @@ function Process() {
   function handelSave(processData) {
     setDoc(doc(db, 'studyGroups', id), { ...studyGroup, process: processData })
       .then(() => {
-        // console.log('Process data saved successfully.');
         modal.success('已儲存讀書會流程!');
       })
       .catch((error) => {
         modal.fail('讀書會流程儲存失敗!');
-        // console.error('Error while saving process data: ', error);
       });
   }
 

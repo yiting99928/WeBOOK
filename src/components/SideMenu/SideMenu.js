@@ -1,15 +1,15 @@
-import styled from 'styled-components/macro';
-import React, { useState, useContext, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../../context/authContext';
 import { getAuth, signOut } from 'firebase/auth';
-import {
-  MdKeyboardDoubleArrowRight,
-  MdKeyboardDoubleArrowLeft,
-} from 'react-icons/md';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { doc, updateDoc } from 'firebase/firestore';
-import { storage, db } from '../../utils/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import React, { useContext, useRef, useState } from 'react';
+import {
+  MdKeyboardDoubleArrowLeft,
+  MdKeyboardDoubleArrowRight,
+} from 'react-icons/md';
+import { Link, useNavigate } from 'react-router-dom';
+import styled from 'styled-components/macro';
+import { AuthContext } from '../../context/authContext';
+import { db, storage } from '../../utils/firebase';
 
 function SideMenu({ children }) {
   const navigate = useNavigate();
@@ -25,41 +25,32 @@ function SideMenu({ children }) {
     const auth = getAuth();
     signOut(auth)
       .then(() => {
-        console.log(' Sign-out successful');
-      })
-      .then(() => {
         setUser(null);
         navigate('/');
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
 
-    // 上传文件到 Firebase Storage
     const storageRef = ref(
       storage,
       `userImgs/${file.name + file.lastModified}`
     );
     await uploadBytes(storageRef, file);
 
-    // 获取文件的 URL
     const imageURL = await getDownloadURL(storageRef);
 
-    // 更新 Firebase Firestore 中的 userImg 字段
     const userDocRef = doc(db, 'users', user.email);
     await updateDoc(userDocRef, { userImg: imageURL });
 
-    // 更新本地 user 状态
     setUser((prevUser) => ({
       ...prevUser,
       userImg: imageURL,
     }));
   };
-  // console.log(fileInputRef.current);
-  // console.log(status);
   return (
     <Container>
       <Sidebar isOpen={isOpen}>

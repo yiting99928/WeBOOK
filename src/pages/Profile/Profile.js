@@ -1,31 +1,29 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components/macro';
-import data from '../../utils/api';
-import { AuthContext } from '../../context/authContext';
-import moment from 'moment';
-import { useNavigate, Link } from 'react-router-dom';
-import SideMenu from '../../components/SideMenu';
 import {
-  HostEditInput,
-  GuestEditInput,
-} from '../../components/Buttons/Buttons';
-import { OutlineBtn } from '../../components/Buttons/Buttons';
-import {
-  doc,
-  updateDoc,
-  deleteDoc,
   collection,
+  deleteDoc,
+  doc,
+  getDoc,
   getDocs,
   query,
+  updateDoc,
   where,
-  getDoc,
 } from 'firebase/firestore';
+import parse, { domToReact } from 'html-react-parser';
+import moment from 'moment';
+import React, { useContext, useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import styled, { keyframes } from 'styled-components/macro';
+import {
+  GuestEditInput,
+  HostEditInput,
+  OutlineBtn,
+} from '../../components/Buttons/Buttons';
+import SideMenu from '../../components/SideMenu';
+import { AuthContext } from '../../context/authContext';
+import data from '../../utils/api';
 import { db } from '../../utils/firebase';
 import modal from '../../utils/modal';
-import parse, { domToReact } from 'html-react-parser';
 import webookLogo from './webookLogo.png';
-import Loading from '../../components/Loading';
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
@@ -58,9 +56,7 @@ const Profile = () => {
   }, [status]);
 
   useEffect(() => {
-    if (groupData.length !== 0) {
-      setTimeout(() => setIsLoading(false), 500);
-    }
+    setTimeout(() => setIsLoading(false), 500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupData]);
 
@@ -119,17 +115,15 @@ const Profile = () => {
     try {
       const groupSnapshot = await getDoc(groupRef);
       const groupData = groupSnapshot.data();
-      console.log(groupData);
 
       if (groupData.process === undefined || groupData.process.length === 0) {
         modal.fail('請新增至少一個流程!');
       } else {
-        // console.log('有流程');
         updateDoc(groupRef, { status: 'ongoing' });
         getData();
       }
     } catch (error) {
-      console.error('Error fetching group data: ', error);
+      console.error(error);
     }
   }
 
@@ -198,7 +192,6 @@ const Profile = () => {
       );
     }
   };
-  // console.log(isLoading);
   return (
     <SideMenu>
       {isLoading && (

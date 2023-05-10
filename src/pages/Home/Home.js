@@ -1,23 +1,23 @@
-import styled, { keyframes } from 'styled-components/macro';
-import DecoBg from '../../components/DecoBg';
-import { RiLiveLine } from 'react-icons/ri';
-import { AiOutlineEdit, AiOutlineQuestionCircle } from 'react-icons/ai';
-import { BsBook, BsSticky, BsChatLeftDots } from 'react-icons/bs';
-import { MdHowToVote } from 'react-icons/md';
-import { VscSave } from 'react-icons/vsc';
-import React, { useState, useEffect, useContext } from 'react';
-import BannerImg from './BannerImg';
 import {
   collection,
-  getDocs,
   doc,
+  getDocs,
   setDoc,
   updateDoc,
 } from 'firebase/firestore';
-import { db } from '../../utils/firebase';
+import React, { useContext, useEffect, useState } from 'react';
+import { AiOutlineEdit, AiOutlineQuestionCircle } from 'react-icons/ai';
+import { BsBook, BsChatLeftDots, BsSticky } from 'react-icons/bs';
+import { MdHowToVote } from 'react-icons/md';
+import { RiLiveLine } from 'react-icons/ri';
+import { VscSave } from 'react-icons/vsc';
+import styled, { keyframes } from 'styled-components/macro';
+import DecoBg from '../../components/DecoBg';
 import StudyGroupCard from '../../components/StudyGroupCard';
 import { AuthContext } from '../../context/authContext';
+import { db } from '../../utils/firebase';
 import modal from '../../utils/modal';
+import BannerImg from './BannerImg';
 import edit from './edit.mp4';
 import live from './live.mp4';
 import note from './note.mp4';
@@ -37,7 +37,6 @@ function Home() {
 
       const now = new Date();
 
-      // 找到時間超過的讀書會更新為 finished 其餘的放到 unfinishedGroups
       const unfinishedGroups = [];
       for (const group of groups) {
         if (group.endTime.toDate() <= now && group.status !== 'ongoing') {
@@ -49,7 +48,6 @@ function Home() {
         }
       }
 
-      // 依照 createTime 排序找到新的
       const sortedGroups = unfinishedGroups.sort(
         (a, b) => b.createTime.seconds - a.createTime.seconds
       );
@@ -235,7 +233,6 @@ const FooterBottom = styled.div`
   height: 60px;
 `;
 
-//-----Feature-----//
 const Features = styled.div`
   max-width: 1100px;
   margin: 0 auto;
@@ -305,7 +302,6 @@ const FeaturePoint = styled.div`
   align-items: center;
   gap: 10px;
 `;
-//-----Banner-----//
 const fadeIn = keyframes`
   0% {
     opacity: 0;

@@ -1,19 +1,19 @@
 import {
+  Timestamp,
   collection,
   getDocs,
+  orderBy,
   query,
   where,
-  Timestamp,
-  orderBy,
 } from 'firebase/firestore';
-import { db } from '../../utils/firebase';
-import { useState, useEffect } from 'react';
-import styled from 'styled-components/macro';
+import { useEffect, useState } from 'react';
 import { GrSearch } from 'react-icons/gr';
-import StudyGroupCard from '../../components/StudyGroupCard';
+import styled from 'styled-components/macro';
 import { OutlineBtn } from '../../components/Buttons/Buttons';
-import webookRest from './webookRest.png';
 import GroupsLoading from '../../components/GroupsLoading';
+import StudyGroupCard from '../../components/StudyGroupCard';
+import { db } from '../../utils/firebase';
+import webookRest from './webookRest.png';
 
 function StudyGroups() {
   const [allGroupsData, setAllGroupsData] = useState([]);
@@ -81,7 +81,6 @@ function StudyGroups() {
     }
   };
 
-  // console.log(allGroupsData);
   const searchByText = async (e) => {
     e.preventDefault();
     const studyGroupRef = collection(db, 'studyGroups');

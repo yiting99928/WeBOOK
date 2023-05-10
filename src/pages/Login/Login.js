@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import styled from 'styled-components/macro';
-import { useNavigate } from 'react-router-dom';
 import {
   createUserWithEmailAndPassword,
   getAuth,
-  signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components/macro';
 
-import { db, auth } from '../../utils/firebase';
 import DecoBg from '../../components/DecoBg';
+import { auth, db } from '../../utils/firebase';
 import modal from '../../utils/modal';
 import LoginImg from './LoginImg';
 
@@ -58,7 +58,6 @@ function Login() {
         }).then(() => {
           modal.success('註冊成功');
         });
-        console.log(userCredential);
       })
       .catch((error) => {
         switch (error.code) {
@@ -97,11 +96,9 @@ function Login() {
     const auth = getAuth();
     sendPasswordResetEmail(auth, login.email)
       .then(() => {
-        // console.log('Password reset email sent');
         modal.success('重置密碼郵件已發送，請查收並按照提示操作');
       })
       .catch((error) => {
-        // console.log(error);
         modal.fail('發送重置密碼郵件失敗，請確保電子郵件正確無誤');
       });
   };

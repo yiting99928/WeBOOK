@@ -1,43 +1,43 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import styled from 'styled-components/macro';
-import SideMenu from '../../components/SideMenu';
-import { useEffect, useState, useRef, useReducer, useContext } from 'react';
-import { db } from '../../utils/firebase';
-import { AuthContext } from '../../context/authContext';
 import {
-  collection,
   addDoc,
-  query,
+  arrayUnion,
+  collection,
+  deleteDoc,
+  deleteField,
+  doc,
   onSnapshot,
   orderBy,
-  doc,
-  updateDoc,
+  query,
   setDoc,
-  deleteDoc,
-  arrayUnion,
-  deleteField,
+  updateDoc,
 } from 'firebase/firestore';
-import EditContent from '../../components/EditContent';
-import Lecture from '../../pages/Process/Lecture';
-import StickyNote from './LiveStickyNote';
-import Vote from './LiveVote';
-import QA from './LiveQA';
-import { v4 as uuidv4 } from 'uuid';
-import { IoIosArrowForward } from 'react-icons/io';
+import { produce } from 'immer';
+import { useContext, useEffect, useReducer, useRef, useState } from 'react';
 import {
+  BsBoxArrowInDownRight,
+  BsBoxArrowInUpLeft,
   BsCameraVideoFill,
   BsCameraVideoOffFill,
   BsChatLeftDotsFill,
   BsPeopleFill,
-  BsBoxArrowInDownRight,
-  BsBoxArrowInUpLeft,
 } from 'react-icons/bs';
-import { RiChatOffFill } from 'react-icons/ri';
+import { FaMicrophone, FaMicrophoneSlash, FaPhoneSlash } from 'react-icons/fa';
+import { IoIosArrowForward } from 'react-icons/io';
 import { MdFirstPage, MdLastPage } from 'react-icons/md';
-import { FaPhoneSlash, FaMicrophoneSlash, FaMicrophone } from 'react-icons/fa';
-import modal from '../../utils/modal';
+import { RiChatOffFill } from 'react-icons/ri';
+import { useNavigate, useParams } from 'react-router-dom';
+import styled from 'styled-components/macro';
+import { v4 as uuidv4 } from 'uuid';
+import EditContent from '../../components/EditContent';
 import GroupTitle from '../../components/GroupTitle/GroupTitle';
-import { produce } from 'immer';
+import SideMenu from '../../components/SideMenu';
+import { AuthContext } from '../../context/authContext';
+import Lecture from '../../pages/Process/Lecture';
+import { db } from '../../utils/firebase';
+import modal from '../../utils/modal';
+import QA from './LiveQA';
+import StickyNote from './LiveStickyNote';
+import Vote from './LiveVote';
 
 function reducer(processData, { type, payload = {} }) {
   const { processIndex, data, process } = payload;
@@ -68,7 +68,6 @@ function Live() {
   const [messages, setMessages] = useState([]);
   const [MessageInput, setMessageInput] = useState('');
   const messagesEndRef = useRef(null);
-  // const [seconds, setSeconds] = useState(0);
   const [isLive, setIsLive] = useState(false);
   const [studyGroup, setStudyGroup] = useState([]);
   const [note, setNote] = useState('');
@@ -88,9 +87,6 @@ function Live() {
   const [viewersNum, setViewersNum] = useState(0);
   const [isDisabled, setIsDisabled] = useState(true);
 
-  //--------------------//
-  //-----直播區開始-----//
-  //--------------------//
   function toggleMute() {
     const audioTracks = localStream.getAudioTracks();
     if (audioTracks.length === 0) {
@@ -130,7 +126,7 @@ function Live() {
         isVideoDisabled: false,
       });
     } catch (error) {
-      console.log('stream Error.', error);
+      console.error(error);
     }
   }
 
@@ -166,7 +162,6 @@ function Live() {
     ]);
 
     localStream.getTracks().forEach((track) => {
-      // console.log(track);
       peerConnection.addTrack(track, localStream);
     });
 
@@ -187,7 +182,6 @@ function Live() {
       }
     });
     peerConnection.addEventListener('icecandidate', (event) => {
-      // console.log(event);
       if (event.candidate) {
         const json = event.candidate.toJSON();
         addDoc(collection(db, 'rooms', id, 'host'), json);
@@ -232,10 +226,8 @@ function Live() {
     const peerConnection = new RTCPeerConnection(configuration);
 
     peerConnection.addEventListener('track', async (event) => {
-      console.log('Join remoteStream', event);
       const [remoteStream] = event.streams;
       remoteVideoRef.current.srcObject = remoteStream;
-      //開始播放刪除 offer & answer
       setTimeout(async () => {
         await deleteOfferAndAnswer();
       }, 500);
@@ -265,7 +257,6 @@ function Live() {
       },
     });
     peerConnection.addEventListener('icecandidate', (event) => {
-      console.log('icecandidate', event);
       if (event.candidate) {
         const json = event.candidate.toJSON();
         addDoc(collection(db, 'rooms', id, 'guest'), json);
@@ -313,10 +304,6 @@ function Live() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [peerConnections, id]);
-
-  //--------------------//
-  //-----直播區結束-----//
-  //--------------------//
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -417,7 +404,6 @@ function Live() {
         note: note,
       });
       setShowSaveInfo(true);
-      // console.log(`儲存 ${id} 筆記`);
       setTimeout(() => {
         setShowSaveInfo(false);
       }, 1000);
@@ -477,7 +463,6 @@ function Live() {
     const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
       const studyGroupData = snapshot.data();
       if (studyGroupData && studyGroupData.currentCard !== undefined) {
-        // console.log(studyGroupData.currentCard);
         setCurrentCard(studyGroupData.currentCard);
       }
     });
@@ -505,13 +490,11 @@ function Live() {
 
   function handleStop() {
     setIsLive(false);
-    // 關閉 Peer 連接
 
     if (peerConnections.length > 0) {
       peerConnections.forEach((pc) => pc.close());
       setPeerConnections([]);
 
-      // 移除媒體軌道
       if (localStream) {
         localStream.getTracks().forEach((track) => {
           track.stop();
@@ -519,7 +502,6 @@ function Live() {
         setLocalStream(null);
       }
 
-      // 移除遠程媒體軌道
       if (remoteVideoRef.current && remoteVideoRef.current.srcObject) {
         remoteVideoRef.current.srcObject.getTracks().forEach((track) => {
           track.stop();
@@ -527,7 +509,6 @@ function Live() {
         remoteVideoRef.current.srcObject = null;
       }
 
-      // 移除本地媒體軌道
       if (localVideoRef.current && localVideoRef.current.srcObject) {
         localVideoRef.current.srcObject.getTracks().forEach((track) => {
           track.stop();
@@ -595,7 +576,7 @@ function Live() {
               ) : (
                 processData.map((item, processIndex) => (
                   <Card
-                    activeCard={processIndex === currentCard} // 卡片index & 目前 currentCard 相同則 block
+                    activeCard={processIndex === currentCard}
                     key={processIndex}>
                     <Description>{item.description}</Description>
                     <CardContent>
@@ -775,7 +756,6 @@ const Broadcast = styled.div`
   right: 10px;
   bottom: 10px;
 `;
-//---直播---//
 const LiveInfo = styled.div`
   position: absolute;
   top: 10px;
@@ -838,7 +818,6 @@ const JoinInput = styled.input`
   border-radius: 6px;
 `;
 
-//---卡片--//
 const Cards = styled.div`
   display: ${({ isLive }) => (isLive ? 'block' : 'none')};
   height: 100%;
@@ -922,7 +901,6 @@ const Hangup = styled(MediaIcon)`
   }
 `;
 
-//---聊天室---//
 const SenderMessage = styled.div`
   background-color: #f1f1f1;
   padding: 5px 10px;
@@ -1001,7 +979,6 @@ const ChatTitle = styled.div`
   text-align: center;
   letter-spacing: 1.2;
 `;
-//---筆記---//
 const Note = styled.div`
   height: 350px;
   background-color: #fff;

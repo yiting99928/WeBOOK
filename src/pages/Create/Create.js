@@ -1,20 +1,20 @@
-import React, { useState, useContext } from 'react';
-import styled from 'styled-components/macro';
-import { storage, db } from '../../utils/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import {
-  collection,
-  addDoc,
-  doc,
-  setDoc,
-  serverTimestamp,
   Timestamp,
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc,
 } from 'firebase/firestore';
-import DecoBg from '../../components/DecoBg';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import React, { useContext, useState } from 'react';
 import { BiImageAdd } from 'react-icons/bi';
-import { AuthContext } from '../../context/authContext';
-import modal from '../../utils/modal';
+import styled from 'styled-components/macro';
 import { MainBtn } from '../../components/Buttons/Buttons';
+import DecoBg from '../../components/DecoBg';
+import { AuthContext } from '../../context/authContext';
+import { db, storage } from '../../utils/firebase';
+import modal from '../../utils/modal';
 
 function Create() {
   const { user } = useContext(AuthContext);
@@ -133,7 +133,6 @@ function Create() {
     });
     setPreviewUrl('');
   };
-  // console.log(createForm);
 
   const isStartTimeInvalid =
     createForm.startTime && new Date(createForm.startTime) <= new Date();

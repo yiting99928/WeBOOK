@@ -1,6 +1,6 @@
-import styled from 'styled-components/macro';
 import { produce } from 'immer';
 import { useContext } from 'react';
+import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
 
 function StickyNote({ item, dispatch, processIndex, editable }) {

@@ -1,5 +1,5 @@
-import load from './load.mp4';
 import styled, { keyframes } from 'styled-components/macro';
+import load from './load.mp4';
 
 function Loading() {
   return (

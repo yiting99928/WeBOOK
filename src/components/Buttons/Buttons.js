@@ -60,7 +60,6 @@ const HostEditInput = styled(OutlineBtnStyled)`
   display: ${({ isHost }) => (isHost ? 'inline-block' : 'none')};
 `;
 
-// export default Buttons;
 export { MainBtn };
 export { OutlineBtn };
 export { GuestEditInput };

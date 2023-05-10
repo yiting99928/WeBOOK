@@ -1,5 +1,5 @@
-import styled from 'styled-components/macro';
 import React, { useState } from 'react';
+import styled from 'styled-components/macro';
 
 function QA({ item }) {
   const [userAnswer, setUserAnswer] = useState(

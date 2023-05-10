@@ -1,8 +1,8 @@
-import { createContext, useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { db } from '../utils/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { createContext, useEffect, useState } from 'react';
 import Loading from '../components/Loading';
+import { db } from '../utils/firebase';
 export const AuthContext = createContext({});
 
 export const AuthContextProvider = ({ children }) => {
@@ -32,8 +32,6 @@ export const AuthContextProvider = ({ children }) => {
   if (isLoading) {
     return <Loading />;
   }
-  console.log(user);
-  console.log(isLoading);
   return (
     <AuthContext.Provider value={{ user, isLoading, setUser, setIsLoading }}>
       {children}

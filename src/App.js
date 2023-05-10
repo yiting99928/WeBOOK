@@ -1,23 +1,23 @@
-import { createGlobalStyle } from 'styled-components';
+import { useContext } from 'react';
 import {
   BrowserRouter,
-  Route,
-  Routes,
   Navigate,
   Outlet,
+  Route,
+  Routes,
 } from 'react-router-dom';
+import { createGlobalStyle } from 'styled-components';
+import Footer from './components/Footer';
+import Header from './components/Header/Header';
+import { AuthContext } from './context/authContext';
 import Create from './pages/Create/Create';
-import Profile from './pages/Profile/Profile';
-import Process from './pages/Process/Process';
 import Home from './pages/Home/Home';
 import Live from './pages/Live/Live';
 import Login from './pages/Login/Login';
-import StudyGroups from './pages/StudyGroups/StudyGroups';
+import Process from './pages/Process/Process';
+import Profile from './pages/Profile/Profile';
 import StudyGroup from './pages/StudyGroup/StudyGroup';
-import Header from './components/Header/Header';
-import Footer from './components/Footer';
-import { useContext } from 'react';
-import { AuthContext } from './context/authContext';
+import StudyGroups from './pages/StudyGroups/StudyGroups';
 
 const UserRouter = () => {
   const { user } = useContext(AuthContext);

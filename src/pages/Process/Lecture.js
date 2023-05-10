@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import styled from 'styled-components/macro';
-import 'react-quill/dist/quill.snow.css';
-import EditContent from '../../components/EditContent';
 import parse, { domToReact } from 'html-react-parser';
+import React, { useState } from 'react';
+import 'react-quill/dist/quill.snow.css';
+import styled from 'styled-components/macro';
+import EditContent from '../../components/EditContent';
 
 function Lecture({ item, processIndex = 0, editable = false, dispatch = {} }) {
   const [content, setContent] = useState(item.data);
@@ -12,7 +12,6 @@ function Lecture({ item, processIndex = 0, editable = false, dispatch = {} }) {
   };
 
   const saveContent = () => {
-    console.log(content);
     dispatch({
       type: 'UPDATE_DATA',
       payload: { processIndex, data: content },

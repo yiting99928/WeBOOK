@@ -1,5 +1,5 @@
-import styled from 'styled-components/macro';
 import moment from 'moment';
+import styled from 'styled-components/macro';
 
 function GroupTitle({ studyGroup }) {
   return (

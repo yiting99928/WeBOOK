@@ -1,5 +1,5 @@
-import styled from 'styled-components/macro';
 import { BsGithub, BsLinkedin } from 'react-icons/bs';
+import styled from 'styled-components/macro';
 
 export default function Footer() {
   return (
