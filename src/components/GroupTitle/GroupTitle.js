@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import styled from 'styled-components/macro';
 
 function GroupTitle({ studyGroup }) {
@@ -17,9 +17,9 @@ function GroupTitle({ studyGroup }) {
         <br />
         時間：
         {studyGroup && studyGroup.startTime && studyGroup.endTime ? (
-          `${moment
+          `${dayjs
             .unix(studyGroup.startTime.seconds)
-            .format('MM.DD HH:mm')} — ${moment
+            .format('MM.DD HH:mm')} — ${dayjs
             .unix(studyGroup.endTime.seconds)
             .format('MM.DD HH:mm')}`
         ) : (

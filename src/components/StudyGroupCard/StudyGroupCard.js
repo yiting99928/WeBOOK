@@ -1,7 +1,7 @@
-import styled from 'styled-components/macro';
-import moment from 'moment';
-import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 import { BiTimeFive } from 'react-icons/bi';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components/macro';
 
 function StudyGroupCard({ item }) {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ function StudyGroupCard({ item }) {
           導讀人：{item.host}
           <div>
             <BiTimeFive />
-            {moment.unix(item.startTime.seconds).format('MM.DD HH:mm')}
+            {dayjs.unix(item.startTime.seconds).format('MM.DD HH.mm')}
           </div>
         </Creator>
       </BookGroupInfo>

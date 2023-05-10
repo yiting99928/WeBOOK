@@ -1,5 +1,5 @@
+import dayjs from 'dayjs';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import moment from 'moment';
 import { useContext, useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components/macro';
 import { MainBtn } from '../../components/Buttons/Buttons';
@@ -99,9 +99,9 @@ function StudyGroup() {
                 章節：{studyGroup.chapter}
                 <br />
                 時間：
-                {`${moment
+                {`${dayjs
                   .unix(studyGroup.startTime.seconds)
-                  .format('MM.DD HH:mm')} — ${moment
+                  .format('MM.DD HH:mm')} — ${dayjs
                   .unix(studyGroup.endTime.seconds)
                   .format('MM.DD HH:mm')}`}
               </Creator>

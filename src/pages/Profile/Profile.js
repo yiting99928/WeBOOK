@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {
   collection,
   deleteDoc,
@@ -9,7 +10,6 @@ import {
   where,
 } from 'firebase/firestore';
 import parse, { domToReact } from 'html-react-parser';
-import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components/macro';
@@ -235,8 +235,8 @@ const Profile = () => {
           </NoData>
         ) : (
           groupData.map((item, index) => {
-            const currentTime = moment().unix();
-            const threeDaysLater = moment().add(3, 'days').unix();
+            const currentTime = dayjs().unix();
+            const threeDaysLater = dayjs().add(3, 'days').unix();
             const startTime = item.startTime.seconds;
             const isUpcoming =
               startTime >= currentTime &&
@@ -261,11 +261,11 @@ const Profile = () => {
                       章節：{item.chapter}
                       <br />
                       時間：
-                      {moment
+                      {`${dayjs
                         .unix(item.startTime.seconds)
-                        .format('MM.DD HH:mm')}{' '}
-                      —{' '}
-                      {moment.unix(item.endTime.seconds).format('MM.DD HH:mm')}
+                        .format('MM.DD HH:mm')} — ${dayjs
+                        .unix(item.endTime.seconds)
+                        .format('MM.DD HH:mm')}`}
                     </Creator>
                     {<ProfileGroupCard index={index} item={item} />}
                   </CardContent>
