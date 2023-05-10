@@ -571,24 +571,18 @@ function Live() {
               />
             </LiveInputs>
             <Cards isLive={isLive}>
-              {!processData ? (
-                <></>
-              ) : (
-                processData.map((item, processIndex) => (
-                  <Card
-                    activeCard={processIndex === currentCard}
-                    key={processIndex}>
-                    <Description>{item.description}</Description>
-                    <CardContent>
-                      {renderCardContent(item, processIndex)}
-                    </CardContent>
-                  </Card>
-                ))
-              )}
+              {processData?.map((item, processIndex) => (
+                <Card
+                  activeCard={processIndex === currentCard}
+                  key={processIndex}>
+                  <Description>{item.description}</Description>
+                  <CardContent>
+                    {renderCardContent(item, processIndex)}
+                  </CardContent>
+                </Card>
+              ))}
             </Cards>
-            {!processData || !isLive ? (
-              <></>
-            ) : (
+            {processData && isLive && (
               <ProcessInputs>
                 <HostInput isHost={studyGroup.createBy === user.email}>
                   <MediaIcon>

@@ -20,21 +20,17 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
 
   return (
     <div>
-      {item.data === undefined ? (
-        <></>
-      ) : (
-        item.data.map((item, index = 0) => (
-          <Note key={index}>
-            <Message
-              readOnly={editable !== processIndex}
-              type="text"
-              value={item.message}
-              onChange={(e) => handleOptionChange(index, e, 'message')}
-            />
-            <Name>{user.name}</Name>
-          </Note>
-        ))
-      )}
+      {item.data?.map((item, index = 0) => (
+        <Note key={index}>
+          <Message
+            readOnly={editable !== processIndex}
+            type="text"
+            value={item.message}
+            onChange={(e) => handleOptionChange(index, e, 'message')}
+          />
+          <Name>{user.name}</Name>
+        </Note>
+      ))}
     </div>
   );
 }

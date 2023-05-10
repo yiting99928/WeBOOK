@@ -13,6 +13,7 @@ import { RiLiveLine } from 'react-icons/ri';
 import { VscSave } from 'react-icons/vsc';
 import styled, { keyframes } from 'styled-components/macro';
 import DecoBg from '../../components/DecoBg';
+import GroupsLoading from '../../components/GroupsLoading';
 import StudyGroupCard from '../../components/StudyGroupCard';
 import { AuthContext } from '../../context/authContext';
 import { db } from '../../utils/firebase';
@@ -185,7 +186,12 @@ function Home() {
         <RecommendedTitle>最新成立的讀書會</RecommendedTitle>
         <BookGroupWrap>
           {allGroupsData.length === 0 ? (
-            <></>
+            <>
+              <GroupsLoading />
+              <GroupsLoading />
+              <GroupsLoading />
+              <GroupsLoading />
+            </>
           ) : (
             allGroupsData.map((item, index) => (
               <StudyGroupCard

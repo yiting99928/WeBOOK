@@ -68,23 +68,19 @@ function StickyNote({ item, dispatch, processIndex, id }) {
         <BiMessageAdd onClick={handleAddOption} />
       </Add>
       <NoteContainer>
-        {item.data === undefined ? (
-          <></>
-        ) : (
-          item.data.map((item, index = 0) => (
-            <Note key={index} noteColor={noteColor[index % noteColor.length]}>
-              <Icons>
-                <MdClose onClick={() => handleDelOption(index)} />
-              </Icons>
-              <Message
-                type="text"
-                value={item.message}
-                onChange={(e) => handleOptionChange(index, e, 'message')}
-              />
-              <Name>{item.name}</Name>
-            </Note>
-          ))
-        )}
+        {item.data?.map((item, index = 0) => (
+          <Note key={index} noteColor={noteColor[index % noteColor.length]}>
+            <Icons>
+              <MdClose onClick={() => handleDelOption(index)} />
+            </Icons>
+            <Message
+              type="text"
+              value={item.message}
+              onChange={(e) => handleOptionChange(index, e, 'message')}
+            />
+            <Name>{item.name}</Name>
+          </Note>
+        ))}
       </NoteContainer>
     </>
   );
