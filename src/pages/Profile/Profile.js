@@ -25,6 +25,7 @@ import { db } from '../../utils/firebase';
 import { formatTimeRange } from '../../utils/formatTime';
 import modal from '../../utils/modal';
 import webookLogo from './webookLogo.png';
+import { statusText } from '../../utils/dataConstants';
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
@@ -60,13 +61,6 @@ const Profile = () => {
     setTimeout(() => setIsLoading(false), 500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupData]);
-
-  const statusText = {
-    ongoing: { type: '進行中', color: '#DF524D' },
-    preparing: { type: '準備中', color: '#F89D7D' },
-    finished: { type: '已結束', color: '#FAC6B8' },
-    upcoming: { type: '即將舉辦', color: '#DF524D' },
-  };
 
   async function handleQuitGroup(id) {
     const usersDocRef = doc(db, 'users', user.email);
@@ -267,9 +261,7 @@ const Profile = () => {
                     {<ProfileGroupCard index={index} item={item} />}
                   </CardContent>
                   <Tag>
-                    <Status
-                      statusColor={statusText[item.status].color}
-                      onClick={() => navigate(`/profile/${item.status}`)}>
+                    <Status statusColor={statusText[item.status].color}>
                       {statusText[item.status].type}
                     </Status>
                     {isUpcoming && (
@@ -383,7 +375,7 @@ const Status = styled.div`
   border-radius: 6px;
   padding: 5px 0px;
   width: 95px;
-  cursor: pointer;
+  cursor: default;
   letter-spacing: 1.3;
 `;
 

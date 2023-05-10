@@ -13,6 +13,7 @@ import styled from 'styled-components/macro';
 import { MainBtn } from '../../components/Buttons/Buttons';
 import DecoBg from '../../components/DecoBg';
 import { AuthContext } from '../../context/authContext';
+import { categoryOptions } from '../../utils/dataConstants';
 import { db, storage } from '../../utils/firebase';
 import modal from '../../utils/modal';
 
@@ -219,19 +220,9 @@ function Create() {
                 value={createForm.category}
                 onChange={handleInputChange}>
                 <option>請選擇書籍類別</option>
-                <option>文學小說</option>
-                <option>商業理財</option>
-                <option>藝術設計</option>
-                <option>醫療保健</option>
-                <option>言情小說</option>
-                <option>社會科學</option>
-                <option>生活風格</option>
-                <option>勵志成長</option>
-                <option>旅遊觀光</option>
-                <option>自然科普</option>
-                <option>宗教</option>
-                <option>漫畫</option>
-                <option>科技</option>
+                {categoryOptions.map((category) => (
+                  <option>{category}</option>
+                ))}
               </CategoryInput>
             </FormInputs>
             <FormInputs>

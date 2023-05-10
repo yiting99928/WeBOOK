@@ -12,6 +12,7 @@ import styled from 'styled-components/macro';
 import { OutlineBtn } from '../../components/Buttons/Buttons';
 import GroupsLoading from '../../components/GroupsLoading';
 import StudyGroupCard from '../../components/StudyGroupCard';
+import { categoryOptions } from '../../utils/dataConstants';
 import { db } from '../../utils/firebase';
 import webookRest from './webookRest.png';
 
@@ -149,22 +150,7 @@ function StudyGroups() {
       setAllGroupsData(filteredGroups);
     });
   }
-  const categories = [
-    '全部讀書會',
-    '文學小說',
-    '商業理財',
-    '藝術設計',
-    '醫療保健',
-    '言情小說',
-    '社會科學',
-    '生活風格',
-    '勵志成長',
-    '自然科普',
-    '旅遊觀光',
-    '宗教',
-    '漫畫',
-    '科技',
-  ];
+
   return (
     <div>
       <Container>
@@ -192,7 +178,7 @@ function StudyGroups() {
           <SearchBar>
             <SearchBtnTitle>類別</SearchBtnTitle>
             <SearchBtns>
-              {categories.map((category) => (
+              {categoryOptions.map((category) => (
                 <OutlineBtn
                   key={category}
                   onClick={() => handleSearchByCategory(category)}

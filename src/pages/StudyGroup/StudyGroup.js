@@ -7,6 +7,7 @@ import { AuthContext } from '../../context/authContext';
 import { db } from '../../utils/firebase';
 import { formatTimeRange } from '../../utils/formatTime';
 import modal from '../../utils/modal';
+import { statusText } from '../../utils/dataConstants';
 
 function StudyGroup() {
   const { user } = useContext(AuthContext);
@@ -52,12 +53,6 @@ function StudyGroup() {
     }
   };
 
-  const statusText = {
-    ongoing: { type: '進行中', color: '#DF524D' },
-    preparing: { type: '準備中', color: '#F89D7D' },
-    finished: { type: '已結束', color: '#FAC6B8' },
-    upcoming: { type: '即將舉辦', color: '#DF524D' },
-  };
   return (
     <div>
       {isLoading ? (
@@ -174,6 +169,7 @@ const Status = styled.div`
   width: 95px;
   letter-spacing: 1.3;
   margin-top: auto;
+  cursor: default;
 `;
 const Title = styled.div`
   font-weight: 600;
