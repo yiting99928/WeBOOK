@@ -6,7 +6,7 @@ import { BiTimeFive } from 'react-icons/bi';
 function StudyGroupCard({ item }) {
   const navigate = useNavigate();
   return (
-    <BookGroup onClick={() => navigate(`/studyGroup/${item.id}`)}>
+    <BookGroup onClick={() => navigate(`/study-group/${item.id}`)}>
       <ImgContainer>
         {item.status === 'ongoing' ? (
           <LiveTag>

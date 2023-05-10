@@ -36,13 +36,13 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/studyGroups" element={<StudyGroups />} />
-        <Route path="/studyGroup/:id" element={<StudyGroup />} />
+        <Route path="/study-groups" element={<StudyGroups />} />
+        <Route path="/study-group/:id" element={<StudyGroup />} />
 
         <Route element={<UserRouter />}>
           <Route path="/profile/:status?" element={<Profile />} />
-          <Route path="/studyGroup/:id/process" element={<Process />} />
-          <Route path="/studyGroup/:id/live" element={<Live />} />
+          <Route path="/study-group/:id/process" element={<Process />} />
+          <Route path="/study-group/:id/live" element={<Live />} />
           <Route path="/create" element={<Create />} />
         </Route>
       </Routes>

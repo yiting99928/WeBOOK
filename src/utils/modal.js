@@ -23,7 +23,7 @@ const modal = {
       scrollbarPadding: false,
     }).then((result) => {
       if (result.isConfirmed && id) {
-        window.location = `/studyGroup/${id}/process`;
+        window.location = `/study-group/${id}/process`;
       }
     });
   },

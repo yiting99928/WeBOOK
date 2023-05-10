@@ -18,7 +18,7 @@ function Header() {
             <Logo />
           </Link>
           <Menu>
-            <Link to="/studyGroups">所有讀書會</Link>
+            <Link to="study-groups">所有讀書會</Link>
             <Link to={user ? '/create' : '/login'}>建立讀書會</Link>
             <Link to={user ? '/profile' : '/login'}>會員</Link>
           </Menu>
@@ -36,7 +36,7 @@ function Header() {
             <Link to={user ? '/create' : '/login'}>建立讀書會</Link>
           </p>
           <p>
-            <Link to={`/studyGroups`}>所有讀書會</Link>
+            <Link to={`/study-groups`}>所有讀書會</Link>
           </p>
           <p>
             <Link to={user ? '/profile' : '/login'}>會員</Link>

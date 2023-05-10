@@ -33,7 +33,7 @@ function Login() {
     try {
       await signInWithEmailAndPassword(auth, login.email, login.password);
       modal.success('登入成功');
-      navigate('/studyGroups');
+      navigate('/study-groups');
     } catch (error) {
       modal.fail('錯誤的帳號或密碼');
     }

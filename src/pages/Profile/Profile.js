@@ -151,7 +151,7 @@ const Profile = () => {
             </HostEditInput>
             <HostEditInput
               isHost={user.email === item.createBy}
-              onClick={() => navigate(`/studyGroup/${item.id}/process`)}>
+              onClick={() => navigate(`/study-group/${item.id}/process`)}>
               編輯流程
             </HostEditInput>
             <HostEditInput
@@ -164,7 +164,7 @@ const Profile = () => {
       case 'ongoing':
         return (
           <Buttons>
-            <Link to={`/studyGroup/${item.id}/live`}>
+            <Link to={`/study-group/${item.id}/live`}>
               <OutlineBtn>進入直播間</OutlineBtn>
             </Link>
           </Buttons>
@@ -249,7 +249,7 @@ const Profile = () => {
                     <BookGroupImg
                       src={item.image}
                       alt="feature"
-                      onClick={() => navigate(`/studyGroup/${item.id}`)}
+                      onClick={() => navigate(`/study-group/${item.id}`)}
                     />
                   </ImgContainer>
                   <CardContent>

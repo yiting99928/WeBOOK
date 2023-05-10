@@ -44,7 +44,7 @@ function StudyGroup() {
         modal.success('已加入讀書會!')
       );
       if (studyGroup.status === 'ongoing') {
-        navigate(`/studyGroup/${id}/live`);
+        navigate(`/study-group/${id}/live`);
       } else {
         navigate(`/profile`);
       }
