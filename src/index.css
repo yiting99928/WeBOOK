@@ -150,13 +150,11 @@ input {
     background: none;
 }
 
-input[type=button] {
-    /* cursor: pointer; */
-}
-
 button {
     border: 0;
+    padding: 0;
     background: none;
+
 }
 
 textarea {

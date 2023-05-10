@@ -17,12 +17,36 @@ const OutlineBtn = ({ children, onClick, isHost, selectedCategory }) => {
     </OutlineBtnStyled>
   );
 };
+const StartBtn = ({ children, isHost, disabled, onClick }) => {
+  return (
+    <OpenInput isHost={isHost} onClick={onClick} disabled={disabled}>
+      {children}
+    </OpenInput>
+  );
+};
+const LiveMainBtn = ({ children, onClick }) => {
+  return <LiveInput onClick={onClick}>{children}</LiveInput>;
+};
 
-const MainBtnStyled = styled.div`
+const LiveInput = styled.button`
+  background-color: #ffac4c;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  color: #fff;
+  cursor: 'pointer';
+  padding: 8px 15px;
+  margin-top: 10px;
+  border-radius: 6px;
+  :hover {
+    background-color: rgb(223, 82, 77);
+  }
+`;
+const OpenInput = styled(LiveInput)`
+  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
+  background-color: ${({ disabled }) => (disabled ? '#b5b5b5' : '#ffac4c')};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+`;
+const MainBtnStyled = styled.button`
+  cursor: pointer;
   height: ${({ height }) => height};
   background-color: #ffac4c;
   border-radius: 10px;
@@ -35,11 +59,8 @@ const MainBtnStyled = styled.div`
     background-color: rgb(223, 82, 77);
   }
 `;
-const OutlineBtnStyled = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 5px 8px 4px 8px;
+const OutlineBtnStyled = styled.button`
+  padding: 3px 8px;
   border: 2px solid #ffac4c;
   border-radius: 5px;
   background-color: ${({ selectedCategory }) =>
@@ -60,7 +81,11 @@ const HostEditInput = styled(OutlineBtnStyled)`
   display: ${({ isHost }) => (isHost ? 'inline-block' : 'none')};
 `;
 
-export { MainBtn };
-export { OutlineBtn };
-export { GuestEditInput };
-export { HostEditInput };
+export {
+  MainBtn,
+  OutlineBtn,
+  LiveMainBtn,
+  StartBtn,
+  GuestEditInput,
+  HostEditInput,
+};

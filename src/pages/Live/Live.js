@@ -28,6 +28,7 @@ import { RiChatOffFill } from 'react-icons/ri';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { v4 as uuidv4 } from 'uuid';
+import { LiveMainBtn, StartBtn } from '../../components/Buttons/Buttons';
 import EditContent from '../../components/EditContent';
 import GroupTitle from '../../components/GroupTitle/GroupTitle';
 import SideMenu from '../../components/SideMenu';
@@ -549,26 +550,23 @@ function Live() {
               </LiveNum>
             </LiveInfo>
             <LiveInputs isLive={isLive}>
-              <StartInput
+              <StartBtn
                 isHost={studyGroup.createBy === user.email}
-                type="button"
-                value="開啟鏡頭"
-                onClick={openUserMedia}
-              />
-              <StartInput
+                onClick={openUserMedia}>
+                開啟鏡頭
+              </StartBtn>
+              <StartBtn
                 isHost={studyGroup.createBy === user.email}
-                type="button"
-                value="開始直播"
                 disabled={videoState.isMuted && videoState.isVideoDisabled}
-                onClick={handleStart}
-              />
-              <JoinInput
-                isHost={studyGroup.createBy === user.email}
-                type="button"
-                value="加入直播"
+                onClick={handleStart}>
+                開始直播
+              </StartBtn>
+              <StartBtn
+                isHost={studyGroup.createBy !== user.email}
                 disabled={isDisabled}
-                onClick={handleJoin}
-              />
+                onClick={handleJoin}>
+                加入直播
+              </StartBtn>
             </LiveInputs>
             <Cards isLive={isLive}>
               {processData?.map((item, processIndex) => (
@@ -585,60 +583,68 @@ function Live() {
             {processData && isLive && (
               <ProcessInputs>
                 <HostInput isHost={studyGroup.createBy === user.email}>
-                  <MediaIcon>
-                    <MdFirstPage
-                      onClick={() =>
-                        setCurrentCard((prev) => {
-                          const newCard = prev > 0 ? prev - 1 : prev;
-                          updateCurrentCardInFirebase(newCard);
-                          return newCard;
-                        })
-                      }
-                    />
-                  </MediaIcon>
-                  <MediaIcon>
-                    <MdLastPage
-                      onClick={() => {
-                        setCurrentCard((prev) => {
-                          const newCard =
-                            prev < processData.length - 1 ? prev + 1 : prev;
-                          updateCurrentCardInFirebase(newCard);
-                          return newCard;
-                        });
-                      }}
-                    />
-                  </MediaIcon>
-                  <MutedIcon isMuted={videoState.isMuted}>
+                  <MediaButton
+                    onClick={() => {
+                      setCurrentCard((prev) => {
+                        const newCard = prev > 0 ? prev - 1 : prev;
+                        updateCurrentCardInFirebase(newCard);
+                        return newCard;
+                      });
+                    }}>
+                    <MdFirstPage />
+                  </MediaButton>
+                  <MediaButton
+                    onClick={() => {
+                      setCurrentCard((prev) => {
+                        const newCard =
+                          prev < processData.length - 1 ? prev + 1 : prev;
+                        updateCurrentCardInFirebase(newCard);
+                        return newCard;
+                      });
+                    }}>
+                    <MdLastPage />
+                  </MediaButton>
+                  <MediaButton
+                    isActive={videoState.isMuted}
+                    activeColor="#e95f5c"
+                    onClick={toggleMute}>
                     {videoState.isMuted ? (
-                      <FaMicrophoneSlash onClick={toggleMute} />
+                      <FaMicrophoneSlash />
                     ) : (
-                      <FaMicrophone onClick={toggleMute} />
+                      <FaMicrophone />
                     )}
-                  </MutedIcon>
-                  <VideoDisabled isVideoDisabled={videoState.isVideoDisabled}>
+                  </MediaButton>
+                  <MediaButton
+                    isActive={videoState.isVideoDisabled}
+                    activeColor="#e95f5c"
+                    onClick={toggleVideo}>
                     {videoState.isVideoDisabled ? (
-                      <BsCameraVideoOffFill onClick={toggleVideo} />
+                      <BsCameraVideoOffFill />
                     ) : (
-                      <BsCameraVideoFill onClick={toggleVideo} />
+                      <BsCameraVideoFill />
                     )}
-                  </VideoDisabled>
+                  </MediaButton>
                 </HostInput>
-                <LocalDisable showLocalVideo={showLocalVideo}>
+                <MediaButton
+                  isActive={!showLocalVideo}
+                  activeColor="#e95f5c"
+                  onClick={handleVideoToggle}>
                   {showLocalVideo ? (
-                    <BsBoxArrowInDownRight onClick={handleVideoToggle} />
+                    <BsBoxArrowInDownRight />
                   ) : (
-                    <BsBoxArrowInUpLeft onClick={handleVideoToggle} />
+                    <BsBoxArrowInUpLeft />
                   )}
-                </LocalDisable>
-                <ChatDisable showChatRoom={showChatRoom}>
-                  {showChatRoom ? (
-                    <BsChatLeftDotsFill onClick={handleChatRoom} />
-                  ) : (
-                    <RiChatOffFill onClick={handleChatRoom} />
-                  )}
-                </ChatDisable>
-                <Hangup isHost={studyGroup.createBy === user.email}>
-                  <FaPhoneSlash onClick={handleStop} />
+                </MediaButton>
+                <MediaButton
+                  isActive={!showChatRoom}
+                  activeColor="#e95f5c"
+                  onClick={handleChatRoom}>
+                  {showChatRoom ? <BsChatLeftDotsFill /> : <RiChatOffFill />}
+                </MediaButton>
+                <Hangup
+                  isHost={studyGroup.createBy === user.email}
+                  onClick={handleStop}>
+                  <FaPhoneSlash />
                 </Hangup>
               </ProcessInputs>
             )}
@@ -703,7 +709,7 @@ function Live() {
         </LiveContainer>
         <Note>
           <EditContent onChange={setNote} value={note} />
-          <Button onClick={handleSaveNote}>儲存筆記</Button>
+          <LiveMainBtn onClick={handleSaveNote}>儲存筆記</LiveMainBtn>
           <SaveInfo showSaveInfo={showSaveInfo}>已儲存筆記</SaveInfo>
         </Note>
       </Container>
@@ -734,7 +740,6 @@ const LocalVideo = styled.video`
 const RemoteVideo = styled.video`
   display: ${({ isHost }) => (isHost ? 'none' : 'block')};
   width: ${({ show }) => (show ? '200px' : '100px')};
-  width: 200px;
   border-radius: 6px;
 `;
 
@@ -793,24 +798,6 @@ const LiveInputs = styled.div`
   transform: translate(-50%, -50%);
   gap: 10px;
 `;
-const StartInput = styled.input`
-  display: ${({ isHost }) => (isHost ? 'block' : 'none')};
-  background-color: ${({ disabled }) => (disabled ? '#b5b5b5' : '#ffac4c')};
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  color: #fff;
-  padding: 8px 15px;
-  margin-top: 10px;
-  border-radius: 6px;
-`;
-const JoinInput = styled.input`
-  display: ${({ isHost }) => (isHost ? 'none' : 'block')};
-  background-color: ${({ disabled }) => (disabled ? '#b5b5b5' : '#ffac4c')};
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  color: #fff;
-  padding: 8px 15px;
-  margin-top: 10px;
-  border-radius: 6px;
-`;
 
 const Cards = styled.div`
   display: ${({ isLive }) => (isLive ? 'block' : 'none')};
@@ -847,10 +834,18 @@ const ProcessInputs = styled.div`
     color: #5b5b5b;
   }
 `;
-const MediaIcon = styled.div`
+
+const MediaButton = styled.button`
   padding: 10px;
   border-radius: 25px;
-  background-color: #f1f1f1;
+  background-color: ${({ isActive, activeColor }) =>
+    isActive ? activeColor : '#f1f1f1'};
+  border: none;
+  cursor: pointer;
+  outline: none;
+  svg {
+    color: ${({ isActive }) => (isActive ? '#fff' : '#5b5b5b')};
+  }
   :hover {
     background-color: #e95f5c;
     svg {
@@ -859,35 +854,8 @@ const MediaIcon = styled.div`
     }
   }
 `;
-const MutedIcon = styled(MediaIcon)`
-  background-color: ${({ isMuted }) => (isMuted ? '#e95f5c' : '#f1f1f1')};
-  svg {
-    color: ${({ isMuted }) => (isMuted ? '#fff' : '#5b5b5b')};
-  }
-`;
-const VideoDisabled = styled(MediaIcon)`
-  background-color: ${({ isVideoDisabled }) =>
-    isVideoDisabled ? '#e95f5c' : '#f1f1f1'};
-  svg {
-    color: ${({ isVideoDisabled }) => (isVideoDisabled ? '#fff' : '#5b5b5b')};
-  }
-`;
-const ChatDisable = styled(MediaIcon)`
-  background-color: ${({ showChatRoom }) =>
-    showChatRoom ? '#f1f1f1' : '#e95f5c'};
-  svg {
-    color: ${({ showChatRoom }) => (showChatRoom ? '#5b5b5b' : '#fff')};
-  }
-`;
-const LocalDisable = styled(MediaIcon)`
-  background-color: ${({ showLocalVideo }) =>
-    showLocalVideo ? '#f1f1f1' : '#e95f5c'};
-  svg {
-    color: ${({ showLocalVideo }) => (showLocalVideo ? '#5b5b5b' : '#fff')};
-  }
-`;
 
-const Hangup = styled(MediaIcon)`
+const Hangup = styled(MediaButton)`
   display: ${({ isHost }) => (isHost ? 'block' : 'none')};
   background-color: #e95f5c;
   svg {
@@ -976,13 +944,5 @@ const ChatTitle = styled.div`
 const Note = styled.div`
   height: 350px;
   background-color: #fff;
-`;
-const Button = styled.button`
-  background-color: #ffac4c;
-  color: #fff;
-  padding: 8px 15px;
-  margin-top: 10px;
-  border-radius: 6px;
-  cursor: pointer;
 `;
 export default Live;
