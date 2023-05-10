@@ -1,7 +1,8 @@
-import dayjs from 'dayjs';
 import styled from 'styled-components/macro';
+import { formatTimeRange } from '../../utils/formatTime';
 
 function GroupTitle({ studyGroup }) {
+
   return (
     <TitleContainer>
       <TitleName>
@@ -15,16 +16,7 @@ function GroupTitle({ studyGroup }) {
         <br />
         章節：{studyGroup.chapter}
         <br />
-        時間：
-        {studyGroup && studyGroup.startTime && studyGroup.endTime ? (
-          `${dayjs
-            .unix(studyGroup.startTime.seconds)
-            .format('MM.DD HH:mm')} — ${dayjs
-            .unix(studyGroup.endTime.seconds)
-            .format('MM.DD HH:mm')}`
-        ) : (
-          <div>loading</div>
-        )}
+        時間： {formatTimeRange(studyGroup.startTime, studyGroup.endTime)}
       </div>
     </TitleContainer>
   );

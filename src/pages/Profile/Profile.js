@@ -22,6 +22,7 @@ import SideMenu from '../../components/SideMenu';
 import { AuthContext } from '../../context/authContext';
 import data from '../../utils/api';
 import { db } from '../../utils/firebase';
+import { formatTimeRange } from '../../utils/formatTime';
 import modal from '../../utils/modal';
 import webookLogo from './webookLogo.png';
 
@@ -261,11 +262,7 @@ const Profile = () => {
                       章節：{item.chapter}
                       <br />
                       時間：
-                      {`${dayjs
-                        .unix(item.startTime.seconds)
-                        .format('MM.DD HH:mm')} — ${dayjs
-                        .unix(item.endTime.seconds)
-                        .format('MM.DD HH:mm')}`}
+                      {formatTimeRange(item.startTime, item.endTime)}
                     </Creator>
                     {<ProfileGroupCard index={index} item={item} />}
                   </CardContent>

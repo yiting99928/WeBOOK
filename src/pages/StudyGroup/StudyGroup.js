@@ -1,13 +1,12 @@
-import dayjs from 'dayjs';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components/macro';
 import { MainBtn } from '../../components/Buttons/Buttons';
 import { AuthContext } from '../../context/authContext';
 import { db } from '../../utils/firebase';
+import { formatTimeRange } from '../../utils/formatTime';
 import modal from '../../utils/modal';
-
-import { useNavigate, useParams } from 'react-router-dom';
 
 function StudyGroup() {
   const { user } = useContext(AuthContext);
@@ -99,11 +98,7 @@ function StudyGroup() {
                 章節：{studyGroup.chapter}
                 <br />
                 時間：
-                {`${dayjs
-                  .unix(studyGroup.startTime.seconds)
-                  .format('MM.DD HH:mm')} — ${dayjs
-                  .unix(studyGroup.endTime.seconds)
-                  .format('MM.DD HH:mm')}`}
+                {formatTimeRange(studyGroup.startTime, studyGroup.endTime)}
               </Creator>
               <MainBtn
                 onClick={() => {
