@@ -10,9 +10,8 @@ import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
 import modal from '../../utils/modal';
 import Lecture from './Lecture';
-import QA from './QA';
+import OptionList from './OptionList';
 import StickyNote from './StickyNote';
-import Vote from './Vote';
 import move from './move.png';
 
 function reducer(processData, { type, payload = {} }) {
@@ -27,7 +26,7 @@ function reducer(processData, { type, payload = {} }) {
         return process;
       }
       case 'ADD_CARD': {
-        draft.push(lecture);
+        draft.splice(processIndex + 1, 0, lecture);
         break;
       }
       case 'CHANGE_CARD': {
@@ -120,18 +119,10 @@ function Process() {
             dispatch={dispatch}
           />
         );
+      case 'vote':
       case 'QA':
         return (
-          <QA
-            item={item}
-            processIndex={processIndex}
-            editable={editable}
-            dispatch={dispatch}
-          />
-        );
-      case 'vote':
-        return (
-          <Vote
+          <OptionList
             item={item}
             processIndex={processIndex}
             editable={editable}
@@ -173,7 +164,21 @@ function Process() {
     setEditable(processIndex);
   };
 
+  function areAllQAsValid(processData) {
+    return processData.every((item) => {
+      if (item.type === 'QA') {
+        return item.data.some((option) => option.answer);
+      }
+      return true;
+    });
+  }
+
   function handelSave(processData) {
+    if (!areAllQAsValid(processData)) {
+      modal.quit('請確認每個QA問答都有選擇正確答案！');
+      return;
+    }
+
     setDoc(doc(db, 'studyGroups', id), { ...studyGroup, process: processData })
       .then(() => {
         modal.success('已儲存讀書會流程!');
@@ -211,6 +216,7 @@ function Process() {
                   onDrop={(e) => handleDrop(e, processIndex)}>
                   <img src={move} alt="move" />
                 </Drag>
+                <></>
                 <Title>
                   <Description
                     readOnly={editable !== processIndex}
@@ -246,7 +252,7 @@ function Process() {
                       );
                       dispatch({
                         type: 'ADD_CARD',
-                        payload: { lecture },
+                        payload: { lecture, processIndex },
                       });
                     }}
                   />

@@ -17,7 +17,6 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
       payload: { processIndex, data: updatedData },
     });
   };
-
   return (
     <div>
       {item.data?.map((item, index = 0) => (
@@ -27,6 +26,7 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
             type="text"
             value={item.message}
             onChange={(e) => handleOptionChange(index, e, 'message')}
+            maxLength={70}
           />
           <Name>{user.name}</Name>
         </Note>
