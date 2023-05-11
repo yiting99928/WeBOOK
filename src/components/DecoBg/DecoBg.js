@@ -1,51 +1,94 @@
-import styled, { keyframes } from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components';
 
 function DecoBg() {
+  const animations = {
+    move1: keyframes`
+      from {
+        transform: translate(0, 0);
+      }
+      to {
+        transform: translate(75%, 0%);
+      }
+    `,
+    move2: keyframes`
+      from {
+        transform: translate(0, 0);
+      }
+      to {
+        transform: translate(100%, 20%);
+      }
+    `,
+    move3: keyframes`
+      from {
+        transform: translate(0, 0);
+      }
+      to {
+        transform: translate(80%, 0%);
+      }
+    `,
+    move4: keyframes`
+      from {
+        transform: translate(0, 0);
+      }
+      to {
+        transform: translate(-100%, 0%);
+      }
+    `,
+  };
+
   return (
     <Decos>
-      <Deco />
-      <Deco2 />
-      <Deco3 />
-      <Deco4 />
+      <Deco
+        {...{
+          animations,
+          name: 'move1',
+          color: '239, 140, 138',
+          blur: '100px',
+          top: '-20%',
+          left: '-10%',
+          width: '40%',
+          height: '90%',
+        }}
+      />
+      <Deco
+        {...{
+          animations,
+          name: 'move2',
+          color: '231, 93, 16',
+          blur: '100px',
+          top: '20%',
+          left: '30%',
+          width: '25%',
+          height: '60%',
+        }}
+      />
+      <Deco
+        {...{
+          animations,
+          name: 'move3',
+          color: '96, 160, 255',
+          blur: '40px',
+          bottom: '0px',
+          right: '20%',
+          width: '20%',
+          height: '45%',
+        }}
+      />
+      <Deco
+        {...{
+          animations,
+          name: 'move4',
+          color: '255, 172, 76',
+          blur: '50px',
+          top: '25%',
+          right: '0px',
+          width: '15%',
+          height: '30%',
+        }}
+      />
     </Decos>
   );
 }
-
-const move1 = keyframes`
-  from {
-    transform: translate(0, 0);
-  }
-  to {
-    transform: translate(75%, 0%);
-  }
-`;
-
-const move2 = keyframes`
-  from {
-    transform: translate(0, 0);
-  }
-  to {
-    transform: translate(100%, 20%);
-  }
-`;
-
-const move3 = keyframes`
-  from {
-    transform: translate(0, 0);
-  }
-  to {
-    transform: translate(80%, 0%);
-  }
-`;
-
-const move4 = keyframes`
-  from {
-    transform: translate(0, 0);
-  }
-  to {
-    transform: translate(-100%, 0%);
-  }
-`;
 
 const Decos = styled.div`
   position: absolute;
@@ -57,50 +100,17 @@ const Decos = styled.div`
 
 const Deco = styled.div`
   position: absolute;
-  width: 40%;
-  height: 90%;
-  background: rgba(239, 140, 138, 0.25);
-  top: -20%;
-  left: -10%;
-  filter: blur(100px);
+  background: rgba(${(props) => props.color}, 0.2);
+  filter: blur(${(props) => props.blur});
   border-radius: 50%;
-  animation: ${move1} 2s linear infinite alternate;
-`;
-
-const Deco2 = styled.div`
-  left: 30%;
-  position: absolute;
-  width: 25%;
-  height: 60%;
-  top: 20%;
-  background: rgba(231, 93, 16, 0.2);
-  filter: blur(100px);
-  border-radius: 50%;
-  animation: ${move2} 1.5s linear infinite alternate;
-`;
-
-const Deco3 = styled.div`
-  position: absolute;
-  width: 20%;
-  height: 45%;
-  right: 20%;
-  bottom: 0px;
-  background: rgba(96, 160, 255, 0.2);
-  border-radius: 50%;
-  filter: blur(40px);
-  animation: ${move3} 3s linear infinite alternate;
-`;
-
-const Deco4 = styled.div`
-  position: absolute;
-  width: 15%;
-  height: 30%;
-  right: 0px;
-  top: 25%;
-  background: rgba(255, 172, 76, 0.3);
-  border-radius: 50%;
-  filter: blur(50px);
-  animation: ${move4} 2s linear infinite alternate;
+  animation: ${({ animations, name }) => animations[name]} 2s linear infinite
+    alternate;
+  ${({ top }) => top && `top: ${top}`};
+  ${({ bottom }) => bottom && `bottom: ${bottom}`};
+  ${({ left }) => left && `left: ${left}`};
+  ${({ right }) => right && `right: ${right}`};
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
 `;
 
 export default DecoBg;
