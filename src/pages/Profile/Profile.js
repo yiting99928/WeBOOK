@@ -21,11 +21,11 @@ import {
 import SideMenu from '../../components/SideMenu';
 import { AuthContext } from '../../context/authContext';
 import data from '../../utils/api';
+import { statusText } from '../../utils/dataConstants';
 import { db } from '../../utils/firebase';
 import { formatTimeRange } from '../../utils/formatTime';
 import modal from '../../utils/modal';
 import webookLogo from './webookLogo.png';
-import { statusText } from '../../utils/dataConstants';
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
@@ -36,7 +36,7 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   async function getData() {
-    const groupData = await data.fetchUserGroup(user.email);
+    const groupData = await data.getUserGroup(user.email);
     let filteredData;
     if (!status) {
       const finishedGroups = groupData.filter(
@@ -50,6 +50,7 @@ const Profile = () => {
       filteredData = groupData.filter((item) => item.status === status);
     }
     setGroupData(filteredData);
+    setIsLoading(false);
   }
 
   useEffect(() => {
@@ -190,35 +191,19 @@ const Profile = () => {
   return (
     <SideMenu>
       {isLoading && (
-        <>
-          <LoadingContainer>
-            <LoadingImg />
-            <LoadingContent>
-              <Info height={'56px'} width={'80%'} />
-              <Info height={'56px'} width={'60%'} />
-              <Info height={'56px'} width={'200px'} />
-              <Info height={'25px'} width={'90px'} />
-            </LoadingContent>
-          </LoadingContainer>
-          <LoadingContainer>
-            <LoadingImg />
-            <LoadingContent>
-              <Info height={'56px'} width={'80%'} />
-              <Info height={'56px'} width={'60%'} />
-              <Info height={'56px'} width={'200px'} />
-              <Info height={'25px'} width={'90px'} />
-            </LoadingContent>
-          </LoadingContainer>
-          <LoadingContainer>
-            <LoadingImg />
-            <LoadingContent>
-              <Info height={'56px'} width={'80%'} />
-              <Info height={'56px'} width={'60%'} />
-              <Info height={'56px'} width={'200px'} />
-              <Info height={'25px'} width={'90px'} />
-            </LoadingContent>
-          </LoadingContainer>
-        </>
+        <div>
+          {[...Array(3)].map((_, index) => (
+            <LoadingContainer key={index}>
+              <LoadingImg />
+              <LoadingContent>
+                <Info height={'56px'} width={'80%'} />
+                <Info height={'56px'} width={'60%'} />
+                <Info height={'56px'} width={'200px'} />
+                <Info height={'25px'} width={'90px'} />
+              </LoadingContent>
+            </LoadingContainer>
+          ))}
+        </div>
       )}
 
       {!isLoading &&
