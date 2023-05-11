@@ -35,6 +35,13 @@ const modal = {
       }
     });
   },
+  noData(text) {
+    createSwal(text, webookSwing, 'quit', (result) => {
+      if (result.isConfirmed) {
+        window.location = `/`;
+      }
+    });
+  },
 };
 
 export default modal;

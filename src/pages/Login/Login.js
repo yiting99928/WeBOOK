@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 
 import DecoBg from '../../components/DecoBg';
-import { auth, db } from '../../utils/firebase';
+import { auth, db } from '../../utils/firebaseConfig';
 import modal from '../../utils/modal';
 import LoginImg from './LoginImg';
 

@@ -14,7 +14,7 @@ import { MainBtn } from '../../components/Buttons';
 import DecoBg from '../../components/DecoBg';
 import { AuthContext } from '../../context/authContext';
 import { categoryOptions } from '../../utils/dataConstants';
-import { db, storage } from '../../utils/firebase';
+import { db, storage } from '../../utils/firebaseConfig';
 import modal from '../../utils/modal';
 
 function Create() {

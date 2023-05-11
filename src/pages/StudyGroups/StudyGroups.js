@@ -1,11 +1,4 @@
-import {
-  Timestamp,
-  collection,
-  getDocs,
-  orderBy,
-  query,
-  where,
-} from 'firebase/firestore';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { GrSearch } from 'react-icons/gr';
 import styled from 'styled-components/macro';
@@ -13,7 +6,7 @@ import { OutlineBtn } from '../../components/Buttons';
 import GroupsLoading from '../../components/GroupsLoading';
 import StudyGroupCard from '../../components/StudyGroupCard';
 import { categoryOptions } from '../../utils/dataConstants';
-import { db } from '../../utils/firebase';
+import data from '../../utils/firebase';
 import webookRest from './webookRest.png';
 
 function StudyGroups() {
@@ -22,111 +15,58 @@ function StudyGroups() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  async function getData() {
-    const StudyGroupsData = collection(db, 'studyGroups');
-    const q = query(
-      StudyGroupsData,
-      where('status', '!=', 'finished'),
-      orderBy('status'),
-      orderBy('startTime')
-    );
-
-    const groupsSnapshot = await getDocs(q);
-    const groups = groupsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return groups;
-  }
   useEffect(() => {
     setIsLoading(true);
-    getData().then((groups) => {
+    data.getAllGroups().then((groups) => {
       setAllGroupsData(groups);
       setIsLoading(false);
     });
   }, []);
 
-  const searchByCategory = async (category) => {
-    if (category === '全部讀書會') {
-      const groups = (await getData()).filter(
-        (item) => item.status !== 'finished'
-      );
-      return groups;
-    } else {
-      const studyGroupsRef = collection(db, 'studyGroups');
-      const q = query(
-        studyGroupsRef,
-        where('category', '==', category),
-        where('status', '!=', 'finished')
-      );
-      const querySnapshot = await getDocs(q);
-      let groups = [];
-      querySnapshot.forEach((doc) => {
-        groups.push({ id: doc.id, ...doc.data() });
-      });
-      return groups;
-    }
-  };
-
   const handleSearchByCategory = async (category) => {
-    if (category === selectedCategory) {
-      setSelectedCategory('全部讀書會');
-      const groups = (await getData()).filter(
-        (item) => item.status !== 'finished'
-      );
-      setAllGroupsData(groups);
+    let groups;
+    if (category === '全部讀書會') {
+      groups = await data.getAllGroups();
     } else {
-      setSelectedCategory(category);
-      const groups = await searchByCategory(category);
-      setAllGroupsData(groups);
+      groups = await data.getCategory(category);
     }
+    
+    setSelectedCategory(category);
+    setAllGroupsData(groups);
   };
 
   const searchByText = async (e) => {
     e.preventDefault();
-    const studyGroupRef = collection(db, 'studyGroups');
 
     const searchWords = searchText.split(' ');
 
-    const allGroupsSnapshot = await getDocs(studyGroupRef);
-    const allGroups = allGroupsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    const filteredGroups = allGroups.filter((group) => {
+    const groups = await data.getAllGroups();
+
+    const filteredGroups = groups.filter((group) => {
       const groupNameLower = group.name.toLowerCase();
       const hostLower = group.host.toLowerCase();
       const nameLower = group.name.toLowerCase();
-      const isNotFinished = group.status !== 'finished';
-      return (
-        isNotFinished &&
-        searchWords.some((word) => {
-          const wordLower = word.toLowerCase();
-          return (
-            groupNameLower.includes(wordLower) ||
-            hostLower.includes(wordLower) ||
-            nameLower.includes(wordLower)
-          );
-        })
-      );
+      return searchWords.some((word) => {
+        const wordLower = word.toLowerCase();
+        return (
+          groupNameLower.includes(wordLower) ||
+          hostLower.includes(wordLower) ||
+          nameLower.includes(wordLower)
+        );
+      });
     });
 
     setAllGroupsData(filteredGroups);
   };
 
   function filterGroups(groups, filterOption) {
-    const now = new Date();
-    const todayStart = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    );
+    const todayStart = dayjs().startOf('day');
 
     const filterOptionMap = {
-      today: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1),
-      week: new Date(todayStart).setDate(todayStart.getDate() + 7),
-      month: new Date(todayStart).setMonth(todayStart.getMonth() + 1),
-      twoMonths: new Date(todayStart).setMonth(todayStart.getMonth() + 2),
+      today: todayStart.add(1, 'day'),
+      week: todayStart.add(1, 'week'),
+      month: todayStart.add(1, 'month'),
+      twoMonths: todayStart.add(2, 'month'),
     };
 
     if (!Object.keys(filterOptionMap).includes(filterOption)) {
@@ -136,16 +76,16 @@ function StudyGroups() {
     const endDate = filterOptionMap[filterOption];
 
     return groups.filter((group) => {
-      const groupHoldDate = Timestamp.fromMillis(
-        group.startTime.seconds * 1000
-      ).toDate();
-      return groupHoldDate >= todayStart && groupHoldDate < endDate;
+      const groupHoldDate = dayjs.unix(group.startTime.seconds);
+      return (
+        groupHoldDate.isAfter(todayStart) && groupHoldDate.isBefore(endDate)
+      );
     });
   }
 
   function handleSelectChange(event) {
     const filterOption = event.target.value;
-    getData().then((groups) => {
+    data.getAllGroups().then((groups) => {
       const filteredGroups = filterGroups(groups, filterOption);
       setAllGroupsData(filteredGroups);
     });

@@ -9,7 +9,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
-import { db, storage } from '../../utils/firebase';
+import { db, storage } from '../../utils/firebaseConfig';
 
 function SideMenu({ children }) {
   const navigate = useNavigate();

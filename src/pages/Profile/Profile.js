@@ -1,14 +1,4 @@
 import dayjs from 'dayjs';
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from 'firebase/firestore';
 import parse, { domToReact } from 'html-react-parser';
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -20,9 +10,8 @@ import {
 } from '../../components/Buttons';
 import SideMenu from '../../components/SideMenu';
 import { AuthContext } from '../../context/authContext';
-import data from '../../utils/api';
 import { statusText } from '../../utils/dataConstants';
-import { db } from '../../utils/firebase';
+import data from '../../utils/firebase';
 import { formatTimeRange } from '../../utils/formatTime';
 import modal from '../../utils/modal';
 import webookLogo from './webookLogo.png';
@@ -60,23 +49,17 @@ const Profile = () => {
 
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 500);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupData]);
 
   async function handleQuitGroup(id) {
-    const usersDocRef = doc(db, 'users', user.email);
-    const userStudyGroupsRef = collection(usersDocRef, 'userStudyGroups');
-    const groupRef = doc(userStudyGroupsRef, id);
-    await deleteDoc(groupRef).then(modal.quit('已退出這場讀書會!'));
+    await data.quitGroup(id, user);
+    modal.quit('已退出這場讀書會!');
     getData();
   }
 
   async function handleDelGroup(id) {
     try {
-      await Promise.all([
-        deleteAllDocs(id),
-        deleteDoc(doc(db, 'studyGroups', id)),
-      ]);
+      await Promise.all([data.delUserGroup(id), data.delGroup(id)]);
       modal.quit('已取消這場讀書會!');
       getData();
     } catch (error) {
@@ -84,42 +67,12 @@ const Profile = () => {
     }
   }
 
-  async function deleteAllDocs(id) {
-    const usersQuerySnapshot = await getDocs(collection(db, 'users'));
-
-    for (const userDoc of usersQuerySnapshot.docs) {
-      const userStudyGroupsRef = collection(userDoc.ref, 'userStudyGroups');
-      const matchingGroupsQuery = query(
-        userStudyGroupsRef,
-        where('__name__', '==', id)
-      );
-      const matchingGroupsSnapshot = await getDocs(matchingGroupsQuery);
-
-      for (const matchingGroupDoc of matchingGroupsSnapshot.docs) {
-        try {
-          await deleteDoc(matchingGroupDoc.ref);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    }
-  }
-
   async function handleChangeState(id) {
-    const groupRef = doc(db, 'studyGroups', id);
-
     try {
-      const groupSnapshot = await getDoc(groupRef);
-      const groupData = groupSnapshot.data();
-
-      if (groupData.process === undefined || groupData.process.length === 0) {
-        modal.quit('請新增至少一個流程!');
-      } else {
-        updateDoc(groupRef, { status: 'ongoing' });
-        getData();
-      }
+      await data.updateGroupStatus(id);
+      getData();
     } catch (error) {
-      console.error(error);
+      modal.quit(error.message);
     }
   }
 
@@ -130,6 +83,7 @@ const Profile = () => {
       return newExpanded;
     });
   }
+
   const ProfileGroupCard = ({ item, index }) => {
     switch (item.status) {
       case 'preparing':

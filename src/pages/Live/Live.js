@@ -34,7 +34,7 @@ import GroupTitle from '../../components/GroupTitle';
 import SideMenu from '../../components/SideMenu';
 import { AuthContext } from '../../context/authContext';
 import Lecture from '../../pages/Process/Lecture';
-import { db } from '../../utils/firebase';
+import { db } from '../../utils/firebaseConfig';
 import modal from '../../utils/modal';
 import QA from './LiveQA';
 import StickyNote from './LiveStickyNote';

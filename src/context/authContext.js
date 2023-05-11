@@ -2,7 +2,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { createContext, useEffect, useState } from 'react';
 import Loading from '../components/Loading';
-import { db } from '../utils/firebase';
+import { db } from '../utils/firebaseConfig';
 export const AuthContext = createContext({});
 
 export const AuthContextProvider = ({ children }) => {

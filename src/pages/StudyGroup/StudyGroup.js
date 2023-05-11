@@ -1,13 +1,12 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components/macro';
 import { MainBtn } from '../../components/Buttons';
 import { AuthContext } from '../../context/authContext';
-import { db } from '../../utils/firebase';
+import { statusText } from '../../utils/dataConstants';
+import data from '../../utils/firebase';
 import { formatTimeRange } from '../../utils/formatTime';
 import modal from '../../utils/modal';
-import { statusText } from '../../utils/dataConstants';
 
 function StudyGroup() {
   const { user } = useContext(AuthContext);
@@ -19,13 +18,11 @@ function StudyGroup() {
 
   useEffect(() => {
     const fetchStudyGroup = async () => {
-      const studyGroupRef = doc(db, 'studyGroups', id);
-      const studyGroupDoc = await getDoc(studyGroupRef);
-
-      if (studyGroupDoc.exists()) {
-        setStudyGroup({ id: studyGroupDoc.id, ...studyGroupDoc.data() });
+      const group = await data.getGroup(id);
+      if (group?.name) {
+        setStudyGroup(group);
       } else {
-        console.error('Document not found');
+        modal.noData('無此讀書會');
       }
     };
 
@@ -34,15 +31,12 @@ function StudyGroup() {
 
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 500);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studyGroup]);
 
   const handleJoinGroup = async (id) => {
     if (user) {
-      const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
-      await setDoc(userGroupRef, { note: '' }).then(
-        modal.success('已加入讀書會!')
-      );
+      await data.setGroup(id, user);
+      modal.success('已加入讀書會!');
       if (studyGroup.status === 'ongoing') {
         navigate(`/study-group/${id}/live`);
       } else {
@@ -55,7 +49,7 @@ function StudyGroup() {
 
   return (
     <div>
-      {isLoading ? (
+      {isLoading && (
         <Container>
           <GroupInfo>
             <LoadingImg />
@@ -71,7 +65,8 @@ function StudyGroup() {
           <Info height={'40px'} width={'20%'} />
           <Info height={'120px'} width={'100%'} />
         </Container>
-      ) : (
+      )}
+      {studyGroup && (
         <Container>
           <GroupInfo>
             <BookGroupImg src={studyGroup.image} alt="feature" />

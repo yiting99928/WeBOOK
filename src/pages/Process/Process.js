@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import GroupTitle from '../../components/GroupTitle';
 import SideMenu from '../../components/SideMenu';
-import { db } from '../../utils/firebase';
+import { db } from '../../utils/firebaseConfig';
 import modal from '../../utils/modal';
 import Lecture from './Lecture';
 import OptionList from './OptionList';

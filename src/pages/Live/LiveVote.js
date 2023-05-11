@@ -2,7 +2,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { produce } from 'immer';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { db } from '../../utils/firebase';
+import { db } from '../../utils/firebaseConfig';
 
 function Vote({ item, id, processIndex }) {
   const [hasVoted, setHasVoted] = useState(false);

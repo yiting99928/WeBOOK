@@ -4,7 +4,7 @@ import styled from 'styled-components/macro';
 import DecoBg from '../../components/DecoBg';
 import GroupsLoading from '../../components/GroupsLoading';
 import StudyGroupCard from '../../components/StudyGroupCard';
-import { db } from '../../utils/firebase';
+import { db } from '../../utils/firebaseConfig';
 import BannerSection from './BannerSection';
 import FeatureSection from './FeatureSection';
 

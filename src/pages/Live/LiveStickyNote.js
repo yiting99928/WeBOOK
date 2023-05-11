@@ -5,7 +5,7 @@ import { BiMessageAdd } from 'react-icons/bi';
 import { MdClose } from 'react-icons/md';
 import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
-import { db } from '../../utils/firebase';
+import { db } from '../../utils/firebaseConfig';
 
 function StickyNote({ item, dispatch, processIndex, id }) {
   const { user } = useContext(AuthContext);
