@@ -9,7 +9,7 @@ import {
 import { useEffect, useState } from 'react';
 import { GrSearch } from 'react-icons/gr';
 import styled from 'styled-components/macro';
-import { OutlineBtn } from '../../components/Buttons/Buttons';
+import { OutlineBtn } from '../../components/Buttons';
 import GroupsLoading from '../../components/GroupsLoading';
 import StudyGroupCard from '../../components/StudyGroupCard';
 import { categoryOptions } from '../../utils/dataConstants';

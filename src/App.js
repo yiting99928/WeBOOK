@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import Footer from './components/Footer';
-import Header from './components/Header/Header';
+import Header from './components/Header';
 import { AuthContext } from './context/authContext';
 import Create from './pages/Create/Create';
 import Home from './pages/Home/Home';

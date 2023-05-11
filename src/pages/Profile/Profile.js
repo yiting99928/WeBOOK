@@ -17,7 +17,7 @@ import {
   GuestEditInput,
   HostEditInput,
   OutlineBtn,
-} from '../../components/Buttons/Buttons';
+} from '../../components/Buttons';
 import SideMenu from '../../components/SideMenu';
 import { AuthContext } from '../../context/authContext';
 import data from '../../utils/api';

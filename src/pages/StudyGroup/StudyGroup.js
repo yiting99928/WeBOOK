@@ -2,7 +2,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components/macro';
-import { MainBtn } from '../../components/Buttons/Buttons';
+import { MainBtn } from '../../components/Buttons';
 import { AuthContext } from '../../context/authContext';
 import { db } from '../../utils/firebase';
 import { formatTimeRange } from '../../utils/formatTime';

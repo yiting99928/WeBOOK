@@ -5,7 +5,7 @@ import { BiCopy, BiTrash } from 'react-icons/bi';
 import { GrAddCircle } from 'react-icons/gr';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import GroupTitle from '../../components/GroupTitle/GroupTitle';
+import GroupTitle from '../../components/GroupTitle';
 import SideMenu from '../../components/SideMenu';
 import { db } from '../../utils/firebase';
 import modal from '../../utils/modal';

@@ -10,7 +10,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { useContext, useState } from 'react';
 import { BiImageAdd } from 'react-icons/bi';
 import styled from 'styled-components/macro';
-import { MainBtn } from '../../components/Buttons/Buttons';
+import { MainBtn } from '../../components/Buttons';
 import DecoBg from '../../components/DecoBg';
 import { AuthContext } from '../../context/authContext';
 import { categoryOptions } from '../../utils/dataConstants';
