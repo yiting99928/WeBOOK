@@ -3,60 +3,38 @@ import withReactContent from 'sweetalert2-react-content';
 import webookJump from './webookJump.gif';
 import webookSwing from './webookSwing.gif';
 
+const createSwal = (title, imageUrl, imageAlt, callback) => {
+  Swal.fire({
+    title,
+    imageUrl,
+    imageWidth: 100,
+    imageAlt,
+    scrollbarPadding: false,
+  }).then(callback);
+};
+
 const modal = {
   success(text) {
     const success = withReactContent(Swal);
-    success.fire({
-      title: text,
-      imageUrl: webookJump,
-      imageWidth: 100,
-      imageAlt: 'success',
-      scrollbarPadding: false,
-    });
+    createSwal.call(success, text, webookJump, 'success');
   },
   create(text, id) {
-    Swal.fire({
-      title: text,
-      imageUrl: webookJump,
-      imageWidth: 100,
-      imageAlt: 'success',
-      scrollbarPadding: false,
-    }).then((result) => {
+    createSwal(text, webookJump, 'success', (result) => {
       if (result.isConfirmed && id) {
         window.location = `/study-group/${id}/process`;
       }
     });
   },
-  fail(text) {
-    Swal.fire({
-      title: text,
-      imageUrl: webookSwing,
-      imageWidth: 100,
-      imageAlt: 'fail',
-      scrollbarPadding: false,
-    });
-  },
   quit(text) {
-    Swal.fire({
-      title: text,
-      imageUrl: webookSwing,
-      imageWidth: 100,
-      imageAlt: 'quit',
-      scrollbarPadding: false,
-    });
+    createSwal(text, webookSwing, 'quit');
   },
   noUser(text) {
-    Swal.fire({
-      title: text,
-      imageUrl: webookSwing,
-      imageWidth: 100,
-      imageAlt: 'quit',
-      scrollbarPadding: false,
-    }).then((result) => {
+    createSwal(text, webookSwing, 'quit', (result) => {
       if (result.isConfirmed) {
         window.location = `/login`;
       }
     });
   },
 };
+
 export default modal;

@@ -35,7 +35,7 @@ function Login() {
       modal.success('登入成功');
       navigate('/study-groups');
     } catch (error) {
-      modal.fail('錯誤的帳號或密碼');
+      modal.quit('錯誤的帳號或密碼');
     }
   };
   const ImgUrl = [
@@ -62,16 +62,16 @@ function Login() {
       .catch((error) => {
         switch (error.code) {
           case 'auth/email-already-in-use':
-            modal.fail('電子信箱已使用');
+            modal.quit('電子信箱已使用');
             break;
           case 'auth/weak-password':
-            modal.fail('密碼應至少為6個字符');
+            modal.quit('密碼應至少為6個字符');
             break;
           case 'auth/invalid-email':
-            modal.fail('無效的電子郵件');
+            modal.quit('無效的電子郵件');
             break;
           default:
-            modal.fail('註冊失敗，請重試');
+            modal.quit('註冊失敗，請重試');
         }
       });
   };
@@ -99,7 +99,7 @@ function Login() {
         modal.success('重置密碼郵件已發送，請查收並按照提示操作');
       })
       .catch((error) => {
-        modal.fail('發送重置密碼郵件失敗，請確保電子郵件正確無誤');
+        modal.quit('發送重置密碼郵件失敗，請確保電子郵件正確無誤');
       });
   };
 

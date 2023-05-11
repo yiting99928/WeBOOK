@@ -179,7 +179,7 @@ function Process() {
         modal.success('已儲存讀書會流程!');
       })
       .catch((error) => {
-        modal.fail('讀書會流程儲存失敗!');
+        modal.quit('讀書會流程儲存失敗!');
       });
   }
 

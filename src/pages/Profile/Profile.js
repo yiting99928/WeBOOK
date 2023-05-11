@@ -113,7 +113,7 @@ const Profile = () => {
       const groupData = groupSnapshot.data();
 
       if (groupData.process === undefined || groupData.process.length === 0) {
-        modal.fail('請新增至少一個流程!');
+        modal.quit('請新增至少一個流程!');
       } else {
         updateDoc(groupRef, { status: 'ongoing' });
         getData();

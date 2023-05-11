@@ -62,12 +62,12 @@ function Create() {
     e.preventDefault();
     for (let key in createForm) {
       if (!createForm[key]) {
-        modal.fail('請填寫完整');
+        modal.quit('請填寫完整');
         return;
       }
     }
     if (new Date(createForm.endTime) <= new Date(createForm.startTime)) {
-      modal.fail('結束時間需超過舉辦時間!');
+      modal.quit('結束時間需超過舉辦時間!');
       return;
     }
     formPost();
@@ -113,7 +113,7 @@ function Create() {
       });
       modal.create('成功建立讀書會!', docRef.id);
     } catch (error) {
-      modal.fail('讀書會建立失敗!');
+      modal.quit('讀書會建立失敗!');
       console.error('Error: ', error);
     }
   };
