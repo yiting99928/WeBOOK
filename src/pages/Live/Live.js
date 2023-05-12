@@ -536,6 +536,23 @@ function Live() {
     setShowChatRoom(!showChatRoom);
   };
 
+  const changeCard = (direction) => {
+    setCurrentCard((prev) => {
+      let newCard = prev;
+
+      if (direction === 'first' && prev > 0) {
+        newCard = prev - 1;
+      }
+
+      if (direction === 'last' && prev < processData.length - 1) {
+        newCard = prev + 1;
+      }
+
+      updateCurrentCardInFirebase(newCard);
+      return newCard;
+    });
+  };
+
   return (
     <SideMenu>
       <Container>
@@ -583,25 +600,10 @@ function Live() {
             {processData && isLive && (
               <ProcessInputs>
                 <HostInput isHost={studyGroup.createBy === user.email}>
-                  <MediaButton
-                    onClick={() => {
-                      setCurrentCard((prev) => {
-                        const newCard = prev > 0 ? prev - 1 : prev;
-                        updateCurrentCardInFirebase(newCard);
-                        return newCard;
-                      });
-                    }}>
+                  <MediaButton onClick={() => changeCard('first')}>
                     <MdFirstPage />
                   </MediaButton>
-                  <MediaButton
-                    onClick={() => {
-                      setCurrentCard((prev) => {
-                        const newCard =
-                          prev < processData.length - 1 ? prev + 1 : prev;
-                        updateCurrentCardInFirebase(newCard);
-                        return newCard;
-                      });
-                    }}>
+                  <MediaButton onClick={() => changeCard('last')}>
                     <MdLastPage />
                   </MediaButton>
                   <MediaButton
