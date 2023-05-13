@@ -1,12 +1,5 @@
-import {
-  Timestamp,
-  addDoc,
-  collection,
-  doc,
-  serverTimestamp,
-  setDoc,
-} from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import dayjs from 'dayjs';
+import { serverTimestamp, Timestamp } from 'firebase/firestore';
 import React, { useContext, useState } from 'react';
 import { BiImageAdd } from 'react-icons/bi';
 import styled from 'styled-components/macro';
@@ -14,7 +7,8 @@ import { MainBtn } from '../../components/Buttons';
 import DecoBg from '../../components/DecoBg';
 import { AuthContext } from '../../context/authContext';
 import { categoryOptions } from '../../utils/dataConstants';
-import { db, storage } from '../../utils/firebaseConfig';
+import data from '../../utils/firebase';
+import { uploadFile } from '../../utils/firebaseStorage';
 import modal from '../../utils/modal';
 
 function Create() {
@@ -73,22 +67,20 @@ function Create() {
     formPost();
     resetForm();
   };
+
   const formPost = async () => {
     try {
-      const storageRef = ref(
-        storage,
-        `image/${createForm.image.name + createForm.name}`
+      const imagePath = `image/${createForm.image.name + createForm.name}`;
+      const imageURL = await uploadFile(imagePath, createForm.image);
+
+      const startTimestamp = Timestamp.fromDate(
+        dayjs(createForm.startTime).toDate()
       );
-      await uploadBytes(storageRef, createForm.image);
-      const imageURL = await getDownloadURL(storageRef);
+      const endTimestamp = Timestamp.fromDate(
+        dayjs(createForm.endTime).toDate()
+      );
 
-      const dateObj = new Date(createForm.startTime);
-      const startTimestamp = Timestamp.fromDate(dateObj);
-
-      const dateObj2 = new Date(createForm.endTime);
-      const endTimestamp = Timestamp.fromDate(dateObj2);
-
-      const docRef = await addDoc(collection(db, 'studyGroups'), {
+      const docRef = await data.addGroup({
         ...createForm,
         groupName: createForm.groupName,
         name: createForm.name,
@@ -101,22 +93,15 @@ function Create() {
         createTime: serverTimestamp(),
         endTime: endTimestamp,
       });
-      const userStudyGroupsRef = doc(
-        db,
-        'users',
-        user.email,
-        'userStudyGroups',
-        docRef.id
-      );
-      await setDoc(userStudyGroupsRef, {
-        note: '',
-      });
+
+      await data.setUserGroup(docRef.id, user.email, { note: '' });
       modal.create('成功建立讀書會!', docRef.id);
     } catch (error) {
       modal.quit('讀書會建立失敗!');
       console.error('Error: ', error);
     }
   };
+
   const resetForm = () => {
     setCreateForm({
       groupName: '',
@@ -136,11 +121,12 @@ function Create() {
   };
 
   const isStartTimeInvalid =
-    createForm.startTime && new Date(createForm.startTime) <= new Date();
+    createForm.startTime && dayjs(createForm.startTime).isBefore(dayjs());
+
   const isEndTimeInvalid =
     createForm.endTime &&
-    (new Date(createForm.endTime) <= new Date() ||
-      new Date(createForm.endTime) <= new Date(createForm.startTime));
+    (dayjs(createForm.endTime).isBefore(dayjs()) ||
+      dayjs(createForm.endTime).isBefore(dayjs(createForm.startTime)));
 
   return (
     <Wrapper>

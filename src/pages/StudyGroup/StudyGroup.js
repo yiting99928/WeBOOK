@@ -35,7 +35,7 @@ function StudyGroup() {
 
   const handleJoinGroup = async (id) => {
     if (user) {
-      await data.setGroup(id, user);
+      await data.setUserGroup(id, user.email, { note: '' });
       modal.success('已加入讀書會!');
       if (studyGroup.status === 'ongoing') {
         navigate(`/study-group/${id}/live`);

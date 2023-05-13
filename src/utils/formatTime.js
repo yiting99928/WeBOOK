@@ -5,9 +5,10 @@ function formatTime(unixTime, format = 'MM.DD HH:mm') {
 }
 
 function formatTimeRange(startTime, endTime, format = 'MM.DD HH:mm') {
-  const formattedStartTime = formatTime(startTime?.seconds, format);
-  const formattedEndTime = formatTime(endTime?.seconds, format);
+  const formattedStartTime = dayjs.unix(startTime?.seconds).format(format);
+  const formattedEndTime = dayjs.unix(endTime?.seconds).format(format);
   return `${formattedStartTime} — ${formattedEndTime}`;
 }
+
 
 export { formatTime, formatTimeRange };

@@ -1,16 +1,9 @@
-import {
-  createUserWithEmailAndPassword,
-  getAuth,
-  sendPasswordResetEmail,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
-
 import DecoBg from '../../components/DecoBg';
-import { auth, db } from '../../utils/firebaseConfig';
+import data from '../../utils/firebase';
+import firebaseAuth from '../../utils/firebaseAuth';
 import modal from '../../utils/modal';
 import LoginImg from './LoginImg';
 
@@ -20,18 +13,17 @@ function Login() {
     email: '',
     password: '',
   });
-
   const [register, setRegister] = useState({
     name: '',
     email: '',
     password: '',
   });
+  const [isFlipped, setIsFlipped] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const auth = getAuth();
     try {
-      await signInWithEmailAndPassword(auth, login.email, login.password);
+      await firebaseAuth.signIn(login.email, login.password);
       modal.success('登入成功');
       navigate('/study-groups');
     } catch (error) {
@@ -48,31 +40,26 @@ function Login() {
   const handleRegister = async (e) => {
     e.preventDefault();
     const randomUserImgURL = ImgUrl[Math.floor(Math.random() * ImgUrl.length)];
-    createUserWithEmailAndPassword(auth, register.email, register.password)
-      .then((userCredential) => {
-        setDoc(doc(db, 'users', register.email), {
-          name: register.name,
-          password: register.password,
-          email: register.email,
-          userImg: randomUserImgURL,
-        }).then(() => {
-          modal.success('註冊成功');
-        });
+    const registerData = {
+      name: register.name,
+      password: register.password,
+      email: register.email,
+      userImg: randomUserImgURL,
+    };
+    firebaseAuth
+      .register(register.email, register.password)
+      .then(() => {
+        data.setDocument(register.email,'users',registerData);
+        modal.success('註冊成功');
       })
       .catch((error) => {
-        switch (error.code) {
-          case 'auth/email-already-in-use':
-            modal.quit('電子信箱已使用');
-            break;
-          case 'auth/weak-password':
-            modal.quit('密碼應至少為6個字符');
-            break;
-          case 'auth/invalid-email':
-            modal.quit('無效的電子郵件');
-            break;
-          default:
-            modal.quit('註冊失敗，請重試');
-        }
+        const errorMessage = {
+          'auth/email-already-in-use': '電子信箱已使用',
+          'auth/weak-password': '密碼應至少為6個字符',
+          'auth/invalid-email': '無效的電子郵件',
+          default: '註冊失敗，請重試',
+        };
+        return modal.quit(errorMessage[error.code] || errorMessage['default']);
       });
   };
 
@@ -86,15 +73,13 @@ function Login() {
     }
   };
 
-  const [isFlipped, setIsFlipped] = useState(false);
-
   function handleFlip() {
     setIsFlipped(!isFlipped);
   }
 
   const handleResetPassword = () => {
-    const auth = getAuth();
-    sendPasswordResetEmail(auth, login.email)
+    firebaseAuth
+      .reset()
       .then(() => {
         modal.success('重置密碼郵件已發送，請查收並按照提示操作');
       })
@@ -104,10 +89,7 @@ function Login() {
   };
 
   function alertTest() {
-    prompt(
-      '測試用帳號密碼：',
-      'yumy19990628@gmail.com yumytest guest@gmail.com aaaaaa'
-    );
+    prompt('測試用帳號密碼：', 'yumy19990628@gmail.com yumy0000');
   }
   return (
     <CenterContainer>
@@ -292,6 +274,7 @@ const FlipContainer = styled.div`
 const ResetPassword = styled.a`
   margin-right: auto;
   cursor: pointer;
+  color: #df524d;
 `;
 const FlipButton = styled.div`
   background-color: #fff;

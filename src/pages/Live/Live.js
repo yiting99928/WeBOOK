@@ -1,15 +1,10 @@
 import {
-  addDoc,
   arrayUnion,
   collection,
-  deleteDoc,
-  deleteField,
   doc,
   onSnapshot,
   orderBy,
   query,
-  setDoc,
-  updateDoc,
 } from 'firebase/firestore';
 import { produce } from 'immer';
 import { useContext, useEffect, useReducer, useRef, useState } from 'react';
@@ -28,17 +23,18 @@ import { RiChatOffFill } from 'react-icons/ri';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { v4 as uuidv4 } from 'uuid';
-import { LiveMainBtn, StartBtn } from '../../components/Buttons';
-import EditContent from '../../components/EditContent';
+import { StartBtn } from '../../components/Buttons';
 import GroupTitle from '../../components/GroupTitle';
 import SideMenu from '../../components/SideMenu';
 import { AuthContext } from '../../context/authContext';
 import Lecture from '../../pages/Process/Lecture';
+import data from '../../utils/firebase';
 import { db } from '../../utils/firebaseConfig';
 import modal from '../../utils/modal';
 import QA from './LiveQA';
 import StickyNote from './LiveStickyNote';
 import Vote from './LiveVote';
+import { Note } from './Note';
 
 function reducer(processData, { type, payload = {} }) {
   const { processIndex, data, process } = payload;
@@ -150,8 +146,6 @@ function Live() {
   }
 
   async function createRoom() {
-    const roomRef = doc(collection(db, 'rooms'), id);
-
     const configuration = {
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     };
@@ -174,7 +168,7 @@ function Live() {
 
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
-        await updateDoc(roomRef, {
+        await data.updateRoom(id, {
           answer: {
             type: answer.type,
             sdp: answer.sdp,
@@ -185,7 +179,7 @@ function Live() {
     peerConnection.addEventListener('icecandidate', (event) => {
       if (event.candidate) {
         const json = event.candidate.toJSON();
-        addDoc(collection(db, 'rooms', id, 'host'), json);
+        data.addIceCandidate(id, 'host', json);
       }
     });
 
@@ -201,10 +195,10 @@ function Live() {
 
   async function joinRoom() {
     const roomRef = doc(db, 'rooms', id);
-    const userUUID = uuidv4();
-    await updateDoc(roomRef, {
-      viewers: arrayUnion({ uuid: userUUID, name: user.name }),
+    await data.updateRoom(id, {
+      viewers: arrayUnion({ uuid: uuidv4(), name: user.name }),
     });
+
     const enterMessages = [
       `${user.name} 剛剛進入直播間`,
       `${user.name} 剛剛著陸`,
@@ -213,7 +207,7 @@ function Live() {
     ];
     const randomMessage =
       enterMessages[Math.floor(Math.random() * enterMessages.length)];
-    await addDoc(collection(db, 'rooms', id, 'messages'), {
+    await data.addMessage(id, {
       message: randomMessage,
       timestamp: new Date(),
       sender: null,
@@ -230,7 +224,7 @@ function Live() {
       const [remoteStream] = event.streams;
       remoteVideoRef.current.srcObject = remoteStream;
       setTimeout(async () => {
-        await deleteOfferAndAnswer();
+        await data.deleteField(id);
       }, 500);
     });
 
@@ -251,7 +245,7 @@ function Live() {
     });
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
-    await updateDoc(roomRef, {
+    await data.updateRoom(id, {
       offer: {
         type: offer.type,
         sdp: offer.sdp,
@@ -260,7 +254,7 @@ function Live() {
     peerConnection.addEventListener('icecandidate', (event) => {
       if (event.candidate) {
         const json = event.candidate.toJSON();
-        addDoc(collection(db, 'rooms', id, 'guest'), json);
+        data.addIceCandidate(id, 'guest', json);
       }
     });
 
@@ -271,14 +265,6 @@ function Live() {
           peerConnection.addIceCandidate(candidate);
         }
       });
-    });
-  }
-
-  async function deleteOfferAndAnswer() {
-    const roomRef = doc(db, 'rooms', id);
-    await updateDoc(roomRef, {
-      offer: deleteField(),
-      answer: deleteField(),
     });
   }
 
@@ -354,7 +340,7 @@ function Live() {
         if (docSnapshot.exists() && docSnapshot.data().status === 'finished') {
           modal.success('結束直播');
           navigate({ pathname: '/profile/finished' }, { replace: true });
-          deleteDoc(doc(db, 'rooms', id));
+          data.delGroup(id, 'rooms');
         }
       }
     );
@@ -386,7 +372,7 @@ function Live() {
     const trimmedMessage = MessageInput.trim();
 
     if (trimmedMessage) {
-      await addDoc(collection(db, 'rooms', id, 'messages'), {
+      await data.addMessage(id, {
         message: trimmedMessage,
         timestamp: new Date(),
         sender: user.email,
@@ -399,9 +385,7 @@ function Live() {
 
   async function handleSaveNote() {
     try {
-      const userRef = doc(db, 'users', user.email);
-      const newGroupRef = doc(collection(userRef, 'userStudyGroups'), id);
-      await setDoc(newGroupRef, {
+      await data.setUserGroup(id, user.email, {
         note: note,
       });
       setShowSaveInfo(true);
@@ -458,7 +442,7 @@ function Live() {
 
   async function handleStart() {
     setIsLive(true);
-    await setDoc(doc(db, 'rooms', id), { currentCard: 0, viewers: [] });
+    await data.setDocument(id, 'rooms', { currentCard: 0, viewers: [] });
     modal.success('開始直播');
     const studyGroupRef = doc(db, 'rooms', id);
     const unsubscribe = onSnapshot(studyGroupRef, (snapshot) => {
@@ -489,7 +473,7 @@ function Live() {
     return () => unsubscribe();
   }
 
-  function handleStop() {
+  async function handleStop() {
     setIsLive(false);
 
     if (peerConnections.length > 0) {
@@ -517,13 +501,12 @@ function Live() {
         localVideoRef.current.srcObject = null;
       }
     }
-    updateDoc(doc(db, 'studyGroups', id), { status: 'finished' });
+    await data.updateStatus(id, 'finished');
   }
 
-  const updateCurrentCardInFirebase = async (newCard) => {
+  const updateCurrentCard = async (newCard) => {
     try {
-      const studyGroupRef = doc(db, 'rooms', id);
-      await setDoc(studyGroupRef, { currentCard: newCard });
+      await data.setDocument(id, 'rooms', { currentCard: newCard });
     } catch (error) {
       console.error(error);
     }
@@ -548,7 +531,7 @@ function Live() {
         newCard = prev + 1;
       }
 
-      updateCurrentCardInFirebase(newCard);
+      updateCurrentCard(newCard);
       return newCard;
     });
   };
@@ -709,11 +692,12 @@ function Live() {
             </ChatInput>
           </ChatRoom>
         </LiveContainer>
-        <Note>
-          <EditContent onChange={setNote} value={note} />
-          <LiveMainBtn onClick={handleSaveNote}>儲存筆記</LiveMainBtn>
-          <SaveInfo showSaveInfo={showSaveInfo}>已儲存筆記</SaveInfo>
-        </Note>
+        <Note
+          setNote={setNote}
+          note={note}
+          handleSaveNote={handleSaveNote}
+          showSaveInfo={showSaveInfo}
+        />
       </Container>
     </SideMenu>
   );
@@ -723,13 +707,6 @@ const Container = styled.div`
   width: 100%;
 `;
 
-const SaveInfo = styled.div`
-  opacity: ${({ showSaveInfo }) => (showSaveInfo ? 1 : 0)};
-  font-size: 14px;
-  color: #e95f5c;
-  display: inline-block;
-  margin-left: 10px;
-`;
 const HostInput = styled.div`
   display: ${({ isHost }) => (isHost ? 'flex' : 'none')};
   gap: 10px;
@@ -943,8 +920,5 @@ const ChatTitle = styled.div`
   text-align: center;
   letter-spacing: 1.2;
 `;
-const Note = styled.div`
-  height: 350px;
-  background-color: #fff;
-`;
+
 export default Live;

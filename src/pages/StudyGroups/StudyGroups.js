@@ -17,7 +17,7 @@ function StudyGroups() {
 
   useEffect(() => {
     setIsLoading(true);
-    data.getAllGroups().then((groups) => {
+    data.getUnfinishedGroups().then((groups) => {
       setAllGroupsData(groups);
       setIsLoading(false);
     });
@@ -26,7 +26,7 @@ function StudyGroups() {
   const handleSearchByCategory = async (category) => {
     let groups;
     if (category === '全部讀書會') {
-      groups = await data.getAllGroups();
+      groups = await data.getUnfinishedGroups();
     } else {
       groups = await data.getCategory(category);
     }
@@ -40,7 +40,7 @@ function StudyGroups() {
 
     const searchWords = searchText.split(' ');
 
-    const groups = await data.getAllGroups();
+    const groups = await data.getUnfinishedGroups();
 
     const filteredGroups = groups.filter((group) => {
       const groupNameLower = group.name.toLowerCase();
@@ -85,7 +85,7 @@ function StudyGroups() {
 
   function handleSelectChange(event) {
     const filterOption = event.target.value;
-    data.getAllGroups().then((groups) => {
+    data.getUnfinishedGroups().then((groups) => {
       const filteredGroups = filterGroups(groups, filterOption);
       setAllGroupsData(filteredGroups);
     });

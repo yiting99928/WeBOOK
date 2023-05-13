@@ -1,10 +1,10 @@
-import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 import DecoBg from '../../components/DecoBg';
 import GroupsLoading from '../../components/GroupsLoading';
 import StudyGroupCard from '../../components/StudyGroupCard';
-import { db } from '../../utils/firebaseConfig';
+import data from '../../utils/firebase';
 import BannerSection from './BannerSection';
 import FeatureSection from './FeatureSection';
 
@@ -13,21 +13,17 @@ function Home() {
 
   useEffect(() => {
     async function getData() {
-      const StudyGroupsData = collection(db, 'studyGroups');
-      const groupsSnapshot = await getDocs(StudyGroupsData);
-      const groups = groupsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const groups = await data.getGroupsData();
 
-      const now = new Date();
+      const now = dayjs();
 
       const unfinishedGroups = [];
       for (const group of groups) {
-        if (group.endTime.toDate() <= now && group.status !== 'ongoing') {
-          await updateDoc(doc(db, 'studyGroups', group.id), {
-            status: 'finished',
-          });
+        if (
+          dayjs(group.endTime.toDate()).isBefore(now) &&
+          group.status !== 'ongoing'
+        ) {
+          await data.updateStatus(group.id, 'finished');
         } else if (group.status !== 'finished') {
           unfinishedGroups.push(group);
         }

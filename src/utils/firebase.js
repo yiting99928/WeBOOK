@@ -1,6 +1,8 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -38,7 +40,17 @@ const data = {
     });
     return allGroupsData;
   },
-  async getAllGroups() {
+  async getGroupsData() {
+    const StudyGroupsData = collection(db, 'studyGroups');
+    const groupsSnapshot = await getDocs(StudyGroupsData);
+    const groups = groupsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return groups;
+  },
+  async getUnfinishedGroups() {
     const StudyGroupsData = collection(db, 'studyGroups');
     const q = query(
       StudyGroupsData,
@@ -74,9 +86,66 @@ const data = {
     const group = { id: studyGroupDoc.id, ...studyGroupDoc.data() };
     return group;
   },
-  async setGroup(id, user) {
-    const userGroupRef = doc(db, 'users', user.email, 'userStudyGroups', id);
-    await setDoc(userGroupRef, { note: '' });
+  async getTemplates() {
+    const templatesCollectionRef = collection(db, 'templates');
+    const templatesSnapshot = await getDocs(templatesCollectionRef);
+    const templatesData = templatesSnapshot.docs.map((doc) => doc.data());
+    return templatesData;
+  },
+  async getUser(email) {
+    const userDocRef = doc(db, 'users', email);
+    const userDoc = await getDoc(userDocRef);
+    const userData = userDoc.data();
+    return userData;
+  },
+  async updateUserData(email, userData) {
+    await updateDoc(doc(db, 'users', email), { ...userData });
+  },
+  async setUserGroup(id, email, userGroupData) {
+    const userGroupRef = doc(db, 'users', email, 'userStudyGroups', id);
+    await setDoc(userGroupRef, { ...userGroupData });
+  },
+  async setDocument(id, collection, data) {
+    await setDoc(doc(db, collection, id), { ...data });
+  },
+  async addGroup(groupData) {
+    return await addDoc(collection(db, 'studyGroups'), {
+      ...groupData,
+    });
+  },
+  async addMessage(id, messageData) {
+    await addDoc(collection(db, 'rooms', id, 'messages'), {
+      ...messageData,
+    });
+  },
+  async addIceCandidate(id, type, data) {
+    addDoc(collection(db, 'rooms', id, type), data);
+  },
+  async updateGroupStatus(id) {
+    const groupRef = doc(db, 'studyGroups', id);
+    const groupSnapshot = await getDoc(groupRef);
+    const groupData = groupSnapshot.data();
+
+    if (groupData.process === undefined || groupData.process.length === 0) {
+      throw new Error('請新增至少一個流程!');
+    } else {
+      await updateDoc(groupRef, { status: 'ongoing' });
+    }
+  },
+  async updateRoom(id, updateData) {
+    await updateDoc(doc(db, 'rooms', id), { ...updateData });
+  },
+  async updateStatus(id, status) {
+    await updateDoc(doc(db, 'studyGroups', id), {
+      status: status,
+    });
+  },
+  async deleteField(id) {
+    const roomRef = doc(db, 'rooms', id);
+    await updateDoc(roomRef, {
+      offer: deleteField(),
+      answer: deleteField(),
+    });
   },
   async quitGroup(id, user) {
     const usersDocRef = doc(db, 'users', user.email);
@@ -108,19 +177,8 @@ const data = {
       })
     );
   },
-  async delGroup(id) {
-    await deleteDoc(doc(db, 'studyGroups', id));
-  },
-  async updateGroupStatus(id) {
-    const groupRef = doc(db, 'studyGroups', id);
-    const groupSnapshot = await getDoc(groupRef);
-    const groupData = groupSnapshot.data();
-
-    if (groupData.process === undefined || groupData.process.length === 0) {
-      throw new Error('請新增至少一個流程!');
-    } else {
-      await updateDoc(groupRef, { status: 'ongoing' });
-    }
+  async delGroup(id, collection) {
+    await deleteDoc(doc(db, collection, id));
   },
 };
 export default data;

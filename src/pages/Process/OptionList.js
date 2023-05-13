@@ -77,6 +77,7 @@ function OptionList({ item, processIndex, editable, dispatch, itemType }) {
             readOnly={editable !== processIndex}
             onChange={(e) => handleOptionChange(index, e)}
             maxLength={30}
+            required
           />
           <DelOption
             editing={editable === processIndex}

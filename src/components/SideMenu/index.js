@@ -1,6 +1,3 @@
-import { getAuth, signOut } from 'firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { useContext, useRef, useState } from 'react';
 import {
   MdKeyboardDoubleArrowLeft,
@@ -9,7 +6,9 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
-import { db, storage } from '../../utils/firebaseConfig';
+import data from '../../utils/firebase';
+import firebaseAuth from '../../utils/firebaseAuth';
+import { uploadFile } from '../../utils/firebaseStorage';
 
 function SideMenu({ children }) {
   const navigate = useNavigate();
@@ -22,8 +21,8 @@ function SideMenu({ children }) {
     setIsOpen(!isOpen);
   };
   function logOut() {
-    const auth = getAuth();
-    signOut(auth)
+    firebaseAuth
+      .signOut()
       .then(() => {
         setUser(null);
         navigate('/');
@@ -34,17 +33,11 @@ function SideMenu({ children }) {
   }
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
+    const imagePath = `userImgs/${file.name + file.lastModified}`;
 
-    const storageRef = ref(
-      storage,
-      `userImgs/${file.name + file.lastModified}`
-    );
-    await uploadBytes(storageRef, file);
+    const imageURL = await uploadFile(imagePath, file);
 
-    const imageURL = await getDownloadURL(storageRef);
-
-    const userDocRef = doc(db, 'users', user.email);
-    await updateDoc(userDocRef, { userImg: imageURL });
+    await data.updateUserData(user.email, { userImg: imageURL });
 
     setUser((prevUser) => ({
       ...prevUser,

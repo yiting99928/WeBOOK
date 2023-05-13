@@ -59,7 +59,10 @@ const Profile = () => {
 
   async function handleDelGroup(id) {
     try {
-      await Promise.all([data.delUserGroup(id), data.delGroup(id)]);
+      await Promise.all([
+        data.delUserGroup(id),
+        data.delGroup(id, 'studyGroups'),
+      ]);
       modal.quit('已取消這場讀書會!');
       getData();
     } catch (error) {
@@ -175,7 +178,7 @@ const Profile = () => {
             const isUpcoming =
               startTime >= currentTime &&
               startTime <= threeDaysLater &&
-              item.status !== 'ongoing';
+              item.status === 'preparing';
             return (
               <StudyGroupCard key={index}>
                 <GroupInfo expanded={expanded[index]}>

@@ -1,4 +1,3 @@
-import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
 import { produce } from 'immer';
 import React, { useEffect, useReducer, useState } from 'react';
 import { BiCopy, BiTrash } from 'react-icons/bi';
@@ -7,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import GroupTitle from '../../components/GroupTitle';
 import SideMenu from '../../components/SideMenu';
-import { db } from '../../utils/firebaseConfig';
+import data from '../../utils/firebase';
 import modal from '../../utils/modal';
 import Lecture from './Lecture';
 import OptionList from './OptionList';
@@ -65,6 +64,7 @@ function reducer(processData, { type, payload = {} }) {
     }
   });
 }
+
 function Process() {
   const [processData, dispatch] = useReducer(reducer, []);
   const [templates, setTemplates] = useState([]);
@@ -75,14 +75,10 @@ function Process() {
   useEffect(() => {
     async function initData() {
       try {
-        const studyGroupRef = doc(db, 'studyGroups', id);
-        const studyGroupSnapshot = await getDoc(studyGroupRef);
-        const studyGroupData = studyGroupSnapshot.data();
+        const studyGroupData = await data.getGroup(id);
         setStudyGroup(studyGroupData);
 
-        const templatesCollectionRef = collection(db, 'templates');
-        const templatesSnapshot = await getDocs(templatesCollectionRef);
-        const templatesData = templatesSnapshot.docs.map((doc) => doc.data());
+        const templatesData = await data.getTemplates();
         setTemplates(templatesData);
         if (studyGroupData.process === undefined) {
           const lecture = templatesData.find((item) => item.type === 'lecture');
@@ -178,8 +174,11 @@ function Process() {
       modal.quit('請確認每個QA問答都有選擇正確答案！');
       return;
     }
-
-    setDoc(doc(db, 'studyGroups', id), { ...studyGroup, process: processData })
+    data
+      .setDocument(id, 'studyGroups', {
+        ...studyGroup,
+        process: processData,
+      })
       .then(() => {
         modal.success('已儲存讀書會流程!');
       })
