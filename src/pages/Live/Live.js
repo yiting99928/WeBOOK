@@ -506,7 +506,7 @@ function Live() {
 
   const updateCurrentCard = async (newCard) => {
     try {
-      await data.setDocument(id, 'rooms', { currentCard: newCard });
+      await data.updateRoom(id, { currentCard: newCard });
     } catch (error) {
       console.error(error);
     }
