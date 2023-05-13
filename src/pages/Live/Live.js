@@ -6,8 +6,7 @@ import {
   orderBy,
   query,
 } from 'firebase/firestore';
-import { produce } from 'immer';
-import { useContext, useEffect, useReducer, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
   BsBoxArrowInDownRight,
   BsBoxArrowInUpLeft,
@@ -27,6 +26,7 @@ import { StartBtn } from '../../components/Buttons';
 import GroupTitle from '../../components/GroupTitle';
 import SideMenu from '../../components/SideMenu';
 import { AuthContext } from '../../context/authContext';
+import useProcessReducer from '../../hooks/useProcessReducer';
 import Lecture from '../../pages/Process/Lecture';
 import data from '../../utils/firebase';
 import { db } from '../../utils/firebaseConfig';
@@ -35,27 +35,6 @@ import QA from './LiveQA';
 import StickyNote from './LiveStickyNote';
 import Vote from './LiveVote';
 import { Note } from './Note';
-
-function reducer(processData, { type, payload = {} }) {
-  const { processIndex, data, process } = payload;
-  return produce(processData, (draft) => {
-    switch (type) {
-      case 'SET_CARD': {
-        return process;
-      }
-      case 'DEL_CARD': {
-        draft.splice(processIndex, 1);
-        break;
-      }
-      case 'UPDATE_DATA': {
-        draft[processIndex].data = data;
-        break;
-      }
-      default:
-        throw new Error(`Unknown action: ${type}`);
-    }
-  });
-}
 
 function Live() {
   const { id } = useParams();
@@ -69,7 +48,7 @@ function Live() {
   const [studyGroup, setStudyGroup] = useState([]);
   const [note, setNote] = useState('');
   const [currentCard, setCurrentCard] = useState(0);
-  const [processData, dispatch] = useReducer(reducer, []);
+  const [processData, dispatch] = useProcessReducer([]);
   const [localStream, setLocalStream] = useState(null);
   const [peerConnections, setPeerConnections] = useState([]);
   const [videoState, setVideoState] = useState({
