@@ -40,7 +40,7 @@ function reducer(processData, { type, payload = {} }) {
   const { processIndex, data, process } = payload;
   return produce(processData, (draft) => {
     switch (type) {
-      case 'SET_DATA': {
+      case 'SET_CARD': {
         return process;
       }
       case 'DEL_CARD': {
@@ -168,7 +168,7 @@ function Live() {
 
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
-        await data.updateRoom(id, {
+        await data.updateDocument(id, 'rooms', {
           answer: {
             type: answer.type,
             sdp: answer.sdp,
@@ -195,7 +195,7 @@ function Live() {
 
   async function joinRoom() {
     const roomRef = doc(db, 'rooms', id);
-    await data.updateRoom(id, {
+    await data.updateDocument(id, 'rooms', {
       viewers: arrayUnion({ uuid: uuidv4(), name: user.name }),
     });
 
@@ -245,7 +245,7 @@ function Live() {
     });
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
-    await data.updateRoom(id, {
+    await data.updateDocument(id, 'rooms', {
       offer: {
         type: offer.type,
         sdp: offer.sdp,
@@ -299,7 +299,7 @@ function Live() {
         const studyGroupData = snapshot.data();
         setStudyGroup(studyGroupData);
         dispatch({
-          type: 'SET_DATA',
+          type: 'SET_CARD',
           payload: { process: studyGroupData.process },
         });
       },
@@ -501,12 +501,14 @@ function Live() {
         localVideoRef.current.srcObject = null;
       }
     }
-    await data.updateStatus(id, 'finished');
+    await data.updateDocument(id, 'studyGroups', {
+      status: 'finished',
+    });
   }
 
   const updateCurrentCard = async (newCard) => {
     try {
-      await data.updateRoom(id, { currentCard: newCard });
+      await data.updateDocument(id, 'rooms', { currentCard: newCard });
     } catch (error) {
       console.error(error);
     }

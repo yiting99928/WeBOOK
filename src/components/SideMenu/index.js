@@ -37,7 +37,7 @@ function SideMenu({ children }) {
 
     const imageURL = await uploadFile(imagePath, file);
 
-    await data.updateUserData(user.email, { userImg: imageURL });
+    await data.updateDocument(user.email, 'users', { userImg: imageURL });
 
     setUser((prevUser) => ({
       ...prevUser,

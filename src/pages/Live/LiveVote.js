@@ -1,16 +1,14 @@
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { produce } from 'immer';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { db } from '../../utils/firebaseConfig';
+import data from '../../utils/firebase';
 
 function Vote({ item, id, processIndex }) {
   const [hasVoted, setHasVoted] = useState(false);
 
   const handleVote = async (index) => {
     setHasVoted(true);
-    const studyGroupDocRef = doc(db, 'studyGroups', id);
-    const studyGroupDocSnapshot = await getDoc(studyGroupDocRef);
+    const studyGroupDocSnapshot = await data.getGroup(id);
 
     const updatedProcess = produce(
       studyGroupDocSnapshot.data().process,
@@ -19,7 +17,7 @@ function Vote({ item, id, processIndex }) {
       }
     );
 
-    await updateDoc(studyGroupDocRef, {
+    await data.updateDocument(id, 'studyGroups', {
       process: updatedProcess,
     });
   };

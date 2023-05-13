@@ -23,7 +23,9 @@ function Home() {
           dayjs(group.endTime.toDate()).isBefore(now) &&
           group.status !== 'ongoing'
         ) {
-          await data.updateStatus(group.id, 'finished');
+          await data.updateDocument(group.id, 'studyGroups', {
+            status: 'finished',
+          });
         } else if (group.status !== 'finished') {
           unfinishedGroups.push(group);
         }

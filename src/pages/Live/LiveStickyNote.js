@@ -1,4 +1,3 @@
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { produce } from 'immer';
 import { useContext, useEffect, useState } from 'react';
 import { BiMessageAdd } from 'react-icons/bi';
@@ -6,7 +5,7 @@ import { FaRegSave } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
-import { db } from '../../utils/firebaseConfig';
+import data from '../../utils/firebase';
 
 function StickyNote({ item, dispatch, processIndex, id }) {
   const { user } = useContext(AuthContext);
@@ -14,15 +13,15 @@ function StickyNote({ item, dispatch, processIndex, id }) {
   const [shouldUpdate, setShouldUpdate] = useState(false);
 
   const handleUpdateNote = async () => {
-    const studyGroupDocRef = doc(db, 'studyGroups', id);
-    const studyGroupDocSnapshot = await getDoc(studyGroupDocRef);
+    const studyGroupDocSnapshot = await data.getGroup(id);
+    
     const updatedProcess = produce(
       studyGroupDocSnapshot.data().process,
       (draft) => {
         draft[processIndex].data = item.data;
       }
     );
-    await updateDoc(studyGroupDocRef, {
+    await data.updateDocument(id, 'studyGroups', {
       process: updatedProcess,
     });
   };
@@ -89,7 +88,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
         {item.data?.map((item, index = 0) => (
           <Note key={index} noteColor={noteColor[index % noteColor.length]}>
             <Icons>
-              <FaRegSave onClick={() => setIsEditing(false)}/>
+              <FaRegSave onClick={() => setIsEditing(false)} />
               <MdClose onClick={() => handleDelOption(index)} />
             </Icons>
             <Message

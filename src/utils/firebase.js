@@ -98,8 +98,8 @@ const data = {
     const userData = userDoc.data();
     return userData;
   },
-  async updateUserData(email, userData) {
-    await updateDoc(doc(db, 'users', email), { ...userData });
+  async updateDocument(id, collection, updateData) {
+    await updateDoc(doc(db, collection, id), { ...updateData });
   },
   async setUserGroup(id, email, userGroupData) {
     const userGroupRef = doc(db, 'users', email, 'userStudyGroups', id);
@@ -131,14 +131,6 @@ const data = {
     } else {
       await updateDoc(groupRef, { status: 'ongoing' });
     }
-  },
-  async updateRoom(id, updateData) {
-    await updateDoc(doc(db, 'rooms', id), { ...updateData });
-  },
-  async updateStatus(id, status) {
-    await updateDoc(doc(db, 'studyGroups', id), {
-      status: status,
-    });
   },
   async deleteField(id) {
     const roomRef = doc(db, 'rooms', id);
