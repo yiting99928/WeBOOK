@@ -30,6 +30,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
   const handleAddOption = () => {
     const newItem = {
       name: user.name,
+      email: user.email,
       message: `請填寫分享內容`,
     };
     const updatedData = produce(item.data, (draft) => {
@@ -77,6 +78,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
               type="text"
               value={item.message}
               onChange={(e) => handleOptionChange(index, e, 'message')}
+              readOnly={user.email !== item.email}
             />
             <Name>{item.name}</Name>
           </Note>

@@ -10,6 +10,7 @@ function StickyNote({ item, dispatch, processIndex, editable }) {
     const updatedData = produce(item.data, (draft) => {
       draft[index][field] = e.target.value;
       draft[index]['name'] = user.name;
+      draft[index]['email'] = user.email;
     });
 
     dispatch({
