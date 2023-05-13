@@ -1,7 +1,8 @@
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { produce } from 'immer';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { BiMessageAdd } from 'react-icons/bi';
+import { FaRegSave } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 import styled from 'styled-components/macro';
 import { AuthContext } from '../../context/authContext';
@@ -9,23 +10,37 @@ import { db } from '../../utils/firebaseConfig';
 
 function StickyNote({ item, dispatch, processIndex, id }) {
   const { user } = useContext(AuthContext);
+  const [isEditing, setIsEditing] = useState(false);
+  const [shouldUpdate, setShouldUpdate] = useState(false);
+
+  const handleUpdateNote = async () => {
+    const studyGroupDocRef = doc(db, 'studyGroups', id);
+    const studyGroupDocSnapshot = await getDoc(studyGroupDocRef);
+    const updatedProcess = produce(
+      studyGroupDocSnapshot.data().process,
+      (draft) => {
+        draft[processIndex].data = item.data;
+      }
+    );
+    await updateDoc(studyGroupDocRef, {
+      process: updatedProcess,
+    });
+  };
+
   useEffect(() => {
-    const handleUpdateNote = async () => {
-      const studyGroupDocRef = doc(db, 'studyGroups', id);
-      const studyGroupDocSnapshot = await getDoc(studyGroupDocRef);
-      const updatedProcess = produce(
-        studyGroupDocSnapshot.data().process,
-        (draft) => {
-          draft[processIndex].data = item.data;
-        }
-      );
-      await updateDoc(studyGroupDocRef, {
-        process: updatedProcess,
-      });
-    };
-    handleUpdateNote();
+    if (!isEditing) {
+      handleUpdateNote();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item.data]);
+  }, [isEditing]);
+
+  useEffect(() => {
+    if (shouldUpdate) {
+      handleUpdateNote();
+      setShouldUpdate(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldUpdate]);
 
   const handleAddOption = () => {
     const newItem = {
@@ -40,6 +55,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
+    setShouldUpdate(true);
   };
 
   const handleOptionChange = (index, e) => {
@@ -60,11 +76,12 @@ function StickyNote({ item, dispatch, processIndex, id }) {
       type: 'UPDATE_DATA',
       payload: { processIndex, data: updatedData },
     });
+    setShouldUpdate(true);
   };
 
   const noteColor = ['#FFE4E1', '#FFF5EE', '#FFE4B5', '#F0FFF0', '#E0FFFF'];
   return (
-    <>
+    <div>
       <Add>
         <BiMessageAdd onClick={handleAddOption} />
       </Add>
@@ -72,11 +89,14 @@ function StickyNote({ item, dispatch, processIndex, id }) {
         {item.data?.map((item, index = 0) => (
           <Note key={index} noteColor={noteColor[index % noteColor.length]}>
             <Icons>
+              <FaRegSave onClick={() => setIsEditing(false)}/>
               <MdClose onClick={() => handleDelOption(index)} />
             </Icons>
             <Message
               type="text"
               value={item.message}
+              onFocus={() => setIsEditing(true)}
+              onBlur={() => setIsEditing(false)}
               onChange={(e) => handleOptionChange(index, e, 'message')}
               readOnly={user.email !== item.email}
             />
@@ -84,7 +104,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
           </Note>
         ))}
       </NoteContainer>
-    </>
+    </div>
   );
 }
 const Add = styled.div`
@@ -105,6 +125,8 @@ const Add = styled.div`
   }
 `;
 const Icons = styled.div`
+  display: flex;
+  gap: 5px;
   padding: 3px;
   position: absolute;
   top: 5px;
