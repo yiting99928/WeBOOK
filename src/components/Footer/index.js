@@ -35,6 +35,9 @@ const Container = styled.div`
   display: flex;
   padding: 0 70px;
   align-items: center;
+  @media screen and (max-width: 640px) {
+    padding: 0 30px;
+  }
 `;
 const ContactIcon = styled.div`
   display: flex;

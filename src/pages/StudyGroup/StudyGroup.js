@@ -69,7 +69,9 @@ function StudyGroup() {
       {studyGroup && (
         <Container>
           <GroupInfo>
-            <BookGroupImg src={studyGroup.image} alt="feature" />
+            <div>
+              <BookGroupImg src={studyGroup.image} alt="feature" />
+            </div>
             <GroupDetail>
               <Title>{studyGroup.groupName}</Title>
               <BookInfo>
@@ -179,7 +181,7 @@ const GroupDetail = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 100%;
+  min-width: 300px;
 `;
 
 const Container = styled.div`
@@ -189,11 +191,12 @@ const Container = styled.div`
   margin-top: 80px;
   margin-bottom: 180px;
   color: #5b5b5b;
+  padding: 0 30px;
 `;
 const BookGroupImg = styled.img`
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   object-fit: cover;
-  max-width: 300px;
+  height: 100%;
 `;
 const GroupInfo = styled.div`
   display: flex;
@@ -203,5 +206,9 @@ const GroupInfo = styled.div`
   border-bottom: 1px solid #b5b5b5;
   width: 100%;
   height: 500px;
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+    height: auto;
+  }
 `;
 export default StudyGroup;
