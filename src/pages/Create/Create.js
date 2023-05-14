@@ -136,7 +136,7 @@ function Create() {
         <Form>
           <InputContainer>
             <FormInputs>
-              <div>讀書會名稱</div>
+              <label>讀書會名稱</label>
               <TextInput
                 type="text"
                 name="groupName"
@@ -145,7 +145,7 @@ function Create() {
               />
             </FormInputs>
             <FormInputs>
-              <div>書籍名稱</div>
+              <label>書籍名稱</label>
               <TextInput
                 type="text"
                 name="name"
@@ -153,6 +153,21 @@ function Create() {
                 onChange={handleInputChange}
               />
             </FormInputs>
+            <MobileImgContainer>
+              <ImgPrev previewurl={previewurl}>
+                <BiImageAdd previewurl={previewurl} />
+                <ImgInput
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  name="image"
+                  onChange={handleInputChange}
+                />
+              </ImgPrev>
+              <Advice>
+                建議圖片使用書籍封面2:3或3:4
+                <br /> 檔案須小於 5 MB
+              </Advice>
+            </MobileImgContainer>
             <FormInputs>
               <label>作者</label>
               <TextInput
@@ -172,7 +187,7 @@ function Create() {
               />
             </FormInputs>
             <FormInputs>
-              <div>舉辦時間</div>
+              <label>舉辦時間</label>
               <DateInput>
                 <SelectInput
                   type="datetime-local"
@@ -186,7 +201,7 @@ function Create() {
               </DateInput>
             </FormInputs>
             <FormInputs>
-              <div>結束時間</div>
+              <label>結束時間</label>
               <DateInput>
                 <SelectInput
                   type="datetime-local"
@@ -200,7 +215,7 @@ function Create() {
               </DateInput>
             </FormInputs>
             <FormInputs>
-              <div>類別</div>
+              <label>類別</label>
               <CategoryInput
                 name="category"
                 value={createForm.category}
@@ -221,8 +236,8 @@ function Create() {
               />
             </FormInputs>
           </InputContainer>
-          <div>
-            <ImgContainer previewurl={previewurl}>
+          <ImgContainer>
+            <ImgPrev previewurl={previewurl}>
               <BiImageAdd previewurl={previewurl} />
               <ImgInput
                 type="file"
@@ -230,12 +245,12 @@ function Create() {
                 name="image"
                 onChange={handleInputChange}
               />
-            </ImgContainer>
+            </ImgPrev>
             <Advice>
               建議圖片使用書籍封面2:3或3:4
               <br /> 檔案須小於 5 MB
             </Advice>
-          </div>
+          </ImgContainer>
         </Form>
         <MainBtn onClick={handleSubmit} height={'44px'}>
           建立讀書會
@@ -244,6 +259,17 @@ function Create() {
     </Wrapper>
   );
 }
+const ImgContainer = styled.div`
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
+`;
+const MobileImgContainer = styled.div`
+  display: none;
+  @media screen and (max-width: 768px) {
+    display: block;
+  }
+`;
 const DateInput = styled.div`
   display: flex;
   align-items: center;
@@ -262,8 +288,13 @@ const Advice = styled.div`
   padding: 15px 10px;
   border-radius: 6px;
   line-height: 1.5;
+  @media screen and (max-width: 768px) {
+    width: 280px;
+  }
 `;
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  margin: 0px 30px;
+`;
 const FormContainer = styled.form`
   margin: 0 auto;
   max-width: 1125px;
@@ -301,7 +332,7 @@ const FormInputs = styled.div`
   flex-direction: column;
   gap: 8px;
 `;
-const ImgContainer = styled.div`
+const ImgPrev = styled.div`
   height: 350px;
   width: 250px;
   border-radius: 6px;
@@ -319,6 +350,10 @@ const ImgContainer = styled.div`
     left: 50%;
     transform: translate(-50%, -50%) scale(5);
     color: #ececec;
+  }
+  @media screen and (max-width: 768px) {
+    height: 300px;
+    width: 200px;
   }
 `;
 const ImgInput = styled.input`
