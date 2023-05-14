@@ -222,7 +222,7 @@ function Create() {
                 onChange={handleInputChange}>
                 <option>請選擇書籍類別</option>
                 {categoryOptions.map((category) => (
-                  <option>{category}</option>
+                  <option key={category}>{category}</option>
                 ))}
               </CategoryInput>
             </FormInputs>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BiCopy, BiTrash } from 'react-icons/bi';
 import { GrAddCircle } from 'react-icons/gr';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import GroupTitle from '../../components/GroupTitle';
 import useProcessReducer from '../../hooks/useProcessReducer';
@@ -18,7 +18,7 @@ function Process() {
   const [studyGroup, setStudyGroup] = useState({});
   const [editable, setEditable] = useState(0);
   const { id } = useParams();
-
+  const navigate = useNavigate();
   useEffect(() => {
     async function initData() {
       try {
@@ -128,6 +128,7 @@ function Process() {
       })
       .then(() => {
         modal.success('已儲存讀書會流程!');
+        navigate(`/profile`);
       })
       .catch((error) => {
         modal.quit('讀書會流程儲存失敗!');

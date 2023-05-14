@@ -93,7 +93,7 @@ function DecoBg() {
 const Decos = styled.div`
   position: absolute;
   z-index: -1;
-  width: 100vw;
+  width: 90vw;
   height: 85vh;
   display: flex;
 `;
