@@ -168,6 +168,7 @@ function Process() {
                       readOnly={editable !== processIndex}
                       onChange={(e) => handleDescriptionChange(processIndex, e)}
                       value={item.description}
+                      maxLength={20}
                     />
                     <TemplateType
                       name="templateType"
@@ -296,7 +297,7 @@ const Buttons = styled.div`
     color: #b5b5b;
   }
   @media screen and (max-width: 768px) {
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 2px solid #fff;
     flex-direction: row;
     justify-content: space-between;
     position: fixed;

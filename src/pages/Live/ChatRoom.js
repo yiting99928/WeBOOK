@@ -1,6 +1,6 @@
 import React from 'react';
+import { IoIosArrowForward } from 'react-icons/io';
 import styled from 'styled-components';
-import {IoIosArrowForward} from 'react-icons/io'
 
 export function ChatRoom({
   showChatRoom,
@@ -9,7 +9,7 @@ export function ChatRoom({
   setMessageInput,
   messagesEndRef,
   messages,
-  user
+  user,
 }) {
   return (
     <ChatRoomContainer showChatRoom={showChatRoom}>
@@ -64,6 +64,18 @@ const ChatRoomContainer = styled.div`
   border-radius: 6px;
   overflow: hidden;
   width: 230px;
+  height: 500px;
+  background-color: #fff;
+  @media screen and (max-width: 1024px) {
+    height: 400px;
+  }
+  @media screen and (max-width: 768px) {
+    position: fixed;
+    right: 10px;
+    bottom: 70px;
+    height: 450px;
+    z-index:2
+  }
 `;
 const SenderName = styled.div`
   color: #5b5b5b;
@@ -111,15 +123,20 @@ const ChatInput = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
   form {
+    width: 100%;
     display: flex;
     align-items: center;
   }
   input {
     margin: 5px 10px;
+    width: 100%;
   }
   button {
     cursor: pointer;
+    position: absolute;
+    right: 10px;
   }
 `;
 const ChatTitle = styled.div`

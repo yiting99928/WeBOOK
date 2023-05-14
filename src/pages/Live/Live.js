@@ -23,7 +23,6 @@ import styled from 'styled-components/macro';
 import { v4 as uuidv4 } from 'uuid';
 import { StartBtn } from '../../components/Buttons';
 import GroupTitle from '../../components/GroupTitle';
-import SideMenu from '../../components/SideMenu';
 import { AuthContext } from '../../context/authContext';
 import useProcessReducer from '../../hooks/useProcessReducer';
 import Lecture from '../../pages/Process/Lecture';
@@ -518,7 +517,7 @@ function Live() {
   };
 
   return (
-    <SideMenu>
+    <div>
       <Container>
         <GroupTitle studyGroup={studyGroup} />
         <LiveContainer>
@@ -601,12 +600,12 @@ function Live() {
                     <BsBoxArrowInUpLeft />
                   )}
                 </MediaButton>
-                <MediaButton
+                <ChatRoomInput
                   isActive={!showChatRoom}
                   activeColor="#e95f5c"
                   onClick={handleChatRoom}>
                   {showChatRoom ? <BsChatLeftDotsFill /> : <RiChatOffFill />}
-                </MediaButton>
+                </ChatRoomInput>
                 <Hangup
                   isHost={studyGroup.createBy === user.email}
                   onClick={handleStop}>
@@ -614,6 +613,12 @@ function Live() {
                 </Hangup>
               </ProcessInputs>
             )}
+            <MobileRoomInput
+              isActive={!showChatRoom}
+              activeColor="#e95f5c"
+              onClick={handleChatRoom}>
+              {showChatRoom ? <RiChatOffFill /> : <BsChatLeftDotsFill />}
+            </MobileRoomInput>
             <Broadcast>
               <LocalVideo
                 isHost={studyGroup.createBy === user.email}
@@ -646,13 +651,18 @@ function Live() {
           handleSaveNote={handleSaveNote}
           showSaveInfo={showSaveInfo}
         />
+        <FooterBottom />
       </Container>
-    </SideMenu>
+    </div>
   );
 }
-
+const FooterBottom = styled.div`
+  height: 100px;
+`;
 const Container = styled.div`
-  width: 100%;
+  max-width: 960px;
+  margin: 50px auto;
+  padding: 0 30px;
 `;
 
 const HostInput = styled.div`
@@ -663,19 +673,29 @@ const LocalVideo = styled.video`
   display: ${({ isHost }) => (isHost ? 'block' : 'none')};
   width: ${({ show }) => (show ? '200px' : '100px')};
   border-radius: 6px;
+  @media screen and (max-width: 640px) {
+    width: ${({ show }) => (show ? '150px' : '80px')};
+  }
 `;
 const RemoteVideo = styled.video`
   display: ${({ isHost }) => (isHost ? 'none' : 'block')};
   width: ${({ show }) => (show ? '200px' : '100px')};
   border-radius: 6px;
+  @media screen and (max-width: 640px) {
+    width: ${({ show }) => (show ? '150px' : '80px')};
+  }
 `;
 
 const LiveContainer = styled.div`
   display: flex;
-  height: 500px;
   justify-content: space-between;
   margin-bottom: 20px;
   gap: 10px;
+  width: 100%;
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    gap: 20px;
+  }
 `;
 const Broadcast = styled.div`
   position: absolute;
@@ -716,14 +736,30 @@ const LiveScreen = styled.div`
   border-radius: 6px;
   background-color: #fff;
   width: ${({ showChatRoom }) => (showChatRoom ? '75%' : '100%')};
+  height: 500px;
+  @media screen and (max-width: 1024px) {
+    height: 400px;
+  }
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    height: 350px;
+  }
+  @media screen and (max-width: 640px) {
+    height: 320px;
+  }
+  @media screen and (max-width: 376px) {
+    height: 250px;
+  }
 `;
 const LiveInputs = styled.div`
   display: ${({ isLive }) => (isLive ? 'none' : 'flex')};
+  justify-content: center;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   gap: 10px;
+  width: 100%;
 `;
 
 const Cards = styled.div`
@@ -734,6 +770,7 @@ const Cards = styled.div`
 `;
 const Card = styled.div`
   display: ${({ activeCard }) => (activeCard ? 'block' : 'none')};
+  overflow: scroll;
 `;
 const Description = styled.div`
   font-size: 20px;
@@ -743,18 +780,21 @@ const CardContent = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 370px;
+  height: 90%;
+  max-height: 370px;
+  min-height: 250px;
+  overflow: scroll;
 `;
 const ProcessInputs = styled.div`
-  margin-top: auto;
   align-items: center;
   gap: 8px;
   display: flex;
   justify-content: center;
-  padding-right: 20px;
   z-index: 1;
-  margin-right: 30px;
-
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-65%);
   svg {
     transform: scale(1.2);
     cursor: pointer;
@@ -787,6 +827,29 @@ const Hangup = styled(MediaButton)`
   background-color: #e95f5c;
   svg {
     color: #fff;
+  }
+`;
+const ChatRoomInput = styled(MediaButton)`
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
+`;
+const MobileRoomInput = styled(MediaButton)`
+  position: fixed;
+  right: 0px;
+  bottom: 10px;
+  z-index: 3;
+  width: 50px;
+  height: 50px;
+  display: none;
+  background-color: #e95f5c;
+  border: 1.5px solid #fff;
+  svg {
+    transform: scale(1.5);
+    color: #fff;
+  }
+  @media screen and (max-width: 768px) {
+    display: block;
   }
 `;
 export default Live;

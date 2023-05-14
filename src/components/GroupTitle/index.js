@@ -2,7 +2,6 @@ import styled from 'styled-components/macro';
 import { formatTimeRange } from '../../utils/formatTime';
 
 function GroupTitle({ studyGroup }) {
-
   return (
     <TitleContainer>
       <TitleName>
@@ -30,9 +29,15 @@ const TitleName = styled.div`
 const GroupName = styled.div`
   font-weight: 600;
   font-size: 28px;
+  @media screen and (max-width: 768px) {
+    font-size: 24px;
+  }
 `;
 const BookName = styled.div`
   font-size: 28px;
+  @media screen and (max-width: 768px) {
+    font-size: 24px;
+  }
 `;
 const TitleContainer = styled.div`
   display: flex;
@@ -41,5 +46,9 @@ const TitleContainer = styled.div`
   line-height: 1.5;
   justify-content: space-between;
   width: 100%;
+  @media screen and (max-width: 768px) {
+    font-size: 14px;
+    line-height: 1.2;
+  }
 `;
 export default GroupTitle;

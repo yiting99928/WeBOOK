@@ -14,7 +14,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
 
   const handleUpdateNote = async () => {
     const studyGroupDocSnapshot = await data.getGroup(id);
-    
+
     const updatedProcess = produce(
       studyGroupDocSnapshot.data().process,
       (draft) => {
@@ -108,7 +108,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
 }
 const Add = styled.div`
   position: absolute;
-  top: 75px;
+  top: 65px;
   left: 40px;
   cursor: pointer;
   background-color: #e95f5c;
@@ -118,6 +118,7 @@ const Add = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 50%;
+  z-index:3;
   svg {
     color: white;
     transform: scale(1.3);
@@ -141,9 +142,12 @@ const NoteContainer = styled.div`
   display: flex;
   gap: 10px;
   width: 100%;
-  height: 70%;
+  height: 100%;
   overflow-x: scroll;
   align-items: center;
+  @media screen and (max-width: 768px) {
+    height: 100%;
+  }
 `;
 const Message = styled.textarea`
   padding: 5px 0;
