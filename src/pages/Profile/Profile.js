@@ -292,23 +292,22 @@ const Note = styled.div`
   line-height: 1.3;
 `;
 const BookName = styled.div`
-  font-size: 28px;
+  font-size: 24px;
   letter-spacing: 1.5;
+  @media screen and (max-width: 640px) {
+    font-size: 20px;
+  }
 `;
 const Tag = styled.div`
   margin-left: auto;
   display: flex;
   gap: 5px;
   flex-direction: column;
-`;
-const Title = styled.div`
-  font-weight: 600;
-  font-size: 28px;
-  letter-spacing: 1.5;
-`;
-const Buttons = styled.div`
-  display: flex;
-  gap: 5px;
+  @media screen and (max-width: 768px) {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+  }
 `;
 const Status = styled.div`
   text-align: center;
@@ -319,8 +318,43 @@ const Status = styled.div`
   width: 95px;
   cursor: default;
   letter-spacing: 1.3;
+  @media screen and (max-width: 768px) {
+    color: ${({ statusColor }) => statusColor};
+    width: 20px;
+    height: 10px;
+    overflow: hidden;
+    :hover {
+      color: #fff;
+      overflow: auto;
+      width: 95px;
+      height: auto;
+    }
+  }
 `;
-
+const Title = styled.div`
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: 1.5;
+  @media screen and (max-width: 640px) {
+    font-size: 24px;
+  }
+`;
+const Buttons = styled.div`
+  display: flex;
+  gap: 5px;
+  @media screen and (max-width: 375px) {
+    white-space: nowrap;
+    overflow-x: scroll;
+    cursor: grab;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+  }
+`;
 const ImgContainer = styled.div`
   overflow: hidden;
 `;
@@ -337,12 +371,21 @@ const GroupInfo = styled.div`
   display: flex;
   gap: 50px;
   padding-bottom: ${({ expanded }) => (expanded ? '30px' : '0px')};
+  @media screen and (max-width: 640px) {
+    gap: 20px;
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 const StudyGroupCard = styled.div`
   padding: 16px 20px;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   width: 100%;
+  position: relative;
+  @media screen and (max-width: 640px) {
+    max-width: 450px;
+  }
 `;
 const Creator = styled.div`
   margin-top: auto;
@@ -355,5 +398,8 @@ const CardContent = styled.div`
   flex-direction: column;
   max-width: 600px;
   color: #5b5b5b;
+  @media screen and (max-width: 640px) {
+    width: 100%;
+  }
 `;
 export default Profile;
