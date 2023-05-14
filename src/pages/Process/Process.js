@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { BiCopy, BiTrash } from 'react-icons/bi';
 import { GrAddCircle } from 'react-icons/gr';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import GroupTitle from '../../components/GroupTitle';
-import SideMenu from '../../components/SideMenu';
 import useProcessReducer from '../../hooks/useProcessReducer';
 import data from '../../utils/firebase';
 import modal from '../../utils/modal';
@@ -143,93 +142,103 @@ function Process() {
     });
   };
   return (
-    <SideMenu>
-      <TitleContainer>
-        <GroupTitle studyGroup={studyGroup} />
-      </TitleContainer>
-      <ProcessContainer>
-        {processData !== undefined &&
-          processData.map((item, processIndex) => {
-            return (
-              <ProcessCard
-                key={processIndex}
-                id={`card-${processIndex}`}
-                onClick={() => setEditable(processIndex)}>
-                <EditBlock editable={editable === processIndex}></EditBlock>
-                <Drag
-                  draggable="true"
-                  onDragStart={(e) => handleDragStart(e, processIndex)}
-                  onDragOver={(e) => handleDragOver(e)}
-                  onDrop={(e) => handleDrop(e, processIndex)}>
-                  <img src={move} alt="move" />
-                </Drag>
-                <></>
-                <Title>
-                  <Description
-                    readOnly={editable !== processIndex}
-                    onChange={(e) => handleDescriptionChange(processIndex, e)}
-                    value={item.description}
-                  />
-                  <TemplateType
-                    name="templateType"
-                    value={item.type}
-                    onChange={(e) =>
-                      dispatch({
-                        type: 'CHANGE_CARD',
-                        payload: {
-                          processIndex: processIndex,
-                          templates: templates,
-                          e: e,
-                        },
-                      })
-                    }>
-                    <option value="lecture">導讀講稿</option>
-                    <option value="stickyNote">便利貼分享</option>
-                    <option value="QA">QA問答</option>
-                    <option value="vote">問題票選</option>
-                  </TemplateType>
-                </Title>
+    <div>
+      <Container>
+        <TitleContainer>
+          <GroupTitle studyGroup={studyGroup} />
+        </TitleContainer>
+        <ProcessContainer>
+          {processData !== undefined &&
+            processData.map((item, processIndex) => {
+              return (
+                <ProcessCard
+                  key={processIndex}
+                  id={`card-${processIndex}`}
+                  onClick={() => setEditable(processIndex)}>
+                  <EditBlock editable={editable === processIndex}></EditBlock>
+                  <Drag
+                    draggable="true"
+                    onDragStart={(e) => handleDragStart(e, processIndex)}
+                    onDragOver={(e) => handleDragOver(e)}
+                    onDrop={(e) => handleDrop(e, processIndex)}>
+                    <img src={move} alt="move" />
+                  </Drag>
+                  <Title>
+                    <Description
+                      readOnly={editable !== processIndex}
+                      onChange={(e) => handleDescriptionChange(processIndex, e)}
+                      value={item.description}
+                    />
+                    <TemplateType
+                      name="templateType"
+                      value={item.type}
+                      onChange={(e) =>
+                        dispatch({
+                          type: 'CHANGE_CARD',
+                          payload: {
+                            processIndex: processIndex,
+                            templates: templates,
+                            e: e,
+                          },
+                        })
+                      }>
+                      <option value="lecture">導讀講稿</option>
+                      <option value="stickyNote">便利貼分享</option>
+                      <option value="QA">QA問答</option>
+                      <option value="vote">問題票選</option>
+                    </TemplateType>
+                  </Title>
 
-                {renderCardContent(item, processIndex)}
-                <Buttons editable={editable === processIndex}>
-                  <GrAddCircle
-                    onClick={() => {
-                      const lecture = templates.find(
-                        (item) => item.type === 'lecture'
-                      );
-                      dispatch({
-                        type: 'ADD_CARD',
-                        payload: { lecture, processIndex },
-                      });
-                    }}
-                  />
-                  <BiCopy
-                    onClick={() => {
-                      dispatch({
-                        type: 'COPY_CARD',
-                        payload: { processIndex },
-                      });
-                    }}
-                  />
-                  <BiTrash
-                    onClick={() => {
-                      dispatch({
-                        type: 'DEL_CARD',
-                        payload: { processIndex },
-                      });
-                    }}
-                  />
-                </Buttons>
-              </ProcessCard>
-            );
-          })}
-      </ProcessContainer>
-      <SubmitInput onClick={() => handelSave(processData)}>儲存</SubmitInput>
-    </SideMenu>
+                  {renderCardContent(item, processIndex)}
+                  <Buttons editable={editable === processIndex}>
+                    <GrAddCircle
+                      onClick={() => {
+                        const lecture = templates.find(
+                          (item) => item.type === 'lecture'
+                        );
+                        dispatch({
+                          type: 'ADD_CARD',
+                          payload: { lecture, processIndex },
+                        });
+                      }}
+                    />
+                    <BiCopy
+                      onClick={() => {
+                        dispatch({
+                          type: 'COPY_CARD',
+                          payload: { processIndex },
+                        });
+                      }}
+                    />
+                    <BiTrash
+                      onClick={() => {
+                        dispatch({
+                          type: 'DEL_CARD',
+                          payload: { processIndex },
+                        });
+                      }}
+                    />
+                  </Buttons>
+                </ProcessCard>
+              );
+            })}
+        </ProcessContainer>
+        <SubmitInput onClick={() => handelSave(processData)}>儲存</SubmitInput>
+        <FooterBottom />
+      </Container>
+    </div>
   );
 }
+const FooterBottom = styled.div`
+  height: 60px;
+`;
+const Container = styled.div`
+  margin: 50px auto;
+  max-width: 960px;
+  padding: 0px 30px;
+`;
 const TitleContainer = styled.div`
-  width: 90%;
+  width: 100%;
 `;
 const SubmitInput = styled.div`
   background: #df524d;
@@ -264,7 +273,11 @@ const ProcessContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 90%;
+  width: 100%;
+  padding-right: 50px;
+  @media screen and (max-width: 768px) {
+    padding-right: 0px;
+  }
 `;
 const Buttons = styled.div`
   display: ${({ editable }) => (editable ? 'flex' : 'none')};
@@ -280,6 +293,19 @@ const Buttons = styled.div`
   svg {
     transform: scale(1.3);
     cursor: pointer;
+    color: #b5b5b;
+  }
+  @media screen and (max-width: 768px) {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    flex-direction: row;
+    justify-content: space-between;
+    position: fixed;
+    top: auto;
+    left: 50%;
+    bottom: 50px;
+    z-index: 3;
+    width: 150px;
+    transform: translateX(-50%);
   }
 `;
 const Title = styled.div`
