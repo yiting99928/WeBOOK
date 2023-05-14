@@ -37,6 +37,9 @@ const Title = styled.div`
   line-height: 1.5;
   animation: ${fadeIn} 2s cubic-bezier(0.5, 0, 0.1, 1) both;
   animation-delay: ${(props) => props.delay}s;
+  @media screen and (max-width: 640px) {
+    font-size: 30px;
+  }
 `;
 const Banner = styled.div`
   height: 100vh;
@@ -53,5 +56,12 @@ const BannerInfo = styled.div`
   padding-left: 20px;
   z-index: 1;
   align-items: center;
+  min-width: 420px;
+  @media screen and (max-width: 768px) {
+    min-width: 100%;
+    text-align: center;
+    width: 100%;
+    padding: 0px;
+  }
 `;
 export default BannerSection;

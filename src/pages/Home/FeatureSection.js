@@ -9,7 +9,6 @@ import live from './featureVideo/live.mp4';
 import note from './featureVideo/note.mp4';
 
 function FeatureSection() {
-
   const featuresData = [
     {
       videoSrc: edit,
@@ -94,8 +93,16 @@ const Features = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 180px;
-  height: 1300px;
+  min-height: 1300px;
   justify-content: space-between;
+  @media screen and (max-width: 1024px) {
+    min-height: 1000px;
+  }
+  @media screen and (max-width: 768px) {
+    gap: 60px;
+    margin-bottom: 100px;
+    text-align: center;
+  }
 `;
 const FeatureWrap = styled.div`
   display: flex;
@@ -103,13 +110,19 @@ const FeatureWrap = styled.div`
   justify-content: space-between;
   padding: 0 30px;
   gap: 60px;
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 const Feature = styled.div`
   display: flex;
   flex-direction: column;
   gap: 18px;
-  width: 480px;
+  max-width: 480px;
   order: ${({ reversed }) => (reversed ? 0 : 1)};
+  @media screen and (max-width: 768px) {
+    order: 0;
+  }
 `;
 const FeatureDeco = styled.div`
   width: 450px;
@@ -129,6 +142,12 @@ const FeatureImg = styled.div`
   :hover ${FeatureDeco} {
     background-color: rgba(239, 140, 138, 0.3);
   }
+  @media screen and (max-width: 1024px) {
+    max-width: 400px;
+  }
+  @media screen and (max-width: 768px) {
+    order: 0;
+  }
 `;
 const FeatureTitle = styled.div`
   color: #df524d;
@@ -136,6 +155,9 @@ const FeatureTitle = styled.div`
   font-weight: 600;
   margin-bottom: 10px;
   letter-spacing: 1.5;
+  @media screen and (max-width: 768px) {
+    font-size: 30px;
+  }
 `;
 const FeatureDescription = styled.div`
   line-height: 1.5;
@@ -147,6 +169,10 @@ const FeaturePoints = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  @media screen and (max-width: 768px) {
+    margin: 0 auto;
+    min-width: 300px;
+  }
 `;
 const FeaturePoint = styled.div`
   font-size: 20px;
@@ -154,6 +180,9 @@ const FeaturePoint = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  @media screen and (max-width: 768px) {
+    font-size: 16px;
+  }
 `;
 
 export default FeatureSection;

@@ -75,6 +75,9 @@ const RecommendedTitle = styled.div`
   font-size: 36px;
   font-weight: 600;
   margin-bottom: 10px;
+  @media screen and (max-width: 768px) {
+    font-size: 30px;
+  }
 `;
 const BookGroupWrap = styled.div`
   margin: 0 auto;
@@ -83,6 +86,15 @@ const BookGroupWrap = styled.div`
   gap: 23px;
   margin-top: 40px;
   margin-bottom: 50px;
+  @media screen and (max-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media screen and (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media screen and (max-width: 320px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 `;
 const Recommended = styled.div`
   max-width: 1100px;
@@ -90,6 +102,9 @@ const Recommended = styled.div`
   margin-bottom: 110px;
   padding: 0 20px;
   overflow: hidden;
+  @media screen and (max-width: 768px) {
+    margin-bottom: 50px;
+  }
 `;
 const FooterBottom = styled.div`
   height: 60px;

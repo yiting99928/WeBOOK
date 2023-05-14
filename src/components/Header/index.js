@@ -29,7 +29,6 @@ function Header() {
         <HamburgerLine2 isOpen={isOpen} />
         <HamburgerLine3 isOpen={isOpen} />
       </HamburgerIcon>
-      <MobileMenuBlack isOpen={isOpen} />
       <MobileWrap isOpen={isOpen}>
         <MobileMenu>
           <p>
@@ -52,14 +51,15 @@ const HamburgerIcon = styled.div`
   flex-direction: column;
   justify-content: space-between;
   position: absolute;
-  top: 30px;
-  right: 50px;
+  top: 20px;
+  right: 30px;
   cursor: pointer;
   position: fixed;
   z-index: 20;
   display: none;
   @media screen and (max-width: 768px) {
     display: flex;
+    right: 30px;
   }
 `;
 
@@ -89,36 +89,30 @@ const HamburgerLine3 = styled.div`
 `;
 
 const MobileWrap = styled.div`
-  display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
-  @media screen and (max-width: 768px) {
-    font-size: 18px;
-    position: fixed;
-    padding-top: 100px;
-    padding-left: 50px;
-    background-color: white;
-    width: 40%;
-    height: 100vh;
-    right: 0;
-    top: 0;
-    z-index: 2;
-  }
+  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
+  font-size: 18px;
+  position: fixed;
+  background-color: white;
+  top: 60px;
+  width: 100%;
+  z-index: 2;
+  padding: 50px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
 `;
 const MobileMenu = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-`;
-const MobileMenuBlack = styled.div`
-  display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
-  @media screen and (max-width: 768px) {
-    position: fixed;
-    background-color: black;
-    width: 100%;
-    height: 100vh;
-    opacity: 0.5;
-    right: 0;
-    top: 0;
-    z-index: 2;
+  width: 100%;
+  p {
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  }
+  a {
+    color: #5b5b5b;
+    :hover {
+      color: #df524d;
+    }
   }
 `;
 const Container = styled.div`
@@ -129,13 +123,14 @@ const Container = styled.div`
   letter-spacing: 1.5;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 5;
   background-color: #fff;
 `;
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   @media screen and (max-width: 768px) {
     justify-content: center;
   }
@@ -145,6 +140,10 @@ const Logo = styled.div`
   height: 63px;
   background-image: url(${logoImg});
   background-size: cover;
+  @media screen and (max-width: 768px) {
+    height: 40px;
+    width: 150px;
+  }
 `;
 const Menu = styled.div`
   display: flex;

@@ -542,6 +542,9 @@ function BannerImg() {
 const BannerMainImg = styled.svg`
   max-width: 600px;
   height: 100%;
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 export default BannerImg;
