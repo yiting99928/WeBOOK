@@ -11,7 +11,7 @@ function Vote({ item, id, processIndex }) {
     const studyGroupDocSnapshot = await data.getGroup(id);
 
     const updatedProcess = produce(
-      studyGroupDocSnapshot.data().process,
+      studyGroupDocSnapshot.process,
       (draftProcess) => {
         draftProcess[processIndex].data[index].number += 1;
       }

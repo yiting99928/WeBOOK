@@ -304,6 +304,9 @@ const FormContainer = styled.form`
   background: #fff;
   box-shadow: 0px 4px 17px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
+  @media screen and (max-width: 768px) {
+    padding: 20px 30px;
+  }
 `;
 const FormTitle = styled.div`
   color: #5b5b5b;

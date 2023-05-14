@@ -16,7 +16,7 @@ function StickyNote({ item, dispatch, processIndex, id }) {
     const studyGroupDocSnapshot = await data.getGroup(id);
 
     const updatedProcess = produce(
-      studyGroupDocSnapshot.data().process,
+      studyGroupDocSnapshot.process,
       (draft) => {
         draft[processIndex].data = item.data;
       }
@@ -118,7 +118,7 @@ const Add = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  z-index:3;
+  z-index: 3;
   svg {
     color: white;
     transform: scale(1.3);
