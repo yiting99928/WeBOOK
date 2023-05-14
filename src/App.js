@@ -10,14 +10,14 @@ import { createGlobalStyle } from 'styled-components';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import { AuthContext } from './context/authContext';
-import Create from './pages/Create/Create';
-import Home from './pages/Home/Home';
-import Live from './pages/Live/Live';
-import Login from './pages/Login/Login';
-import Process from './pages/Process/Process';
-import Profile from './pages/Profile/Profile';
-import StudyGroup from './pages/StudyGroup/StudyGroup';
-import StudyGroups from './pages/StudyGroups/StudyGroups';
+import Create from './pages/Create';
+import Home from './pages/Home';
+import Live from './pages/Live';
+import Login from './pages/Login';
+import Process from './pages/Process';
+import Profile from './pages/Profile';
+import StudyGroup from './pages/StudyGroup';
+import StudyGroups from './pages/StudyGroups';
 
 const UserRouter = () => {
   const { user } = useContext(AuthContext);
