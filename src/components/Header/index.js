@@ -59,7 +59,10 @@ const HamburgerIcon = styled.div`
   display: none;
   @media screen and (max-width: 768px) {
     display: flex;
-    right: 30px;
+    right: 45px;
+  }
+  @media screen and (max-width: 375px) {
+    right: 60px;
   }
 `;
 
@@ -89,12 +92,12 @@ const HamburgerLine3 = styled.div`
 `;
 
 const MobileWrap = styled.div`
-  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
+  display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
   font-size: 18px;
   position: fixed;
   background-color: white;
   top: 60px;
-  width: 100%;
+  width: 100vw;
   z-index: 2;
   padding: 50px;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);

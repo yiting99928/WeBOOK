@@ -19,7 +19,9 @@ function StudyGroupCard({ item }) {
         <BookGroupImg src={item.image} alt="feature" />
       </ImgContainer>
       <BookGroupInfo>
-        <BookTitle>{item.groupName}</BookTitle>
+        <BookTitle>
+          {item.groupName.length > 8 ? `${item.groupName.slice(0, 8)}...` : item.groupName}
+        </BookTitle>
         <p>
           {item.name.length > 10 ? `${item.name.slice(0, 10)}...` : item.name}
         </p>

@@ -30,7 +30,7 @@ function StudyGroups() {
     } else {
       groups = await data.getCategory(category);
     }
-    
+
     setSelectedCategory(category);
     setAllGroupsData(groups);
   };
@@ -175,7 +175,17 @@ const BookGroupWrap = styled.div`
   gap: 23px;
   margin-top: 40px;
   margin-bottom: 120px;
-  ${'' /* padding: 0 20px; */}
+  @media screen and (max-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media screen and (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0px 20px;
+  }
+  @media screen and (max-width: 375px) {
+    grid-template-columns: repeat(1, 1fr);
+    padding: 0px 40px;
+  }
 `;
 const SearchBar = styled.div`
   display: flex;
@@ -220,11 +230,23 @@ const SearchBtns = styled.div`
   flex-wrap: wrap;
   margin-top: -3px;
   width: 90%;
+  overflow-x: scroll;
+  cursor: grab;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  @media screen and (max-width: 640px) {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
 `;
 const SearchBtnTitle = styled.div`
   width: 50px;
 `;
-
 const Container = styled.div`
   max-width: 1000px;
   margin: 0 auto;

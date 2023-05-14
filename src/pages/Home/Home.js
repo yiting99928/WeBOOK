@@ -85,15 +85,16 @@ const BookGroupWrap = styled.div`
   grid-template-columns: repeat(4, 1fr);
   gap: 23px;
   margin-top: 40px;
-  margin-bottom: 50px;
   @media screen and (max-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
   }
   @media screen and (max-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
+    padding: 0px 20px;
   }
-  @media screen and (max-width: 320px) {
+  @media screen and (max-width: 375px) {
     grid-template-columns: repeat(1, 1fr);
+    padding: 0px 40px;
   }
 `;
 const Recommended = styled.div`
