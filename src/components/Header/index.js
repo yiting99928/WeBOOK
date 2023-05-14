@@ -123,7 +123,6 @@ const MobileMenuBlack = styled.div`
 `;
 const Container = styled.div`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-  ${'' /* padding: 20px; */}
   padding: 10px 70px;
   font-size: 20px;
   color: #5b5b5b;

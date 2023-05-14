@@ -105,15 +105,26 @@ const StyledLink = styled(Link)`
   &:hover {
     color: #df524d;
   }
+  @media screen and (max-width: 1024px) {
+    line-height: 2.2;
+  }
 `;
 const SideMenuLink = styled.div`
   display: flex;
   flex-direction: column;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  padding-bottom: 10px;
+  @media screen and (max-width: 1024px) {
+    border-bottom: none;
+  }
 `;
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
   position: relative;
+  @media screen and (max-width: 1024px) {
+    flex-direction: column;
+  }
 `;
 
 const Content = styled.div`
@@ -121,12 +132,17 @@ const Content = styled.div`
   margin: 0 auto;
   margin-top: 54px;
   margin-bottom: 120px;
-  width: 960px;
+  width: 100%;
+  max-width: 960px;
   padding: 0 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
   align-items: center;
+  @media screen and (max-width: 1024px) {
+    width: 100%;
+    max-width: 960px;
+  }
 `;
 const Sidebar = styled.div`
   width: ${({ isOpen }) => (isOpen ? '10%' : '40px')};
@@ -135,11 +151,23 @@ const Sidebar = styled.div`
   transition: all 0.3s ease;
   background-color: #fee0d4;
   position: relative;
+  @media screen and (max-width: 1024px) {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
 `;
 const SidebarContainer = styled.div`
   position: fixed;
   min-width: ${({ isOpen }) => (isOpen ? '200px' : '40px')};
   width: ${({ isOpen }) => (isOpen ? '10%' : '40px')};
+  @media screen and (max-width: 1024px) {
+    position: relative;
+    margin: 0 auto;
+    width: auto;
+    max-width: 960px;
+    padding: 20px 20px;
+  }
 `;
 const User = styled.div`
   display: flex;
@@ -180,15 +208,20 @@ const UploadText = styled.div`
   }
 `;
 
-const Logout = styled.div`
-  margin: 0px 30px;
+const Logout = styled.button`
+  width: 100%;
   line-height: 2;
-  margin-top: 10px;
   cursor: pointer;
-  border-top: 1px solid gray;
-  padding-top: 20px;
+  padding-top: 15px;
+  font-size: 16px;
+  letter-spacing:1.8;
   &:hover {
     color: #df524d;
+  }
+  @media screen and (max-width: 1024px) {
+    ${'' /* line-height: 1; */}
+    margin-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
   }
 `;
 const ArrowIcon = styled.div`
@@ -199,11 +232,20 @@ const ArrowIcon = styled.div`
   svg {
     transform: scale(1.3);
   }
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 const SidebarLinks = styled.div`
   padding-top: 70px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  align-items: center;
+  @media screen and (max-width: 1024px) {
+    flex-direction: row;
+    padding: 0px;
+    justify-content: center;
+  }
 `;
 export default SideMenu;
