@@ -53,7 +53,6 @@ function App() {
 const GlobalStyle = createGlobalStyle`
 * {
     box-sizing: border-box;
-    ${'' /* border:1px solid black !important */}
 }
 input{
   border-radius: 4px;
