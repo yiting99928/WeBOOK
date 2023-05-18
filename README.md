@@ -1,46 +1,60 @@
-# Getting Started with Create React App and Redux
+<div align="center">
+  <a href="https://joyup-management.web.app" style="margin-bottom:20px; display:block;">
+    <img src="./src/assets/images/logo/dark-name/rectengle_logo.png" alt="Logo" width="200px">
+  </a>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+  <p align="center">
+    <a href="https://github.com/Joy-port/joyup# About-JoyUp">About</a>
+    |
+    <a href="https://github.com/Joy-port/joyup# Demo">Demo</a>
+    |
+    <a href="https://github.com/Joy-port/joyup#Contact">Contact</a>
+  </p>
+</div>
 
-## Available Scripts
+# WeBOOK
+[WeBOOK書適圈](https://webook-studygroups.web.app) is an online study platform that enables users to edit study group processes and utilize them during live streams. It offers a seamless experience for collaborative learning.
 
-In the project directory, you can run:
+* Used `WebRTC` communication, implementing one-to-many live stream.
+* Integrated `Firebase firestore database`, `Firebase storage`, and `Firebase authentication` for database and membership management.
+* Applied the `onSnapshot` API of Firestore, achieved real-time voting, sharing, and chatting functionalities with other users.
+* Utilized `immer` library to handle immutable data.
+* Leveraged `useReducer` hook to manage various process templates and scheduling processes.
+* Implemented `onDrag` event-driven drag and drop capabilities for process adjustment.
+* Employed `Jest` as a framework for unit tests.
+* Created a reusable alert component using `SweetAlert` library.
+* Computed time calculations using the lightweight `Day.js` library.
+* Utilized `react-quill` library, and implemented text editors.
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Built with
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![Styled Components](https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white) ![Firebase](https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black) ![NPM](https://img.shields.io/badge/NPM-%23CB3837.svg?style=for-the-badge&logo=npm&logoColor=white) ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 
-### `npm test`
+**Base**
+* React.js
+* Styled-components
+* Firebase
+* WebRTC
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**Libraries**
+* Immer
+* React-quill
+* Day.js
+* Sweetalert2
 
-### `npm run build`
+### User Flow
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Demo
+- Self-editable book introduction process.
+- Live streaming with a self-edited process.
+- Engaging with the audience.
+- Saving study group notes.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Contact
+  <a href="https://www.linkedin.com/in/yiting-yang999628" text-decoration="none">
+    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />
+  </a>
+  <a href="mailto:yitingyang6288@gmail.com">
+    <img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" />
+  </a>
