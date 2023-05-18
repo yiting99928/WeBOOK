@@ -1,9 +1,11 @@
 <div align="center">
-  <a href="https://joyup-management.web.app" style="margin-bottom:20px; display:block;">
+  <a href="https://webook-studygroups.web.app/" style="margin-bottom:20px; display:block;">
     <img src="https://github.com/yiting99928/WeBOOK/assets/119116127/4ca2c0f5-f82b-4bcf-907c-438824629602" alt="Logo" width="200px">
   </a>
 
   <p align="center">
+    <a href="https://webook-studygroups.web.app/">Website</a>
+    |
     <a href="https://github.com/yiting99928/WeBOOK#demo">Demo</a>
     |
     <a href="https://github.com/yiting99928/WeBOOK#contact">Contact</a>
@@ -11,7 +13,7 @@
 </div>
 
 # WeBOOK
-[WeBOOK書適圈](https://webook-studygroups.web.app) is an online study platform that enables users to edit study group processes and utilize them during live streams. It offers a seamless experience for collaborative learning.
+[WeBOOK 書適圈](https://webook-studygroups.web.app) is an online study platform that enables users to edit study group processes and utilize them during live streams. It offers a seamless experience for collaborative learning.
 
 * Used `WebRTC` communication, implementing one-to-many live stream.
 * Integrated `Firebase firestore database`, `Firebase storage`, and `Firebase authentication` for database and membership management.
