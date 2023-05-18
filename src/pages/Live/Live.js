@@ -101,7 +101,7 @@ function Live() {
         isVideoDisabled: false,
       });
     } catch (error) {
-      console.error(error);
+      modal.quit("請確保已開啟設備，或嘗試更換瀏覽器")
     }
   }
 
