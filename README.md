@@ -1,14 +1,12 @@
 <div align="center">
   <a href="https://joyup-management.web.app" style="margin-bottom:20px; display:block;">
-    <img src="./src/assets/images/logo/dark-name/rectengle_logo.png" alt="Logo" width="200px">
+    <img src="https://github.com/yiting99928/WeBOOK/assets/119116127/4ca2c0f5-f82b-4bcf-907c-438824629602" alt="Logo" width="200px">
   </a>
 
   <p align="center">
-    <a href="https://github.com/Joy-port/joyup# About-JoyUp">About</a>
+    <a href="https://github.com/yiting99928/WeBOOK#demo">Demo</a>
     |
-    <a href="https://github.com/Joy-port/joyup# Demo">Demo</a>
-    |
-    <a href="https://github.com/Joy-port/joyup#Contact">Contact</a>
+    <a href="https://github.com/yiting99928/WeBOOK#contact">Contact</a>
   </p>
 </div>
 
@@ -44,14 +42,17 @@
 * Sweetalert2
 
 ### User Flow
+<img width="600" alt="WeBOOK user flow" src="https://github.com/yiting99928/WeBOOK/assets/119116127/cd10b4b1-556c-4bb3-9863-0fcd326981dc">
 
-### Demo
-- Self-editable book introduction process.
-- Live streaming with a self-edited process.
-- Engaging with the audience.
-- Saving study group notes.
+### <a id="demo"></a>Demo
+- Self-editable book introduction process.<br>
+![edit](https://github.com/yiting99928/WeBOOK/assets/119116127/92b69b7e-2403-40e4-aea4-0a8b405a0c87)
+- Live streaming with a self-edited process and engaging with the audience.<br>
+![live](https://github.com/yiting99928/WeBOOK/assets/119116127/d3aa39b5-423c-4efe-8a7c-9286ed96299f)
+- Saving study group notes.<br>
+![note](https://github.com/yiting99928/WeBOOK/assets/119116127/a89fa4ea-657b-4145-a805-150a99495c63)
 
-### Contact
+### <a id="contact"></a>Contact
   <a href="https://www.linkedin.com/in/yiting-yang999628" text-decoration="none">
     <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />
   </a>
