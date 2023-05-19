@@ -250,7 +250,7 @@ const Container = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 50px;
-  padding: 0 30px;
+  padding: 0 10px;
 `;
 
 const Cards = styled.div`
@@ -263,12 +263,15 @@ const Cards = styled.div`
   height: 450px;
   box-shadow: 0px 0px 17px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
+  @media screen and (max-width: 640px) {
+    min-width: 350px;
+  }
 `;
 
 const LoginCard = styled.div`
   display: flex;
   flex-direction: column;
-  width: 400px;
+  width: 100%;
   height: 100%;
   padding: 24px;
   position: absolute;

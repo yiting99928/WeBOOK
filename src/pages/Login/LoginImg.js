@@ -519,6 +519,9 @@ function LoginImg() {
 const LoginMainImg = styled.svg`
   width: 100%;
   max-height: 400px;
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 export default LoginImg;
