@@ -87,14 +87,14 @@ function Login() {
         modal.quit('發送重置密碼郵件失敗，請確保電子郵件正確無誤');
       });
   };
-  function Test(e) {
+  const handleTestLogin = (e) => {
     e.stopPropagation();
+
     setLogin({
       email: 'webooktest@gmail.com',
       password: 'webooktest',
     });
-  }
-
+  };
   return (
     <CenterContainer>
       <DecoBg height={550} />
@@ -106,7 +106,9 @@ function Login() {
             </FormTitle>
             <FormContainer onSubmit={handleLogin}>
               <Description>加入WeBOOK展開全新的讀書會體驗</Description>
-              <TestAccount onClick={Test}>點此使用測試帳戶</TestAccount>
+              <TestAccount type="button" onClick={(e) => handleTestLogin(e)}>
+                點此使用測試帳戶
+              </TestAccount>
               <div>
                 <div>電子郵件</div>
                 <FormInput
@@ -185,6 +187,7 @@ function Login() {
     </CenterContainer>
   );
 }
+
 const TestAccount = styled.button`
   font-size: 16px;
   cursor: pointer;
