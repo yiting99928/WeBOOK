@@ -6,6 +6,8 @@
   <p align="center">
     <a href="https://webook-studygroups.web.app/">Website</a>
     |
+    <a href="https://github.com/yiting99928/WeBOOK#test">Test Account</a>
+    |
     <a href="https://github.com/yiting99928/WeBOOK#demo">Demo</a>
     |
     <a href="https://github.com/yiting99928/WeBOOK#contact">Contact</a>
@@ -53,6 +55,10 @@
 ![live](https://github.com/yiting99928/WeBOOK/assets/119116127/d3aa39b5-423c-4efe-8a7c-9286ed96299f)
 - Saving study group notes.<br>
 ![note](https://github.com/yiting99928/WeBOOK/assets/119116127/a89fa4ea-657b-4145-a805-150a99495c63)
+
+### <a id="test"></a>Test Account
+- Email: webooktest@gmail.com
+- Password: webooktest
 
 ### <a id="contact"></a>Contact
   <a href="https://www.linkedin.com/in/yiting-yang999628" text-decoration="none">
