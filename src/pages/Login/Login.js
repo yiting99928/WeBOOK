@@ -49,7 +49,7 @@ function Login() {
     firebaseAuth
       .register(register.email, register.password)
       .then(() => {
-        data.setDocument(register.email,'users',registerData);
+        data.setDocument(register.email, 'users', registerData);
         modal.success('註冊成功');
       })
       .catch((error) => {
@@ -87,10 +87,13 @@ function Login() {
         modal.quit('發送重置密碼郵件失敗，請確保電子郵件正確無誤');
       });
   };
-
-  function alertTest() {
-    prompt('測試用帳號密碼：', 'yumy19990628@gmail.com yumy0000');
+  function Test() {
+    setLogin({
+      email: 'webooktest@gmail.com',
+      password: 'webooktest',
+    });
   }
+
   return (
     <CenterContainer>
       <DecoBg height={550} />
@@ -101,9 +104,8 @@ function Login() {
               <Title>登入</Title>
             </FormTitle>
             <FormContainer onSubmit={handleLogin}>
-              <Description onClick={alertTest}>
-                加入WeBOOK展開全新的讀書會體驗
-              </Description>
+              <Description>加入WeBOOK展開全新的讀書會體驗</Description>
+              <TestAccount onClick={Test}>點此使用測試帳戶</TestAccount>
               <div>
                 <div>電子郵件</div>
                 <FormInput
@@ -182,6 +184,14 @@ function Login() {
     </CenterContainer>
   );
 }
+const TestAccount = styled.button`
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: -12px;
+  :hover {
+    color: #df524d;
+  }
+`;
 const CenterContainer = styled.div`
   margin: auto;
   display: flex;
