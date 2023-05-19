@@ -6,7 +6,7 @@
   <p align="center">
     <a href="https://webook-studygroups.web.app/">Website</a>
     |
-    <a href="https://github.com/yiting99928/WeBOOK#testAccount">Test Account</a>
+    <a href="https://github.com/yiting99928/WeBOOK#test">Test Account</a>
     |
     <a href="https://github.com/yiting99928/WeBOOK#demo">Demo</a>
     |
@@ -56,7 +56,7 @@
 - Saving study group notes.<br>
 ![note](https://github.com/yiting99928/WeBOOK/assets/119116127/a89fa4ea-657b-4145-a805-150a99495c63)
 
-### <a id="testAccount"></a>Test Account
+### <a id="test"></a>Test Account
 - Email: webooktest@gmail.com
 - Password: webooktest
 
