@@ -87,7 +87,8 @@ function Login() {
         modal.quit('發送重置密碼郵件失敗，請確保電子郵件正確無誤');
       });
   };
-  function Test() {
+  function Test(e) {
+    e.stopPropagation();
     setLogin({
       email: 'webooktest@gmail.com',
       password: 'webooktest',
