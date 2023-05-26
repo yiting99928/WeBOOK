@@ -103,13 +103,16 @@ function StudyGroup() {
           </GroupInfo>
           <Announcement>
             <Description>讀書會公告</Description>
-            <div>{studyGroup.post}</div>
+            <Post>{studyGroup.post}</Post>
           </Announcement>
         </Container>
       )}
     </div>
   );
 }
+const Post = styled.div`
+  word-break: break-word;
+`;
 const pulse = keyframes`
   0%, 100% {
     opacity: 1;
