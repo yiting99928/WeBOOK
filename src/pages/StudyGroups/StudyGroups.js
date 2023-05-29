@@ -38,24 +38,17 @@ function StudyGroups() {
   const searchByText = async (e) => {
     e.preventDefault();
 
-    const searchWords = searchText.split(' ');
-
     const groups = await data.getUnfinishedGroups();
+    const searchPattern = new RegExp(searchText, 'i');
 
     const filteredGroups = groups.filter((group) => {
-      const groupNameLower = group.name.toLowerCase();
-      const hostLower = group.host.toLowerCase();
-      const nameLower = group.name.toLowerCase();
-      return searchWords.some((word) => {
-        const wordLower = word.toLowerCase();
-        return (
-          groupNameLower.includes(wordLower) ||
-          hostLower.includes(wordLower) ||
-          nameLower.includes(wordLower)
-        );
-      });
+      return (
+        searchPattern.test(group.groupName) ||
+        searchPattern.test(group.host) ||
+        searchPattern.test(group.name)
+      );
     });
-
+    setSelectedCategory('');
     setAllGroupsData(filteredGroups);
   };
 
