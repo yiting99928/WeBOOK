@@ -212,14 +212,24 @@ function Process() {
                         });
                       }}
                     />
-                    <BiTrash
+                    {/* <BiTrash
                       onClick={() => {
                         dispatch({
                           type: 'DEL_CARD',
                           payload: { processIndex },
                         });
                       }}
-                    />
+                    /> */}
+                    {processIndex!==0 && (
+                      <BiTrash
+                        onClick={() => {
+                          dispatch({
+                            type: 'DEL_CARD',
+                            payload: { processIndex },
+                          });
+                        }}
+                      />
+                    )}
                   </Buttons>
                 </ProcessCard>
               );
