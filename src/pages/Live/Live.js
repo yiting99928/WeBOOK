@@ -1,11 +1,4 @@
-import {
-  arrayUnion,
-  collection,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-} from 'firebase/firestore';
+import { arrayUnion, collection, doc, onSnapshot } from 'firebase/firestore';
 import { useContext, useEffect, useRef, useState } from 'react';
 import {
   BsBoxArrowInDownRight,
@@ -40,9 +33,6 @@ function Live() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [messages, setMessages] = useState([]);
-  const [MessageInput, setMessageInput] = useState('');
-  const messagesEndRef = useRef(null);
   const [isLive, setIsLive] = useState(false);
   const [studyGroup, setStudyGroup] = useState([]);
   const [note, setNote] = useState('');
@@ -101,7 +91,7 @@ function Live() {
         isVideoDisabled: false,
       });
     } catch (error) {
-      modal.quit("請確保已開啟設備，或嘗試更換瀏覽器")
+      modal.quit('請確保已開啟設備，或嘗試更換瀏覽器');
     }
   }
 
@@ -292,26 +282,6 @@ function Live() {
   }, [id]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
-      inline: 'start',
-    });
-  }, [messages]);
-
-  useEffect(() => {
-    const chatRoomRef = collection(db, 'rooms', id, 'messages');
-    const q = query(chatRoomRef, orderBy('timestamp', 'asc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setMessages(snapshot.docs.map((doc) => doc.data()));
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [id]);
-
-  useEffect(() => {
     const unsubscribe = onSnapshot(
       doc(db, 'studyGroups', id),
       (docSnapshot) => {
@@ -344,22 +314,6 @@ function Live() {
       };
     }
   }, [id]);
-
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    const trimmedMessage = MessageInput.trim();
-
-    if (trimmedMessage) {
-      await data.addMessage(id, {
-        message: trimmedMessage,
-        timestamp: new Date(),
-        sender: user.email,
-        senderName: user.name,
-        sanderImg: user.userImg,
-      });
-      setMessageInput('');
-    }
-  };
 
   async function handleSaveNote() {
     try {
@@ -635,15 +589,7 @@ function Live() {
               />
             </Broadcast>
           </LiveScreen>
-          <ChatRoom
-            showChatRoom={showChatRoom}
-            sendMessage={sendMessage}
-            MessageInput={MessageInput}
-            setMessageInput={setMessageInput}
-            messagesEndRef={messagesEndRef}
-            messages={messages}
-            user={user}
-          />
+          <ChatRoom showChatRoom={showChatRoom} />
         </LiveContainer>
         <Note
           setNote={setNote}

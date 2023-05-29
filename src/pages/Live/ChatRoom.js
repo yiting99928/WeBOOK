@@ -1,57 +1,113 @@
-import React from 'react';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { IoIosArrowForward } from 'react-icons/io';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { AuthContext } from '../../context/authContext';
+import data from '../../utils/firebase';
+import { db } from '../../utils/firebaseConfig';
 
-export function ChatRoom({
-  showChatRoom,
-  sendMessage,
-  MessageInput,
-  setMessageInput,
-  messagesEndRef,
-  messages,
-  user,
-}) {
+const Message = () => {
+  const { id } = useParams();
+  const { email } = useContext(AuthContext).user;
+  const [messages, setMessages] = useState([]);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'start',
+    });
+  }, [messages]);
+
+  useEffect(() => {
+    const chatRoomRef = collection(db, 'rooms', id, 'messages');
+    const q = query(chatRoomRef, orderBy('timestamp', 'asc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setMessages(snapshot.docs.map((doc) => doc.data()));
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [id]);
+
   return (
-    <ChatRoomContainer showChatRoom={showChatRoom}>
-      <ChatTitle>聊天室</ChatTitle>
-      <Message>
-        {messages.map((message, index) => {
-          if (message.sender === null) {
-            return <SystemMessage key={index}>{message.message}</SystemMessage>;
-          } else if (user.email === message.sender) {
-            return <UserMessage key={index}>{message.message}</UserMessage>;
-          } else {
-            return (
-              <GuestMessage key={index}>
-                <UserImg src={message.sanderImg} alt="userImg" />
-                <SenderMessage>
-                  <SenderName>{message.senderName}</SenderName>
-                  <p>{message.message}</p>
-                </SenderMessage>
-              </GuestMessage>
-            );
-          }
-        })}
-        <div
-          ref={(el) => {
-            messagesEndRef.current = el;
-          }}
-        />
-      </Message>
-      <ChatInput>
-        <form onSubmit={sendMessage}>
-          <input
-            value={MessageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-          />
-          <button type="submit">
-            <IoIosArrowForward />
-          </button>
-        </form>
-      </ChatInput>
-    </ChatRoomContainer>
+    <MessageStyled>
+      {messages.map(({ sender, message, sanderImg, senderName }, index) => {
+        if (sender === null)
+          return <SystemMessage key={index}>{message}</SystemMessage>;
+        if (email === sender)
+          return <UserMessage key={index}>{message}</UserMessage>;
+        return (
+          <GuestMessage key={index}>
+            <UserImg src={sanderImg} alt="userImg" />
+            <SenderMessage>
+              <SenderName>{senderName}</SenderName>
+              <p>{message}</p>
+            </SenderMessage>
+          </GuestMessage>
+        );
+      })}
+      <div ref={messagesEndRef} />
+    </MessageStyled>
   );
-}
+};
+
+const Chat = () => {
+  const { id } = useParams();
+  const { email, name, userImg } = useContext(AuthContext).user;
+  const [messageInput, setMessageInput] = useState('');
+
+  const sendMessage = useCallback(
+    async (e) => {
+      e.preventDefault();
+      const trimmedMessage = messageInput.trim();
+
+      if (trimmedMessage) {
+        await data.addMessage(id, {
+          message: trimmedMessage,
+          timestamp: new Date(),
+          sender: email,
+          senderName: name,
+          sanderImg: userImg,
+        });
+        setMessageInput('');
+      }
+    },
+    [messageInput]
+  );
+
+  return (
+    <ChatInput>
+      <form onSubmit={sendMessage}>
+        <input
+          value={messageInput}
+          onChange={(e) => setMessageInput(e.target.value)}
+        />
+        <button type="submit">
+          <IoIosArrowForward />
+        </button>
+      </form>
+    </ChatInput>
+  );
+};
+
+export const ChatRoom = React.memo(({ showChatRoom }) => (
+  <ChatRoomContainer showChatRoom={showChatRoom}>
+    <ChatTitle>聊天室</ChatTitle>
+    <Message />
+    <Chat />
+  </ChatRoomContainer>
+));
+
 const SenderMessage = styled.div`
   background-color: #f1f1f1;
   padding: 5px 10px;
@@ -105,7 +161,7 @@ const SystemMessage = styled.div`
   text-align: center;
   color: #df524d;
 `;
-const Message = styled.div`
+const MessageStyled = styled.div`
   display: flex;
   flex-direction: column;
   line-height: 2;
