@@ -10,8 +10,8 @@ import LoginImg from './LoginImg';
 function Login() {
   const navigate = useNavigate();
   const [login, setLogin] = useState({
-    email: '',
-    password: '',
+    email: 'webooktest@gmail.com',
+    password: 'webooktest',
   });
   const [register, setRegister] = useState({
     name: '',
@@ -95,6 +95,7 @@ function Login() {
       password: 'webooktest',
     });
   };
+
   return (
     <CenterContainer>
       <DecoBg height={550} />
