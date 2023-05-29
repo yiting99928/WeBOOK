@@ -185,6 +185,7 @@ const GroupDetail = styled.div`
   flex-direction: column;
   gap: 10px;
   min-width: 300px;
+  max-width:300px;
 `;
 
 const Container = styled.div`
