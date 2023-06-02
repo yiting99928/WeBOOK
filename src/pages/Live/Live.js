@@ -717,6 +717,7 @@ const Cards = styled.div`
 const Card = styled.div`
   display: ${({ activeCard }) => (activeCard ? 'block' : 'none')};
   overflow: scroll;
+  height:100%;
 `;
 const Description = styled.div`
   font-size: 20px;
