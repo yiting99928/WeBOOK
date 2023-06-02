@@ -32,19 +32,36 @@ function Header() {
       <MobileWrap isOpen={isOpen}>
         <MobileMenu>
           <p>
-            <Link to={user ? '/create' : '/login'}>建立讀書會</Link>
+            <Link onClick={handleClick} to={user ? '/create' : '/login'}>
+              建立讀書會
+            </Link>
           </p>
           <p>
-            <Link to={`/study-groups`}>所有讀書會</Link>
+            <Link onClick={handleClick} to={`/study-groups`}>
+              所有讀書會
+            </Link>
           </p>
           <p>
-            <Link to={user ? '/profile' : '/login'}>會員</Link>
+            <Link onClick={handleClick} to={user ? '/profile' : '/login'}>
+              會員
+            </Link>
           </p>
         </MobileMenu>
       </MobileWrap>
+      <MobileBg isOpen={isOpen} onClick={handleClick}/>
     </>
   );
 }
+const MobileBg = styled.div`
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
+`;
+
 const HamburgerIcon = styled.div`
   width: 30px;
   height: 20px;
@@ -98,7 +115,7 @@ const MobileWrap = styled.div`
   background-color: white;
   top: 60px;
   width: 100vw;
-  z-index: 2;
+  z-index: 3;
   padding: 50px;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
 `;
