@@ -6,7 +6,7 @@
   <p align="center">
     <a href="https://webook-studygroups.web.app/">Website</a>
     |
-    <a href="https://github.com/yiting99928/WeBOOK#test">Test Account</a>
+    <a href="https://github.com/yiting99928/WeBOOK#test-account">Test Account</a>
     |
     <a href="https://github.com/yiting99928/WeBOOK#demo">Demo</a>
     |
@@ -48,7 +48,7 @@
 ### User Flow
 <img width="600" alt="WeBOOK user flow" src="https://github.com/yiting99928/WeBOOK/assets/119116127/cd10b4b1-556c-4bb3-9863-0fcd326981dc">
 
-### <a id="demo"></a>Demo
+### Demo
 - Self-editable book introduction process.<br>
 ![edit](https://github.com/yiting99928/WeBOOK/assets/119116127/92b69b7e-2403-40e4-aea4-0a8b405a0c87)
 - Live streaming with a self-edited process and engaging with the audience.<br>
@@ -56,11 +56,11 @@
 - Saving study group notes.<br>
 ![note](https://github.com/yiting99928/WeBOOK/assets/119116127/a89fa4ea-657b-4145-a805-150a99495c63)
 
-### <a id="test"></a>Test Account
+### Test Account
 - Email: webooktest@gmail.com
 - Password: webooktest
 
-### <a id="contact"></a>Contact
+### Contact
   <a href="https://www.linkedin.com/in/yiting-yang999628" text-decoration="none">
     <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />
   </a>
