@@ -46,7 +46,7 @@
 * Sweetalert2
 
 ### User Flow
-<img width="600" alt="WeBOOK user flow" src="https://github.com/yiting99928/WeBOOK/assets/119116127/cd10b4b1-556c-4bb3-9863-0fcd326981dc">
+<img alt="WeBOOK user flow" src="https://github.com/yiting99928/WeBOOK/assets/119116127/cd10b4b1-556c-4bb3-9863-0fcd326981dc">
 
 ### Demo
 - Self-editable book introduction process.<br>
