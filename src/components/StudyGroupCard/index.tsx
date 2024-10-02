@@ -17,7 +17,7 @@ function StudyGroupCard({ item }: { item: StudyGroupType }) {
         ) : (
           <div></div>
         )}
-        <BookGroupImg src={item.image as string} alt="feature" />
+        <BookGroupImg src={item.image} alt="feature" />
       </ImgContainer>
       <BookGroupInfo>
         <BookTitle>
