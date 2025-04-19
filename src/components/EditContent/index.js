@@ -7,15 +7,12 @@ const quillModules = {
 		[{ color: [] }],
 		["bold", "italic", "underline", "strike"],
 		[{ list: "ordered" }, { list: "bullet" }],
-		["link", "emoji"],
+		["link"],
 		["clean"],
 	],
 	clipboard: {
 		matchVisual: false,
 	},
-	"emoji-toolbar": true,
-	"emoji-textarea": false,
-	"emoji-shortname": true,
 };
 
 function EditContent({ onChange, value, onBlur }) {
